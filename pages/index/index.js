@@ -75,19 +75,17 @@ Page({
     const seenIds = getSeenIds()
     const freshJokes = jokes.filter(j => !seenIds.includes(j.id))
     
-    // 热门推荐：如果有likes>0的笑话就按likes排序，否则随机选4条
+    // 热门推荐逻辑
     let hotJokes
     const likedJokes = jokes.filter(j => j.likes > 0)
     if (likedJokes.length >= 4) {
       hotJokes = likedJokes.sort((a, b) => b.likes - a.likes).slice(0, 4)
     } else if (likedJokes.length > 0) {
-      // 有一些点赞但不够4条，补充随机笑话
       const randomOthers = jokes.filter(j => j.likes === 0)
         .sort(() => Math.random() - 0.5)
         .slice(0, 4 - likedJokes.length)
       hotJokes = [...likedJokes.sort((a, b) => b.likes - a.likes), ...randomOthers]
     } else {
-      // 没有任何点赞，随机选4条
       hotJokes = jokes.sort(() => Math.random() - 0.5).slice(0, 4)
     }
     
@@ -134,7 +132,6 @@ Page({
     }
     
     const randomJoke = freshJokes[Math.floor(Math.random() * freshJokes.length)]
-    
     markSeen(randomJoke.id)
     
     const newSeenIds = getSeenIds()
@@ -151,18 +148,22 @@ Page({
     this.checkStatus(randomJoke.id)
   },
 
-  toggleLike() {
+  async toggleLike() {
     const id = this.data.currentJoke.id
     let likes = wx.getStorageSync('userLikes') || []
     let dislikes = wx.getStorageSync('userDislikes') || []
     
+    // 如果之前不喜欢，先取消
     if (dislikes.includes(id)) {
       dislikes = dislikes.filter(d => d !== id)
       wx.setStorageSync('userDislikes', dislikes)
       this.setData({ disliked: false })
+      await api.toggleDislike(id, false)
     }
     
     const wasLiked = this.data.liked
+    const newLiked = !wasLiked
+    
     if (wasLiked) {
       likes = likes.filter(l => l !== id)
     } else {
@@ -174,24 +175,32 @@ Page({
     const joke = this.data.currentJoke
     joke.likes = wasLiked ? joke.likes - 1 : joke.likes + 1
     
-    this.setData({ liked: !wasLiked, currentJoke: joke })
+    this.setData({ liked: newLiked, currentJoke: joke })
     
-    // 调用API更新数据库（异步，不等待）
-    api.likeJoke(id).catch(err => console.log('API更新失败，本地已保存'))
+    // 同步到数据库
+    try {
+      await api.toggleLike(id, newLiked)
+    } catch (err) {
+      console.log('API更新失败，本地已保存')
+    }
   },
 
-  toggleDislike() {
+  async toggleDislike() {
     const id = this.data.currentJoke.id
     let likes = wx.getStorageSync('userLikes') || []
     let dislikes = wx.getStorageSync('userDislikes') || []
     
+    // 如果之前喜欢，先取消
     if (likes.includes(id)) {
       likes = likes.filter(l => l !== id)
       wx.setStorageSync('userLikes', likes)
       this.setData({ liked: false })
+      await api.toggleLike(id, false)
     }
     
     const wasDisliked = this.data.disliked
+    const newDisliked = !wasDisliked
+    
     if (wasDisliked) {
       dislikes = dislikes.filter(d => d !== id)
     } else {
@@ -203,7 +212,14 @@ Page({
     const joke = this.data.currentJoke
     joke.dislikes = wasDisliked ? joke.dislikes - 1 : joke.dislikes + 1
     
-    this.setData({ disliked: !wasDisliked, currentJoke: joke })
+    this.setData({ disliked: newDisliked, currentJoke: joke })
+    
+    // 同步到数据库
+    try {
+      await api.toggleDislike(id, newDisliked)
+    } catch (err) {
+      console.log('API更新失败，本地已保存')
+    }
   },
 
   toggleTheme() {
@@ -212,7 +228,6 @@ Page({
       pageClass: newTheme === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
-    wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 
   previewImage(e) {
@@ -231,12 +246,19 @@ Page({
     wx.navigateTo({ url: '/pages/search/search' })
   },
 
-  onShareAppMessage() {
+  async onShareAppMessage() {
     const joke = this.data.currentJoke
     if (!joke) return
     
     joke.shares++
     this.setData({ currentJoke: joke })
+    
+    // 同步到数据库
+    try {
+      await api.incrementShare(joke.id)
+    } catch (err) {
+      console.log('分享数更新失败')
+    }
     
     return {
       title: `【哇哇笑】${joke.title}`,

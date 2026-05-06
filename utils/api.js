@@ -26,36 +26,40 @@ function getUserId() {
 }
 
 const api = {
+  // 获取笑话列表
   getJokes(params = {}) {
     const query = Object.keys(params).map(k => `${k}=${params[k]}`).join('&')
     return request(`/jokes?${query}`)
   },
   
+  // 获取热门笑话
   getHotJokes() {
     return request('/hot')
   },
   
+  // 获取随机笑话
   getRandomJoke() {
     return request('/random')
   },
   
+  // 获取单个笑话
   getJokeById(id) {
     return request(`/jokes/${id}`)
   },
   
-  // 喜欢/取消喜欢
-  toggleLike(id, liked) {
+  // 喜欢/取消喜欢（同步到数据库）
+  toggleLike(id, isLike) {
     return request(`/like/${id}`, 'POST', {
       userId: getUserId(),
-      action: liked ? 'like' : 'unlike'
+      action: isLike ? 'like' : 'unlike'
     })
   },
   
-  // 不喜欢/取消不喜欢
-  toggleDislike(id, disliked) {
+  // 不喜欢/取消不喜欢（同步到数据库）
+  toggleDislike(id, isDislike) {
     return request(`/dislike/${id}`, 'POST', {
       userId: getUserId(),
-      action: disliked ? 'dislike' : 'undislike'
+      action: isDislike ? 'dislike' : 'undislike'
     })
   },
   
@@ -64,13 +68,10 @@ const api = {
     return request(`/share/${id}`, 'POST', { userId: getUserId() })
   },
   
-  submitJoke(data) {
-    return request('/jokes', 'POST', data)
-  },
-  
+  // 获取统计信息
   getStats() {
     return request('/stats')
   }
 }
 
-module.exports = { api, request, getUserId }
+module.exports = { api, getUserId }

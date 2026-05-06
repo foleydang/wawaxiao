@@ -63,66 +63,52 @@ Page({
     this.setData({ loading: true })
     
     try {
-      const res = await api.getJokes({ limit: 50 })
-      const jokes = this.processJokes(res.data.list || res.data)
+      const res = await api.getJokes({ limit: 100 })
+      const jokes = this.processJokes(res.data.list)
       
-      const cats = this.data.categories.map(c => ({
-        ...c,
-        count: c.name === '全部' 
-          ? jokes.length 
-          : jokes.filter(j => j.category === c.name).length
+      // 更新分类计数
+      const categories = this.data.categories.map(cat => ({
+        ...cat,
+        count: cat.name === '全部' ? jokes.length : jokes.filter(j => j.category === cat.name).length
       }))
+      
+      wx.setStorageSync('cachedJokes', jokes)
       
       this.setData({
         allJokes: jokes,
-        jokes: this.filterByCategory(jokes),
-        categories: cats,
+        jokes: this.filterJokes(jokes, this.data.currentCategory),
+        categories,
         loading: false
       })
-      
-      wx.setStorageSync('cachedJokes', jokes)
       
     } catch (err) {
       const cached = wx.getStorageSync('cachedJokes') || []
       const jokes = this.processJokes(cached)
-      
-      const cats = this.data.categories.map(c => ({
-        ...c,
-        count: c.name === '全部' 
-          ? jokes.length 
-          : jokes.filter(j => j.category === c.name).length
-      }))
-      
       this.setData({
         allJokes: jokes,
-        jokes: this.filterByCategory(jokes),
-        categories: cats,
+        jokes: this.filterJokes(jokes, this.data.currentCategory),
         loading: false
       })
     }
   },
 
-  updateSeenStatus() {
-    if (this.data.allJokes.length === 0) return
-    
-    const jokes = this.processJokes(this.data.allJokes)
-    this.setData({
-      allJokes: jokes,
-      jokes: this.filterByCategory(jokes)
-    })
+  filterJokes(jokes, category) {
+    if (category === '全部') return jokes.sort((a, b) => b.likes - a.like)
+    return jokes.filter(j => j.category === category).sort((a, b) => b.likes - a.likes)
   },
 
-  filterByCategory(jokes) {
-    const cat = this.data.currentCategory
-    if (cat === '全部') return jokes
-    return jokes.filter(j => j.category === cat)
+  updateSeenStatus() {
+    const jokes = this.processJokes(this.data.allJokes)
+    this.setData({
+      jokes: this.filterJokes(jokes, this.data.currentCategory)
+    })
   },
 
   switchCategory(e) {
     const category = e.currentTarget.dataset.category
     this.setData({
       currentCategory: category,
-      jokes: this.filterByCategory(this.data.allJokes)
+      jokes: this.filterJokes(this.data.allJokes, category)
     })
   },
 
@@ -132,7 +118,6 @@ Page({
       pageClass: newTheme === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
-    wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 
   goToDetail(e) {

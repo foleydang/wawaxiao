@@ -1,3 +1,4 @@
+const { api } = require('../../utils/api.js')
 const { getCurrentTheme, toggleTheme, getThemeIcon, initTheme } = require('../../utils/theme.js')
 
 const CAT_COLORS = {
@@ -26,59 +27,49 @@ Page({
     })
   },
 
-  onShow() {
-    this.setData({
-      pageClass: getCurrentTheme() === 'light' ? 'light-mode' : '',
-      themeIcon: getThemeIcon()
-    })
-  },
-
-  toggleTheme() {
-    const newTheme = toggleTheme()
-    this.setData({
-      pageClass: newTheme === 'light' ? 'light-mode' : '',
-      themeIcon: getThemeIcon()
-    })
-    wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
+  processJokes(jokes) {
+    return jokes.map(j => ({
+      ...j,
+      color: CAT_COLORS[j.category] || '#667eea',
+      preview: j.content.split('\n')[0].substring(0, 40)
+    }))
   },
 
   onInput(e) {
     this.setData({ keyword: e.detail.value })
   },
 
-  onSearch() {
+  async onSearch() {
     const keyword = this.data.keyword.trim()
     if (!keyword) return
     
+    // 保存搜索历史
     let history = wx.getStorageSync('searchHistory') || []
-    history = [keyword, ...history.filter(h => h !== keyword)].slice(0, 10)
-    wx.setStorageSync('searchHistory', history)
+    if (!history.includes(keyword)) {
+      history.unshift(keyword)
+      history = history.slice(0, 10)
+      wx.setStorageSync('searchHistory', history)
+      this.setData({ history })
+    }
     
-    const cached = wx.getStorageSync('cachedJokes') || []
-    const results = cached
+    // 搜索笑话（本地搜索）
+    const allJokes = wx.getStorageSync('cachedJokes') || []
+    const results = allJokes
       .filter(j => 
         j.title.toLowerCase().includes(keyword.toLowerCase()) ||
-        j.content.toLowerCase().includes(keyword.toLowerCase()) ||
-        j.category.toLowerCase().includes(keyword.toLowerCase())
+        j.content.toLowerCase().includes(keyword.toLowerCase())
       )
       .map(j => ({
         ...j,
         color: CAT_COLORS[j.category] || '#667eea',
-        preview: j.content.split('\n')[0].substring(0, 40),
-        hasImage: j.images && j.images.length > 0
+        preview: j.content.split('\n')[0].substring(0, 40)
       }))
     
-    this.setData({ results, searched: true, history })
+    this.setData({ results, searched: true })
   },
 
   clearInput() {
     this.setData({ keyword: '', results: [], searched: false })
-  },
-
-  searchHistory(e) {
-    const keyword = e.currentTarget.dataset.keyword
-    this.setData({ keyword })
-    this.onSearch()
   },
 
   clearHistory() {
@@ -87,8 +78,23 @@ Page({
     wx.showToast({ title: '已清空', icon: 'none' })
   },
 
+  searchHistory(e) {
+    const keyword = e.currentTarget.dataset.keyword
+    this.setData({ keyword })
+    this.onSearch()
+  },
+
+  toggleTheme() {
+    const newTheme = toggleTheme()
+    this.setData({
+      pageClass: newTheme === 'light' ? 'light-mode' : '',
+      themeIcon: getThemeIcon()
+    })
+  },
+
   goToDetail(e) {
-    wx.navigateTo({ url: `/pages/detail/detail?id=${e.currentTarget.dataset.id}` })
+    const id = e.currentTarget.dataset.id
+    wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
   },
 
   goBack() {
