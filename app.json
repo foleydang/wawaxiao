@@ -3,7 +3,6 @@
     "pages/index/index",
     "pages/detail/detail",
     "pages/favorites/favorites",
-    "pages/submit/submit",
     "pages/search/search"
   ],
   "window": {
@@ -28,12 +27,6 @@
         "text": "喜欢",
         "iconPath": "images/heart.png",
         "selectedIconPath": "images/heart-active.png"
-      },
-      {
-        "pagePath": "pages/submit/submit",
-        "text": "投稿",
-        "iconPath": "images/edit.png",
-        "selectedIconPath": "images/edit-active.png"
       }
     ]
   },
