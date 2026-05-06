@@ -1,6 +1,6 @@
 const { api } = require('../../utils/api.js')
 const { markSeen } = require('../../utils/seen.js')
-const { getCurrentTheme, toggleTheme, getThemeIcon, initTheme } = require('../../utils/theme.js')
+const { getCurrentTheme, toggleTheme, initTheme, getThemeIcon } = require('../../utils/theme.js')
 
 const CAT_COLORS = {
   '职场': '#f093fb',
@@ -11,11 +11,11 @@ const CAT_COLORS = {
 
 Page({
   data: {
+    pageClass: '',
     joke: { color: '#667eea', likes: 0, dislikes: 0, shares: 0, hasImage: false },
     moreJokes: [],
     liked: false,
     disliked: false,
-    currentTheme: 'dark',
     themeIcon: '🌙'
   },
 
@@ -24,7 +24,7 @@ Page({
     
     const id = parseInt(options.id)
     this.setData({
-      currentTheme: getCurrentTheme(),
+      pageClass: getCurrentTheme() === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
     this.loadJoke(id)
@@ -33,9 +33,8 @@ Page({
   },
 
   onShow() {
-    const theme = getCurrentTheme()
     this.setData({
-      currentTheme: theme,
+      pageClass: getCurrentTheme() === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
   },
@@ -84,6 +83,10 @@ Page({
 
   toggleTheme() {
     const newTheme = toggleTheme()
+    this.setData({
+      pageClass: newTheme === 'light' ? 'light-mode' : '',
+      themeIcon: getThemeIcon()
+    })
     wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 

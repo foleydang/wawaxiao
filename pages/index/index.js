@@ -1,6 +1,6 @@
 const { api } = require('../../utils/api.js')
 const { markSeen, getSeenIds } = require('../../utils/seen.js')
-const { getCurrentTheme, toggleTheme, getThemeIcon, initTheme } = require('../../utils/theme.js')
+const { getCurrentTheme, toggleTheme, initTheme, getThemeIcon } = require('../../utils/theme.js')
 
 const CAT_COLORS = {
   '职场': '#f093fb',
@@ -11,6 +11,7 @@ const CAT_COLORS = {
 
 Page({
   data: {
+    pageClass: '',  // 页面主题class
     categories: [
       { name: '全部', color: '#667eea', count: 0 },
       { name: '职场', color: '#f093fb', count: 0 },
@@ -27,26 +28,23 @@ Page({
     randomJoke: null,
     loading: true,
     showSeen: false,
-    currentTheme: 'dark',
     themeIcon: '🌙'
   },
 
   onLoad() {
-    // 初始化主题
     initTheme()
     
     this.setData({
-      currentTheme: getCurrentTheme(),
+      pageClass: getCurrentTheme() === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
+    
     this.loadJokes()
   },
 
   onShow() {
-    // 每次显示页面时更新主题
-    const theme = getCurrentTheme()
     this.setData({
-      currentTheme: theme,
+      pageClass: getCurrentTheme() === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
     this.updateSeenStatus()
@@ -123,6 +121,8 @@ Page({
   },
 
   updateSeenStatus() {
+    if (this.data.allJokes.length === 0) return
+    
     const jokes = this.processJokes(this.data.allJokes)
     const { todayJokes, seenJokes } = this.splitBySeen(jokes)
     
@@ -175,6 +175,10 @@ Page({
 
   toggleTheme() {
     const newTheme = toggleTheme()
+    this.setData({
+      pageClass: newTheme === 'light' ? 'light-mode' : '',
+      themeIcon: getThemeIcon()
+    })
     wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 

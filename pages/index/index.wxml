@@ -1,5 +1,8 @@
-<view class="page {{currentTheme}}">
-  <!-- 顶部：搜索 + 主题切换 -->
+<!-- 使用page-class绑定到根page元素 -->
+<page class="{{pageClass}}">
+
+<view class="container">
+  <!-- 顶部：搜索 + 主题 -->
   <view class="header">
     <view class="search-bar glass" bindtap="goToSearch">
       <view class="search-icon"></view>
@@ -26,7 +29,7 @@
     </view>
   </scroll-view>
 
-  <!-- 新鲜未看 -->
+  <!-- 新鲜 -->
   <view class="section" wx:if="{{todayJokes.length > 0}}">
     <view class="section-header">
       <view class="section-title-wrap">
@@ -54,17 +57,17 @@
   </view>
 
   <!-- 已看过 -->
-  <view class="section seen-section" wx:if="{{seenJokes.length > 0}}">
+  <view class="section" wx:if="{{seenJokes.length > 0}}">
     <view class="section-header" bindtap="toggleShowSeen">
       <view class="section-title-wrap">
         <view class="title-bar seen"></view>
-        <text class="section-title seen-text">{{showSeen ? '隐藏' : '看过' + seenJokes.length + '条'}} {{showSeen ? '' : '▶'}}</text>
+        <text class="section-title">{{showSeen ? '隐藏' : '看过' + seenJokes.length + '条'}} {{showSeen ? '' : '▶'}}</text>
       </view>
     </view>
     
     <view class="joke-list" wx:if="{{showSeen}}">
       <view 
-        class="joke-card fade-up seen-card"
+        class="joke-card glass"
         wx:for="{{seenJokes}}"
         wx:key="id"
         bindtap="goToDetail"
@@ -102,7 +105,7 @@
 
     <view class="joke-list" wx:else>
       <view 
-        class="joke-card fade-up"
+        class="joke-card glass fade-up"
         wx:for="{{filteredJokes}}"
         wx:key="id"
         bindtap="goToDetail"
@@ -123,15 +126,15 @@
   <!-- 随机按钮 -->
   <view class="float-btn" bindtap="showRandom">
     <view class="float-bg gradient-btn"></view>
-    <view class="float-content">
-      <text class="float-icon">⚡</text>
-    </view>
+    <text class="float-icon">⚡</text>
   </view>
 </view>
 
-<!-- 随机弹窗 -->
+</page>
+
+<!-- 弹窗 -->
 <view class="modal-overlay {{showModal ? 'show' : ''}}" bindtap="hideModal">
-  <view class="modal glass scale-in" catchtap="preventClose">
+  <view class="modal glass" catchtap="preventClose">
     <view class="modal-header">
       <view class="modal-bar" style="background: {{randomJoke.color}}"></view>
       <text class="modal-cat">{{randomJoke.category}}</text>

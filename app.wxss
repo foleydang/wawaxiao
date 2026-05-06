@@ -1,25 +1,17 @@
-/* app.wxss - 支持动态切换主题 */
+/* app.wxss - 小程序主题切换 */
 
+/* 根页面 - 定义变量 */
 page {
-  /* 安全区域 */
   --safe-top: env(safe-area-inset-top);
   --safe-bottom: env(safe-area-inset-bottom);
   
-  /* 主题色 */
   --primary: #667eea;
   --accent: #f093fb;
   
   --radius: 12rpx;
   --radius-lg: 20rpx;
   
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
-  font-size: 32rpx;
-  line-height: 1.65;
-  font-weight: 400;
-}
-
-/* 夜间模式（默认） */
-.page.dark {
+  /* 夜间模式变量（默认） */
   --bg: #0f0f23;
   --bg-light: #1a1a2e;
   --card: rgba(255,255,255,0.05);
@@ -30,10 +22,14 @@ page {
   
   background: var(--bg);
   color: var(--text);
+  
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+  font-size: 32rpx;
+  line-height: 1.65;
 }
 
-/* 日间模式 */
-.page.light {
+/* 日间模式类 - 覆盖变量 */
+page.light-mode {
   --bg: #f5f7fa;
   --bg-light: #ffffff;
   --card: rgba(0,0,0,0.03);
@@ -41,45 +37,32 @@ page {
   --text: #1a1a2e;
   --text-secondary: rgba(0,0,0,0.6);
   --text-muted: rgba(0,0,0,0.3);
-  
-  background: var(--bg);
-  color: var(--text);
 }
 
-/* 渐变 */
+/* 通用样式 */
 .gradient-btn {
   background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
 }
 
-.gradient-text {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* 玻璃卡片 */
 .glass {
   background: var(--card);
   border: 1rpx solid var(--border);
   border-radius: var(--radius-lg);
 }
 
-/* 动画 */
 .fade-up {
-  animation: fadeUp 0.35s ease-out both;
+  animation: fadeUp 0.3s ease-out;
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24rpx); }
+  from { opacity: 0; transform: translateY(20rpx); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 骨架屏 */
 .skeleton {
   background: linear-gradient(90deg, var(--bg-light) 25%, var(--card) 50%, var(--bg-light) 75%);
   background-size: 200% 100%;
-  animation: skeleton 1.2s infinite linear;
+  animation: skeleton 1.2s infinite;
 }
 
 @keyframes skeleton {
