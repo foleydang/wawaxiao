@@ -6,6 +6,12 @@
     "pages/favorites/favorites",
     "pages/search/search"
   ],
+  "plugins": {
+    "WechatSI": {
+      "version": "0.3.5",
+      "provider": "wx0696ef688009cc79"
+    }
+  },
   "window": {
     "navigationBarTitleText": "",
     "navigationStyle": "custom",
