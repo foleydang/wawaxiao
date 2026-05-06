@@ -16,6 +16,15 @@ function request(url, method = 'GET', data = {}) {
   })
 }
 
+function getUserId() {
+  let userId = wx.getStorageSync('userId')
+  if (!userId) {
+    userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+    wx.setStorageSync('userId', userId)
+  }
+  return userId
+}
+
 const api = {
   getJokes(params = {}) {
     const query = Object.keys(params).map(k => `${k}=${params[k]}`).join('&')
@@ -34,12 +43,25 @@ const api = {
     return request(`/jokes/${id}`)
   },
   
+  // 喜欢/取消喜欢
   toggleLike(id, liked) {
-    return request(`/like/${id}`, 'POST', { userId: wx.getStorageSync('userId') || Date.now() })
+    return request(`/like/${id}`, 'POST', {
+      userId: getUserId(),
+      action: liked ? 'like' : 'unlike'
+    })
   },
   
+  // 不喜欢/取消不喜欢
   toggleDislike(id, disliked) {
-    return request(`/dislike/${id}`, 'POST', { userId: wx.getStorageSync('userId') || Date.now() })
+    return request(`/dislike/${id}`, 'POST', {
+      userId: getUserId(),
+      action: disliked ? 'dislike' : 'undislike'
+    })
+  },
+  
+  // 增加分享数
+  incrementShare(id) {
+    return request(`/share/${id}`, 'POST', { userId: getUserId() })
   },
   
   submitJoke(data) {
@@ -51,4 +73,4 @@ const api = {
   }
 }
 
-module.exports = { api, request }
+module.exports = { api, request, getUserId }

@@ -1,20 +1,16 @@
 <view class="page">
-  <!-- 顶部安全区域 + 内容 -->
   <view class="header">
-    <!-- 品牌 -->
     <view class="brand">
       <view class="brand-dot"></view>
       <text class="brand-name gradient-text">哇哇笑</text>
     </view>
     
-    <!-- 搜索入口 -->
     <view class="search-bar glass" bindtap="goToSearch">
       <text class="search-text">搜索笑话</text>
       <view class="search-arrow"></view>
     </view>
   </view>
 
-  <!-- 分类 -->
   <scroll-view class="categories" scroll-x show-scrollbar="{{false}}">
     <view 
       class="cat-item {{currentCategory === item.name ? 'active' : ''}}"
@@ -28,7 +24,7 @@
     </view>
   </scroll-view>
 
-  <!-- 今日精选（紧凑版） -->
+  <!-- 今日新鲜 -->
   <view class="section" wx:if="{{todayJokes.length > 0}}">
     <view class="section-header">
       <view class="section-title-wrap">
@@ -48,9 +44,9 @@
       >
         <view class="today-color" style="background: {{item.color}}"></view>
         <text class="today-title">{{item.title}}</text>
-        <view class="today-meta">
-          <text class="today-cat">{{item.category}}</text>
-          <text class="today-likes">{{item.likes}}</text>
+        <view class="today-stats">
+          <text class="stat-num">{{item.likes}}</text>
+          <text class="stat-label">喜欢</text>
         </view>
       </view>
     </scroll-view>
@@ -82,13 +78,18 @@
           <text class="joke-preview">{{item.preview}}</text>
         </view>
         <view class="joke-right">
+          <view class="stats-mini">
+            <text class="mini-num">{{item.likes}}</text>
+            <text class="mini-sep">/</text>
+            <text class="mini-num bad">{{item.dislikes}}</text>
+          </view>
           <view class="seen-badge">已看过</view>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 笑话库（统一两行） -->
+  <!-- 笑话库 -->
   <view class="section">
     <view class="section-header">
       <view class="section-title-wrap">
@@ -98,7 +99,6 @@
       <text class="section-count">{{filteredJokes.length}}条</text>
     </view>
 
-    <!-- 骨架屏 -->
     <view class="skeleton-wrap" wx:if="{{loading}}">
       <view class="skeleton-card glass" wx:for="{{3}}" wx:key="index">
         <view class="skeleton-bar skeleton"></view>
@@ -106,7 +106,6 @@
       </view>
     </view>
 
-    <!-- 列表 -->
     <view class="joke-list" wx:else>
       <view 
         class="joke-card fade-up"
@@ -121,14 +120,18 @@
           <text class="joke-preview">{{item.preview}}</text>
         </view>
         <view class="joke-right">
-          <view class="joke-dot" style="background: {{item.color}}"></view>
-          <text class="joke-likes">{{item.likes}}</text>
+          <view class="stats-mini">
+            <text class="mini-num">{{item.likes}}</text>
+            <text class="mini-sep">/</text>
+            <text class="mini-num bad">{{item.dislikes}}</text>
+          </view>
+          <view class="mini-share">📤{{item.shares}}</view>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 悬浮随机按钮 -->
+  <!-- 悬浮按钮 -->
   <view class="float-btn" bindtap="showRandom">
     <view class="float-bg gradient-btn"></view>
     <view class="float-content">

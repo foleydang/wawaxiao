@@ -5,7 +5,7 @@
 
 .main-scroll {
   height: 100vh;
-  padding-bottom: var(--safe-bottom);
+  padding-bottom: calc(48rpx + var(--safe-bottom));
 }
 
 .nav-bar {
@@ -71,21 +71,13 @@
   font-weight: 500;
 }
 
-.meta-badge {
-  font-size: 24rpx;
-  margin-left: 16rpx;
-  padding: 4rpx 10rpx;
-  border-radius: 6rpx;
-}
-
 .meta-badge.hot {
+  font-size: 24rpx;
   color: var(--accent);
   background: rgba(240,147,251,0.15);
-}
-
-.meta-badge.seen {
-  color: var(--text-muted);
-  background: var(--card);
+  padding: 4rpx 10rpx;
+  border-radius: 6rpx;
+  margin-left: 16rpx;
 }
 
 .main-title {
@@ -106,8 +98,7 @@
 
 .stats-row {
   display: flex;
-  justify-content: center;
-  gap: 60rpx;
+  justify-content: space-around;
   margin-top: 24rpx;
   padding-top: 20rpx;
   border-top: 1rpx solid var(--border);
@@ -131,6 +122,7 @@
   margin-top: 6rpx;
 }
 
+/* 操作按钮 */
 .action-row {
   display: flex;
   padding: 20rpx 32rpx;
@@ -139,15 +131,24 @@
 
 .action-btn {
   flex: 1;
-  height: 72rpx;
-  border-radius: 12rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 12rpx;
   position: relative;
   overflow: hidden;
   background: var(--bg-light);
   border: 1rpx solid var(--border);
+}
+
+.action-btn.liked {
+  border: none;
+}
+
+.action-btn.disliked {
+  border: none;
 }
 
 .action-bg {
@@ -159,14 +160,19 @@
 }
 
 .dislike-bg {
-  background: rgba(255,100,100,0.15);
+  background: rgba(255,100,100,0.2);
+}
+
+.action-icon {
+  font-size: 32rpx;
+  position: relative;
 }
 
 .action-text {
   font-size: 32rpx;
+  font-weight: 600;
   color: var(--text-secondary);
   position: relative;
-  font-weight: 500;
 }
 
 .action-btn.liked .action-text,
@@ -174,6 +180,7 @@
   color: var(--text);
 }
 
+/* 更多推荐 */
 .more-section {
   padding: 32rpx;
 }
@@ -230,9 +237,8 @@
 
 .more-meta {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
   padding-left: 16rpx;
-  gap: 12rpx;
 }
 
 .more-cat {
@@ -240,7 +246,7 @@
   color: var(--text-secondary);
 }
 
-.more-likes {
+.more-stats {
   font-size: 26rpx;
   color: var(--text-muted);
 }

@@ -1,7 +1,6 @@
 <view class="page">
-  <!-- 整体滚动区域 -->
   <scroll-view class="main-scroll" scroll-y show-scrollbar="{{false}}">
-    <!-- 返回按钮 -->
+    <!-- 导航 -->
     <view class="nav-bar">
       <view class="back-btn glass" bindtap="goBack">
         <view class="back-arrow"></view>
@@ -10,21 +9,15 @@
 
     <!-- 主卡片 -->
     <view class="main-card glass">
-      <!-- 分类色条 -->
       <view class="color-bar" style="background: {{joke.color}}"></view>
       
-      <!-- 元信息 -->
       <view class="meta-row">
         <view class="meta-dot" style="background: {{joke.color}}"></view>
         <text class="meta-category">{{joke.category}}</text>
         <view class="meta-badge hot" wx:if="{{joke.isHot}}">HOT</view>
-        <view class="meta-badge seen" wx:if="{{joke.hasSeen}}">已看过</view>
       </view>
 
-      <!-- 标题 -->
       <text class="main-title">{{joke.title}}</text>
-
-      <!-- 内容（不再单独滚动） -->
       <text class="main-content">{{joke.content}}</text>
 
       <!-- 统计 -->
@@ -37,23 +30,30 @@
           <text class="stat-value">{{joke.dislikes}}</text>
           <text class="stat-label">不喜欢</text>
         </view>
+        <view class="stat">
+          <text class="stat-value">{{joke.shares}}</text>
+          <text class="stat-label">分享</text>
+        </view>
       </view>
     </view>
 
-    <!-- 操作按钮 -->
+    <!-- 操作按钮（带数量） -->
     <view class="action-row">
       <view class="action-btn {{liked ? 'liked' : ''}}" bindtap="toggleLike">
         <view class="action-bg gradient-btn" wx:if="{{liked}}"></view>
-        <text class="action-text">{{liked ? '已喜欢' : '喜欢'}}</text>
+        <text class="action-icon">{{liked ? '❤️' : '🤍'}}</text>
+        <text class="action-text">{{joke.likes}}</text>
       </view>
       
       <view class="action-btn {{disliked ? 'disliked' : ''}}" bindtap="toggleDislike">
         <view class="action-bg dislike-bg" wx:if="{{disliked}}"></view>
-        <text class="action-text">{{disliked ? '已不喜欢' : '不喜欢'}}</text>
+        <text class="action-icon">{{disliked ? '👎' : '👎🏻'}}</text>
+        <text class="action-text">{{joke.dislikes}}</text>
       </view>
       
-      <view class="action-btn glass" bindtap="shareJoke">
-        <text class="action-text">分享</text>
+      <view class="action-btn" bindtap="shareJoke">
+        <text class="action-icon">📤</text>
+        <text class="action-text">{{joke.shares}}</text>
       </view>
     </view>
 
@@ -76,7 +76,7 @@
           <text class="more-name">{{item.title}}</text>
           <view class="more-meta">
             <text class="more-cat">{{item.category}}</text>
-            <text class="more-likes">{{item.likes}}</text>
+            <text class="more-stats">{{item.likes}}/{{item.dislikes}}</text>
           </view>
         </view>
       </view>

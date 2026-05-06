@@ -1,4 +1,4 @@
-/* pages/index/index.wxss - 极简深色风格 v3 */
+/* pages/index/index.wxss */
 
 .page {
   min-height: 100vh;
@@ -6,7 +6,6 @@
   padding-bottom: calc(120rpx + var(--safe-bottom));
 }
 
-/* ========== 顶部 ========== */
 .header {
   padding: calc(56rpx + var(--safe-top)) 32rpx 32rpx;
   display: flex;
@@ -66,7 +65,6 @@
   top: -5rpx;
 }
 
-/* ========== 分类 ========== */
 .categories {
   padding: 12rpx 32rpx 28rpx;
   white-space: nowrap;
@@ -104,7 +102,6 @@
   font-weight: 500;
 }
 
-/* ========== 板块 ========== */
 .section {
   padding: 28rpx 0;
 }
@@ -165,7 +162,7 @@
   border-radius: 8rpx;
 }
 
-/* ========== 今日新鲜（紧凑） ========== */
+/* 今日新鲜 */
 .today-scroll {
   padding: 12rpx 32rpx;
   white-space: nowrap;
@@ -180,7 +177,6 @@
   background: var(--card);
   border: 1rpx solid var(--border);
   border-radius: 16rpx;
-  position: relative;
 }
 
 .today-color {
@@ -195,30 +191,27 @@
   font-weight: 500;
   color: var(--text);
   line-height: 1.4;
-  display: block;
   margin-bottom: 12rpx;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.today-meta {
+.today-stats {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 6rpx;
 }
 
-.today-cat {
+.stat-num {
   font-size: 26rpx;
   color: var(--text-secondary);
+  font-weight: 500;
 }
 
-.today-likes {
-  font-size: 26rpx;
+.stat-label {
+  font-size: 24rpx;
   color: var(--text-muted);
 }
 
-/* ========== 笑话卡片（两行） ========== */
+/* 笑话卡片 */
 .joke-list {
   padding: 12rpx 32rpx;
 }
@@ -258,38 +251,45 @@
   font-size: 32rpx;
   font-weight: 500;
   color: var(--text);
-  display: block;
   margin-bottom: 6rpx;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .joke-preview {
   font-size: 28rpx;
   color: var(--text-secondary);
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .joke-right {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   gap: 8rpx;
   padding-left: 16rpx;
 }
 
-.joke-dot {
-  width: 8rpx;
-  height: 8rpx;
-  border-radius: 4rpx;
+.stats-mini {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
 }
 
-.joke-likes {
+.mini-num {
   font-size: 26rpx;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.mini-num.bad {
+  color: rgba(255,100,100,0.6);
+}
+
+.mini-sep {
+  font-size: 24rpx;
+  color: var(--text-muted);
+}
+
+.mini-share {
+  font-size: 24rpx;
   color: var(--text-muted);
 }
 
@@ -301,7 +301,7 @@
   border-radius: 4rpx;
 }
 
-/* ========== 骨架屏 ========== */
+/* 骨架屏 */
 .skeleton-wrap {
   padding: 32rpx;
 }
@@ -322,7 +322,7 @@
   width: 50%;
 }
 
-/* ========== 悬浮按钮 ========== */
+/* 悬浮按钮 */
 .float-btn {
   position: fixed;
   right: 32rpx;
@@ -364,7 +364,7 @@
   font-weight: 500;
 }
 
-/* ========== 弹窗 ========== */
+/* 弹窗 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -425,7 +425,6 @@
   font-weight: 600;
   color: var(--text);
   margin-bottom: 20rpx;
-  display: block;
 }
 
 .modal-content {
@@ -448,6 +447,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.modal-btn.outline {
+  background: var(--card);
+  border: 1rpx solid var(--border);
+}
+
+.modal-btn.primary {
+  border: none;
 }
 
 .modal-btn-text {
