@@ -33,11 +33,12 @@ Page({
   },
 
   onShow() {
+    // 每次显示都重新加载最新数据
     this.setData({
       pageClass: getCurrentTheme() === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
-    this.updateData()
+    this.loadJokes()  // 关键修改：每次onShow都刷新数据
   },
 
   processJokes(jokes) {
@@ -53,15 +54,18 @@ Page({
     this.setData({ loading: true })
     
     try {
+      // 从API获取最新数据（包含真实的likes/dislikes/shares）
       const res = await api.getJokes({ limit: 100 })
       const jokes = this.processJokes(res.data.list || res.data)
       
+      // 更新缓存
       wx.setStorageSync('cachedJokes', jokes)
       
       this.updateData(jokes)
       this.setData({ loading: false })
       
     } catch (err) {
+      console.log('API加载失败，使用缓存:', err)
       const cached = wx.getStorageSync('cachedJokes') || []
       const jokes = this.processJokes(cached)
       this.updateData(jokes)
@@ -70,12 +74,12 @@ Page({
   },
 
   updateData(jokes) {
-    if (!jokes) jokes = this.processJokes(this.data.allJokes || wx.getStorageSync('cachedJokes') || [])
+    if (!jokes || jokes.length === 0) return
     
     const seenIds = getSeenIds()
     const freshJokes = jokes.filter(j => !seenIds.includes(j.id))
     
-    // 热门推荐逻辑
+    // 热门推荐：优先显示有likes的笑话
     let hotJokes
     const likedJokes = jokes.filter(j => j.likes > 0)
     if (likedJokes.length >= 4) {
@@ -89,10 +93,20 @@ Page({
       hotJokes = jokes.sort(() => Math.random() - 0.5).slice(0, 4)
     }
     
-    let currentJoke = freshJokes.length > 0 ? freshJokes[0] : null
+    // 当前笑话：优先显示未看过的
+    let currentJoke = null
+    if (this.data.currentJoke) {
+      // 保持当前笑话，但更新数据
+      const updated = jokes.find(j => j.id === this.data.currentJoke.id)
+      if (updated) {
+        currentJoke = updated
+      }
+    }
     
-    if (this.data.currentJoke && seenIds.includes(this.data.currentJoke.id)) {
-      currentJoke = freshJokes.length > 0 ? freshJokes[Math.floor(Math.random() * freshJokes.length)] : null
+    if (!currentJoke && freshJokes.length > 0) {
+      currentJoke = freshJokes[0]
+    } else if (!currentJoke && jokes.length > 0) {
+      currentJoke = jokes[Math.floor(Math.random() * jokes.length)]
     }
     
     this.setData({
@@ -172,16 +186,20 @@ Page({
     
     wx.setStorageSync('userLikes', likes)
     
-    const joke = this.data.currentJoke
-    joke.likes = wasLiked ? joke.likes - 1 : joke.likes + 1
-    
-    this.setData({ liked: newLiked, currentJoke: joke })
-    
-    // 同步到数据库
+    // 调用API更新数据库
     try {
-      await api.toggleLike(id, newLiked)
+      const res = await api.toggleLike(id, newLiked)
+      // 使用API返回的真实数据更新
+      const joke = this.data.currentJoke
+      joke.likes = res.data.likes
+      joke.dislikes = res.data.dislikes
+      this.setData({ liked: newLiked, currentJoke: joke })
     } catch (err) {
-      console.log('API更新失败，本地已保存')
+      console.log('API更新失败，本地已保存:', err)
+      // API失败时本地估算
+      const joke = this.data.currentJoke
+      joke.likes = wasLiked ? joke.likes - 1 : joke.likes + 1
+      this.setData({ liked: newLiked, currentJoke: joke })
     }
   },
 
@@ -209,16 +227,20 @@ Page({
     
     wx.setStorageSync('userDislikes', dislikes)
     
-    const joke = this.data.currentJoke
-    joke.dislikes = wasDisliked ? joke.dislikes - 1 : joke.dislikes + 1
-    
-    this.setData({ disliked: newDisliked, currentJoke: joke })
-    
-    // 同步到数据库
+    // 调用API更新数据库
     try {
-      await api.toggleDislike(id, newDisliked)
+      const res = await api.toggleDislike(id, newDisliked)
+      // 使用API返回的真实数据更新
+      const joke = this.data.currentJoke
+      joke.likes = res.data.likes
+      joke.dislikes = res.data.dislikes
+      this.setData({ disliked: newDisliked, currentJoke: joke })
     } catch (err) {
-      console.log('API更新失败，本地已保存')
+      console.log('API更新失败，本地已保存:', err)
+      // API失败时本地估算
+      const joke = this.data.currentJoke
+      joke.dislikes = wasDisliked ? joke.dislikes - 1 : joke.dislikes + 1
+      this.setData({ disliked: newDisliked, currentJoke: joke })
     }
   },
 
@@ -250,14 +272,14 @@ Page({
     const joke = this.data.currentJoke
     if (!joke) return
     
-    joke.shares++
-    this.setData({ currentJoke: joke })
-    
-    // 同步到数据库
+    // 调用API更新分享数
     try {
-      await api.incrementShare(joke.id)
+      const res = await api.incrementShare(joke.id)
+      joke.shares = res.data.shares
+      this.setData({ currentJoke: joke })
     } catch (err) {
-      console.log('分享数更新失败')
+      joke.shares++
+      this.setData({ currentJoke: joke })
     }
     
     return {
