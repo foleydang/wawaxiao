@@ -33,12 +33,16 @@ Page({
   },
 
   onShow() {
-    // 每次显示都重新加载最新数据
     this.setData({
       pageClass: getCurrentTheme() === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
-    this.loadJokes()  // 关键修改：每次onShow都刷新数据
+    this.loadJokes()
+  },
+
+  onPullDownRefresh() {
+    this.loadJokes()
+    setTimeout(() => wx.stopPullDownRefresh(), 500)
   },
 
   processJokes(jokes) {
@@ -54,11 +58,9 @@ Page({
     this.setData({ loading: true })
     
     try {
-      // 从API获取最新数据（包含真实的likes/dislikes/shares）
       const res = await api.getJokes({ limit: 100 })
       const jokes = this.processJokes(res.data.list || res.data)
       
-      // 更新缓存
       wx.setStorageSync('cachedJokes', jokes)
       
       this.updateData(jokes)
@@ -74,12 +76,20 @@ Page({
   },
 
   updateData(jokes) {
-    if (!jokes || jokes.length === 0) return
+    if (!jokes || jokes.length === 0) {
+      this.setData({
+        allJokes: [],
+        freshJokes: [],
+        hotJokes: [],
+        freshCount: 0,
+        currentJoke: null
+      })
+      return
+    }
     
     const seenIds = getSeenIds()
     const freshJokes = jokes.filter(j => !seenIds.includes(j.id))
     
-    // 热门推荐：优先显示有likes的笑话
     let hotJokes
     const likedJokes = jokes.filter(j => j.likes > 0)
     if (likedJokes.length >= 4) {
@@ -93,14 +103,10 @@ Page({
       hotJokes = jokes.sort(() => Math.random() - 0.5).slice(0, 4)
     }
     
-    // 当前笑话：优先显示未看过的
     let currentJoke = null
     if (this.data.currentJoke) {
-      // 保持当前笑话，但更新数据
       const updated = jokes.find(j => j.id === this.data.currentJoke.id)
-      if (updated) {
-        currentJoke = updated
-      }
+      if (updated) currentJoke = updated
     }
     
     if (!currentJoke && freshJokes.length > 0) {
@@ -160,6 +166,7 @@ Page({
     })
     
     this.checkStatus(randomJoke.id)
+    wx.showToast({ title: '已看过', icon: 'none', duration: 1000 })
   },
 
   async toggleLike() {
@@ -167,7 +174,6 @@ Page({
     let likes = wx.getStorageSync('userLikes') || []
     let dislikes = wx.getStorageSync('userDislikes') || []
     
-    // 如果之前不喜欢，先取消
     if (dislikes.includes(id)) {
       dislikes = dislikes.filter(d => d !== id)
       wx.setStorageSync('userDislikes', dislikes)
@@ -186,21 +192,20 @@ Page({
     
     wx.setStorageSync('userLikes', likes)
     
-    // 调用API更新数据库
     try {
       const res = await api.toggleLike(id, newLiked)
-      // 使用API返回的真实数据更新
       const joke = this.data.currentJoke
       joke.likes = res.data.likes
       joke.dislikes = res.data.dislikes
       this.setData({ liked: newLiked, currentJoke: joke })
     } catch (err) {
       console.log('API更新失败，本地已保存:', err)
-      // API失败时本地估算
       const joke = this.data.currentJoke
       joke.likes = wasLiked ? joke.likes - 1 : joke.likes + 1
       this.setData({ liked: newLiked, currentJoke: joke })
     }
+    
+    wx.showToast({ title: newLiked ? '喜欢了' : '取消了', icon: 'none', duration: 1000 })
   },
 
   async toggleDislike() {
@@ -208,7 +213,6 @@ Page({
     let likes = wx.getStorageSync('userLikes') || []
     let dislikes = wx.getStorageSync('userDislikes') || []
     
-    // 如果之前喜欢，先取消
     if (likes.includes(id)) {
       likes = likes.filter(l => l !== id)
       wx.setStorageSync('userLikes', likes)
@@ -227,21 +231,20 @@ Page({
     
     wx.setStorageSync('userDislikes', dislikes)
     
-    // 调用API更新数据库
     try {
       const res = await api.toggleDislike(id, newDisliked)
-      // 使用API返回的真实数据更新
       const joke = this.data.currentJoke
       joke.likes = res.data.likes
       joke.dislikes = res.data.dislikes
       this.setData({ disliked: newDisliked, currentJoke: joke })
     } catch (err) {
       console.log('API更新失败，本地已保存:', err)
-      // API失败时本地估算
       const joke = this.data.currentJoke
       joke.dislikes = wasDisliked ? joke.dislikes - 1 : joke.dislikes + 1
       this.setData({ disliked: newDisliked, currentJoke: joke })
     }
+    
+    wx.showToast({ title: newDisliked ? '不喜欢了' : '取消了', icon: 'none', duration: 1000 })
   },
 
   toggleTheme() {
@@ -250,6 +253,7 @@ Page({
       pageClass: newTheme === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
+    wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 
   previewImage(e) {
@@ -268,11 +272,14 @@ Page({
     wx.navigateTo({ url: '/pages/search/search' })
   },
 
+  goToLibrary() {
+    wx.switchTab({ url: '/pages/library/library' })
+  },
+
   async onShareAppMessage() {
     const joke = this.data.currentJoke
     if (!joke) return
     
-    // 调用API更新分享数
     try {
       const res = await api.incrementShare(joke.id)
       joke.shares = res.data.shares

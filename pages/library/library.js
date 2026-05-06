@@ -40,7 +40,7 @@ Page({
       pageClass: getCurrentTheme() === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
-    this.updateSeenStatus()
+    this.loadJokes()
   },
 
   onPullDownRefresh() {
@@ -66,7 +66,6 @@ Page({
       const res = await api.getJokes({ limit: 100 })
       const jokes = this.processJokes(res.data.list)
       
-      // 更新分类计数
       const categories = this.data.categories.map(cat => ({
         ...cat,
         count: cat.name === '全部' ? jokes.length : jokes.filter(j => j.category === cat.name).length
@@ -93,15 +92,8 @@ Page({
   },
 
   filterJokes(jokes, category) {
-    if (category === '全部') return jokes.sort((a, b) => b.likes - a.like)
+    if (category === '全部') return jokes.sort((a, b) => b.likes - a.likes)
     return jokes.filter(j => j.category === category).sort((a, b) => b.likes - a.likes)
-  },
-
-  updateSeenStatus() {
-    const jokes = this.processJokes(this.data.allJokes)
-    this.setData({
-      jokes: this.filterJokes(jokes, this.data.currentCategory)
-    })
   },
 
   switchCategory(e) {
@@ -110,6 +102,7 @@ Page({
       currentCategory: category,
       jokes: this.filterJokes(this.data.allJokes, category)
     })
+    wx.showToast({ title: category, icon: 'none', duration: 1000 })
   },
 
   toggleTheme() {
@@ -118,6 +111,7 @@ Page({
       pageClass: newTheme === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
+    wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 
   goToDetail(e) {

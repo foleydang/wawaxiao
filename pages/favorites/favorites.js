@@ -54,6 +54,7 @@ Page({
       pageClass: newTheme === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
+    wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 
   goToDetail(e) {

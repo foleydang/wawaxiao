@@ -32,7 +32,7 @@ page {
   border-radius: 14rpx;
 }
 
-/* 日间模式 - 通过页面容器的class切换 */
+/* 日间模式 */
 .page-wrapper.light-mode {
   --bg: #f8f9fa;
   --bg-light: #ffffff;
@@ -46,7 +46,6 @@ page {
   color: #1a1a2e !important;
 }
 
-/* 日间模式 - 强制覆盖 */
 .page-wrapper.light-mode .glass {
   background: rgba(0,0,0,0.04) !important;
   border-color: rgba(0,0,0,0.1) !important;
@@ -56,7 +55,13 @@ page {
 .page-wrapper.light-mode .section-title,
 .page-wrapper.light-mode .card-title,
 .page-wrapper.light-mode .hot-title,
-.page-wrapper.light-mode .category-name {
+.page-wrapper.light-mode .category-name,
+.page-wrapper.light-mode .main-title,
+.page-wrapper.light-mode .joke-title,
+.page-wrapper.light-mode .fav-title,
+.page-wrapper.light-mode .result-title,
+.page-wrapper.light-mode .more-title,
+.page-wrapper.light-mode .empty-title {
   color: #1a1a2e !important;
 }
 
@@ -65,12 +70,100 @@ page {
 .page-wrapper.light-mode .section-count,
 .page-wrapper.light-mode .action-num,
 .page-wrapper.light-mode .hot-stats,
-.page-wrapper.light-mode .category-count {
+.page-wrapper.light-mode .category-count,
+.page-wrapper.light-mode .joke-preview,
+.page-wrapper.light-mode .joke-likes,
+.page-wrapper.light-mode .main-content,
+.page-wrapper.light-mode .stat-label,
+.page-wrapper.light-mode .fav-preview,
+.page-wrapper.light-mode .fav-stats,
+.page-wrapper.light-mode .result-preview,
+.page-wrapper.light-mode .result-stats,
+.page-wrapper.light-mode .more-stats {
   color: #555555 !important;
 }
 
-.page-wrapper.light-mode .hot-cat {
+.page-wrapper.light-mode .hot-cat,
+.page-wrapper.light-mode .joke-cat,
+.page-wrapper.light-mode .joke-seen,
+.page-wrapper.light-mode .fav-cat,
+.page-wrapper.light-mode .result-cat,
+.page-wrapper.light-mode .more-cat,
+.page-wrapper.light-mode .empty-desc {
   color: #888888 !important;
+}
+
+/* 骨架屏 */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-light) 25%, var(--card) 50%, var(--bg-light) 75%);
+  background-size: 200% 100%;
+  animation: skeleton 1.2s ease-in-out infinite;
+}
+
+@keyframes skeleton {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-card {
+  height: 200rpx;
+  margin: 28rpx;
+  border-radius: 16rpx;
+}
+
+.skeleton-title {
+  height: 36rpx;
+  width: 60%;
+  margin: 16rpx 0;
+  border-radius: 8rpx;
+}
+
+.skeleton-content {
+  height: 28rpx;
+  width: 80%;
+  margin: 8rpx 0;
+  border-radius: 6rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 28rpx;
+}
+
+.empty-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24rpx;
+  font-size: 40rpx;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.empty-desc {
+  font-size: 26rpx;
+  color: var(--text-muted);
+  margin-bottom: 28rpx;
+}
+
+.empty-btn {
+  padding: 16rpx 32rpx;
+  border-radius: 12rpx;
+}
+
+.empty-btn-text {
+  font-size: 30rpx;
+  font-weight: 500;
 }
 
 /* 动画 */
@@ -83,13 +176,17 @@ page {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.skeleton {
-  background: linear-gradient(90deg, var(--bg-light) 25%, var(--card) 50%, var(--bg-light) 75%);
-  background-size: 200% 100%;
-  animation: skeleton 1.2s infinite;
+.fade-in {
+  animation: fadeIn 0.25s ease-out;
 }
 
-@keyframes skeleton {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 按钮点击效果 */
+.btn-press:active {
+  opacity: 0.7;
+  transform: scale(0.98);
 }
