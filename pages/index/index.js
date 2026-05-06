@@ -1,33 +1,43 @@
-// pages/index/index.js
+// pages/index/index.js - 现代风格
 const { api } = require('../../utils/api.js')
 
 Page({
   data: {
-    categories: [{ name: '全部', icon: '🌟' }, { name: '职场', icon: '💼' }, { name: '生活', icon: '🌈' }, { name: '家庭', icon: '🏠' }, { name: '校园', icon: '📚' }],
+    categories: [
+      { name: '全部', icon: '🌟', count: 20 },
+      { name: '职场', icon: '💼', count: 5 },
+      { name: '生活', icon: '🌈', count: 6 },
+      { name: '家庭', icon: '🏠', count: 5 },
+      { name: '校园', icon: '📚', count: 4 }
+    ],
     currentCategory: '全部',
     jokes: [],
-    hotJoke: null,
+    hotJokes: [],
     showModal: false,
     randomJoke: null,
     loading: true,
-    stats: null
+    stats: { total: 20, hotCount: 9 },
+    favoritesCount: 0,
+    page: 1,
+    hasMore: true
   },
 
   onLoad() {
     this.loadData()
     this.loadStats()
+    this.loadFavoritesCount()
+  },
+
+  onShow() {
+    this.loadFavoritesCount()
   },
 
   onPullDownRefresh() {
+    this.setData({ page: 1, hasMore: true })
     this.loadData()
     this.loadStats()
     setTimeout(() => {
       wx.stopPullDownRefresh()
-      wx.showToast({
-        title: '刷新成功',
-        icon: 'success',
-        duration: 1500
-      })
     }, 500)
   },
 
@@ -35,43 +45,44 @@ Page({
     this.setData({ loading: true })
     
     try {
-      // 加载笑话列表
-      const jokesRes = await api.getJokes({ category: this.data.currentCategory, limit: 50 })
+      const jokesRes = await api.getJokes({ 
+        category: this.data.currentCategory, 
+        page: this.data.page,
+        limit: 20 
+      })
       
-      // 加载热门笑话
       const hotRes = await api.getHotJokes()
-      const randomHot = hotRes.data[Math.floor(Math.random() * hotRes.data.length)]
+      
+      // 更新分类计数
+      const categories = this.data.categories.map(cat => {
+        if (cat.name === '全部') {
+          cat.count = jokesRes.data.total
+        } else {
+          cat.count = jokesRes.data.list.filter(j => j.category === cat.name).length
+        }
+        return cat
+      })
       
       this.setData({
         jokes: jokesRes.data.list,
-        hotJoke: randomHot,
-        loading: false
+        hotJokes: hotRes.data.slice(0, 5),
+        categories,
+        loading: false,
+        hasMore: jokesRes.data.list.length >= 20
       })
       
-      // 缓存数据
       wx.setStorageSync('cachedJokes', jokesRes.data.list)
       wx.setStorageSync('cachedHot', hotRes.data)
       
     } catch (err) {
-      console.log('加载失败，使用缓存数据:', err)
-      
-      // 尽量使用缓存数据
       const cachedJokes = wx.getStorageSync('cachedJokes') || []
       const cachedHot = wx.getStorageSync('cachedHot') || []
-      const randomHot = cachedHot.length > 0 ? cachedHot[Math.floor(Math.random() * cachedHot.length)] : null
       
       this.setData({
         jokes: cachedJokes,
-        hotJoke: randomHot || cachedJokes[0],
+        hotJokes: cachedHot.slice(0, 5),
         loading: false
       })
-      
-      if (cachedJokes.length === 0) {
-        wx.showToast({
-          title: '网络加载失败',
-          icon: 'none'
-        })
-      }
     }
   },
 
@@ -79,102 +90,88 @@ Page({
     try {
       const res = await api.getStats()
       this.setData({ stats: res.data })
-    } catch (err) {
-      console.log('统计加载失败:', err)
-    }
+    } catch (err) {}
+  },
+
+  loadFavoritesCount() {
+    const favorites = wx.getStorageSync('favorites') || []
+    this.setData({ favoritesCount: favorites.length })
   },
 
   async switchCategory(e) {
     const category = e.currentTarget.dataset.category
-    this.setData({ currentCategory: category, loading: true })
-    
-    try {
-      const res = await api.getJokes({ category, limit: 50 })
-      this.setData({
-        jokes: res.data.list,
-        loading: false
-      })
-    } catch (err) {
-      wx.showToast({ title: '加载失败', icon: 'none' })
-      this.setData({ loading: false })
-    }
+    this.setData({ currentCategory: category, page: 1, loading: true })
+    await this.loadData()
   },
 
-  refreshJokes() {
-    // 刷新热门
-    const hotJokes = wx.getStorageSync('cachedHot') || this.data.jokes.filter(j => j.isHot)
+  refreshHot() {
+    const hotJokes = this.data.hotJokes
     if (hotJokes.length > 0) {
-      let randomHot = hotJokes[Math.floor(Math.random() * hotJokes.length)]
-      while (randomHot.id === this.data.hotJoke?.id && hotJokes.length > 1) {
-        randomHot = hotJokes[Math.floor(Math.random() * hotJokes.length)]
-      }
-      this.setData({ hotJoke: randomHot })
+      // 随机排序
+      const shuffled = [...hotJokes].sort(() => Math.random() - 0.5)
+      this.setData({ hotJokes: shuffled })
     }
+    wx.showToast({ title: '换了一批~', icon: 'none' })
+  },
+
+  async loadMore() {
+    if (!this.data.hasMore || this.data.loading) return
     
-    wx.showToast({
-      title: '换了一个~',
-      icon: 'none',
-      duration: 1000
-    })
+    this.setData({ page: this.data.page + 1, loading: true })
+    
+    try {
+      const res = await api.getJokes({
+        category: this.data.currentCategory,
+        page: this.data.page,
+        limit: 20
+      })
+      
+      this.setData({
+        jokes: [...this.data.jokes, ...res.data.list],
+        loading: false,
+        hasMore: res.data.list.length >= 20
+      })
+    } catch (err) {
+      this.setData({ loading: false, hasMore: false })
+    }
   },
 
   goToDetail(e) {
     const id = e.currentTarget.dataset.id
-    wx.navigateTo({
-      url: `/pages/detail/detail?id=${id}`
-    })
+    wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
+  },
+
+  showSearch() {
+    wx.showToast({ title: '搜索功能开发中~', icon: 'none' })
   },
 
   async showRandomJoke() {
     try {
       const res = await api.getRandomJoke()
-      this.setData({
-        showModal: true,
-        randomJoke: res.data
-      })
+      this.setData({ showModal: true, randomJoke: res.data })
     } catch (err) {
-      wx.showToast({ title: '获取失败', icon: 'none' })
+      const jokes = this.data.jokes
+      if (jokes.length > 0) {
+        const random = jokes[Math.floor(Math.random() * jokes.length)]
+        this.setData({ showModal: true, randomJoke: random })
+      }
     }
   },
 
   async getAnotherRandom() {
-    try {
-      const res = await api.getRandomJoke()
-      this.setData({ randomJoke: res.data })
-    } catch (err) {
-      // 使用本地数据
-      const jokes = this.data.jokes
-      if (jokes.length > 0) {
-        let random = jokes[Math.floor(Math.random() * jokes.length)]
-        while (random.id === this.data.randomJoke?.id && jokes.length > 1) {
-          random = jokes[Math.floor(Math.random() * jokes.length)]
-        }
-        this.setData({ randomJoke: random })
-      }
-    }
+    await this.showRandomJoke()
   },
 
   hideModal() {
     this.setData({ showModal: false })
   },
 
-  preventClose() {
-    // 阻止事件冒泡
-  },
-
+  preventClose() {},
+  
   onShareAppMessage() {
     return {
       title: '哇哇笑 - 每天开心一笑！',
-      path: '/pages/index/index',
-      imageUrl: '/images/share.png'
-    }
-  },
-
-  onShareTimeline() {
-    return {
-      title: '哇哇笑 - 每天开心一笑！',
-      query: '',
-      imageUrl: '/images/share.png'
+      path: '/pages/index/index'
     }
   }
 })

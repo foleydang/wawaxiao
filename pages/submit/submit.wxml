@@ -1,0 +1,97 @@
+<view class="container">
+  <!-- 顶部装饰 -->
+  <view class="header-gradient">
+    <text class="header-icon">✨</text>
+    <text class="header-title">分享你的笑话</text>
+    <text class="header-desc">让更多人开心一笑</text>
+  </view>
+
+  <!-- 表单区域 -->
+  <view class="form-card glass">
+    <!-- 分类选择 -->
+    <view class="form-section">
+      <text class="form-label">选择分类</text>
+      <view class="category-grid">
+        <view 
+          class="category-option {{form.category === item ? 'active' : ''}}"
+          wx:for="{{categories}}"
+          wx:key="*this"
+          bindtap="selectCategory"
+          data-category="{{item}}"
+        >
+          <text class="option-icon">{{item === '职场' ? '💼' : item === '生活' ? '🌈' : item === '家庭' ? '🏠' : '📚'}}</text>
+          <text class="option-name">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 标题输入 -->
+    <view class="form-section">
+      <text class="form-label">笑话标题</text>
+      <view class="input-wrap">
+        <input 
+          class="form-input"
+          placeholder="给笑话起个名字"
+          maxlength="50"
+          value="{{form.title}}"
+          bindinput="inputTitle"
+        />
+        <text class="input-count">{{form.title.length}}/50</text>
+      </view>
+    </view>
+
+    <!-- 内容输入 -->
+    <view class="form-section">
+      <text class="form-label">笑话内容</text>
+      <view class="textarea-wrap">
+        <textarea 
+          class="form-textarea"
+          placeholder="分享你的笑话内容..."
+          maxlength="500"
+          value="{{form.content}}"
+          bindinput="inputContent"
+        />
+        <text class="textarea-count">{{form.content.length}}/500</text>
+      </view>
+    </view>
+
+    <!-- 作者（可选） -->
+    <view class="form-section">
+      <text class="form-label">作者昵称（可选）</text>
+      <input 
+        class="form-input"
+        placeholder="匿名用户"
+        maxlength="20"
+        value="{{form.author}}"
+        bindinput="inputAuthor"
+      />
+    </view>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="submit-section">
+    <view class="submit-btn {{canSubmit ? '' : 'disabled'}}" bindtap="submitJoke">
+      <view class="btn-gradient" wx:if="{{canSubmit}}"></view>
+      <text class="submit-text">{{canSubmit ? '提交笑话' : '请填写完整内容'}}</text>
+    </view>
+    
+    <view class="submit-tip">
+      <text class="tip-icon">💡</text>
+      <text class="tip-text">提交后会进入审核，审核通过后即可展示</text>
+    </view>
+  </view>
+</view>
+
+<!-- 成功弹窗 -->
+<view class="success-overlay {{showSuccess ? 'show' : ''}}" bindtap="hideSuccess">
+  <view class="success-modal bounce-in" catchtap="preventClose">
+    <view class="success-icon-wrap">
+      <text class="success-icon">🎉</text>
+    </view>
+    <text class="success-title">提交成功！</text>
+    <text class="success-desc">你的笑话已提交，等待审核中</text>
+    <view class="success-btn" bindtap="hideSuccess">
+      <text class="btn-text">继续投稿</text>
+    </view>
+  </view>
+</view>

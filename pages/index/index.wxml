@@ -1,138 +1,189 @@
-<!--pages/index/index.wxml-->
+<!--pages/index/index.wxml - 现代风格-->
 <view class="container">
-  <!-- 顶部装饰 -->
-  <view class="header-decoration">
-    <view class="deco-circle circle-1"></view>
-    <view class="deco-circle circle-2"></view>
-    <view class="deco-circle circle-3"></view>
+  <!-- 顶部渐变背景 -->
+  <view class="header-bg">
+    <view class="header-content">
+      <!-- 搜索框 -->
+      <view class="search-bar glass" bindtap="showSearch">
+        <text class="search-icon">🔍</text>
+        <text class="search-placeholder">搜索笑话...</text>
+      </view>
+      
+      <!-- 统计卡片 -->
+      <view class="stats-card glass fade-in">
+        <view class="stats-item">
+          <text class="stats-num">{{stats.total || 20}}</text>
+          <text class="stats-label">笑话</text>
+        </view>
+        <view class="stats-divider"></view>
+        <view class="stats-item">
+          <text class="stats-num">{{stats.hotCount || 9}}</text>
+          <text class="stats-label">热门</text>
+        </view>
+        <view class="stats-divider"></view>
+        <view class="stats-item">
+          <text class="stats-num">{{favoritesCount || 0}}</text>
+          <text class="stats-label">收藏</text>
+        </view>
+      </view>
+    </view>
   </view>
 
-  <!-- 分类标签 -->
-  <scroll-view class="category-scroll" scroll-x enable-flex>
-    <view 
-      class="category-item {{currentCategory === item.name ? 'active' : ''}}" 
-      wx:for="{{categories}}" 
-      wx:key="name"
-      bindtap="switchCategory"
-      data-category="{{item.name}}"
-    >
-      <text class="category-icon">{{item.icon}}</text>
-      <text class="category-name">{{item.name}}</text>
-    </view>
-  </scroll-view>
-
-  <!-- 热门推荐 -->
-  <view class="section" wx:if="{{currentCategory === '全部'}}">
-    <view class="section-header">
-      <view class="section-title">
-        <text class="title-icon">🔥</text>
-        <text class="title-text">今日热门</text>
+  <!-- 分类标签 - 横向滑动 -->
+  <view class="category-section">
+    <view class="category-list">
+      <view 
+        class="category-item {{currentCategory === item.name ? 'active' : ''}}" 
+        wx:for="{{categories}}" 
+        wx:key="name"
+        bindtap="switchCategory"
+        data-category="{{item.name}}"
+      >
+        <view class="category-icon-wrap">
+          <text class="category-icon">{{item.icon}}</text>
+        </view>
+        <text class="category-name">{{item.name}}</text>
+        <view class="category-count">{{item.count}}</view>
       </view>
-      <view class="section-more" bindtap="refreshJokes">
-        <text class="refresh-icon">🔄</text>
-        <text class="refresh-text">换一批</text>
+    </view>
+  </view>
+
+  <!-- 热门推荐 - 横向卡片 -->
+  <view class="hot-section" wx:if="{{currentCategory === '全部' && hotJokes.length > 0}}">
+    <view class="section-header">
+      <view class="section-title-wrap">
+        <text class="section-icon">🔥</text>
+        <text class="section-title">热门精选</text>
+      </view>
+      <view class="section-action" bindtap="refreshHot">
+        <text class="action-text">换一批</text>
+        <text class="action-arrow">→</text>
       </view>
     </view>
     
-    <!-- 热门笑话卡片 -->
-    <view class="hot-joke-card" bindtap="goToDetail" data-id="{{hotJoke.id}}">
-      <view class="hot-badge">HOT</view>
-      <view class="joke-header">
-        <text class="joke-category">{{hotJoke.category}}</text>
-        <text class="joke-title">{{hotJoke.title}}</text>
-      </view>
-      <view class="joke-content">{{hotJoke.content}}</view>
-      <view class="joke-footer">
-        <view class="joke-likes">
-          <text class="like-icon">❤️</text>
-          <text class="like-count">{{hotJoke.likes}}</text>
-        </view>
-        <view class="joke-action">
-          <text class="action-text">点击查看更多</text>
-          <text class="action-arrow">→</text>
-        </view>
-      </view>
-    </view>
-  </view>
-
-  <!-- 笑话列表 -->
-  <view class="section">
-    <view class="section-header">
-      <view class="section-title">
-        <text class="title-icon">✨</text>
-        <text class="title-text">{{currentCategory === '全部' ? '全部笑话' : currentCategory + '笑话'}}</text>
-      </view>
-      <text class="joke-count">共{{jokes.length}}条</text>
-    </view>
-
-    <view class="joke-list">
+    <scroll-view class="hot-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
       <view 
-        class="joke-card" 
-        wx:for="{{jokes}}" 
+        class="hot-card" 
+        wx:for="{{hotJokes}}" 
         wx:key="id"
         bindtap="goToDetail"
         data-id="{{item.id}}"
       >
-        <view class="card-top">
-          <view class="card-category">
-            <text class="category-tag">{{item.category}}</text>
-          </view>
-          <view class="card-hot" wx:if="{{item.isHot}}">
-            <text class="hot-text">🔥 热门</text>
+        <view class="hot-gradient"></view>
+        <view class="hot-content">
+          <view class="hot-badge">HOT</view>
+          <text class="hot-title">{{item.title}}</text>
+          <text class="hot-preview">{{item.content.substring(0, 40)}}...</text>
+          <view class="hot-meta">
+            <text class="hot-icon">❤️</text>
+            <text class="hot-likes">{{item.likes}}</text>
           </view>
         </view>
-        
-        <view class="card-title">{{item.title}}</view>
-        
-        <view class="card-preview">
-          {{item.content.length > 50 ? item.content.substring(0, 50) + '...' : item.content}}
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 笑话列表 -->
+  <view class="joke-section">
+    <view class="section-header">
+      <view class="section-title-wrap">
+        <text class="section-icon">✨</text>
+        <text class="section-title">{{currentCategory === '全部' ? '最新笑话' : currentCategory}}</text>
+      </view>
+      <text class="joke-total">{{jokes.length}}条</text>
+    </view>
+
+    <!-- 加载骨架屏 -->
+    <view class="skeleton-list" wx:if="{{loading}}">
+      <view class="skeleton-card" wx:for="{{3}}" wx:key="index">
+        <view class="skeleton-avatar skeleton"></view>
+        <view class="skeleton-content">
+          <view class="skeleton-title skeleton"></view>
+          <view class="skeleton-text skeleton"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 笑话卡片列表 -->
+    <view class="joke-list" wx:else>
+      <view 
+        class="joke-card fade-in" 
+        wx:for="{{jokes}}" 
+        wx:key="id"
+        bindtap="goToDetail"
+        data-id="{{item.id}}"
+        style="animation-delay: {{index * 0.05}}s"
+      >
+        <!-- 左侧图标 -->
+        <view class="joke-avatar {{item.isHot ? 'hot' : ''}}">
+          <text class="avatar-emoji">{{item.category === '职场' ? '💼' : item.category === '生活' ? '🌈' : item.category === '家庭' ? '🏠' : '📚'}}</text>
         </view>
         
-        <view class="card-footer">
-          <view class="card-likes">
-            <text class="heart-icon">❤️</text>
-            <text class="likes-num">{{item.likes}}</text>
+        <!-- 内容区域 -->
+        <view class="joke-content">
+          <view class="joke-header">
+            <view class="joke-tags">
+              <text class="joke-tag">{{item.category}}</text>
+              <text class="joke-tag hot" wx:if="{{item.isHot}}">🔥热门</text>
+            </view>
           </view>
-          <view class="card-arrow">
-            <text class="arrow-icon">›</text>
+          <text class="joke-title">{{item.title}}</text>
+          <text class="joke-preview">{{item.content.length > 60 ? item.content.substring(0, 60) + '...' : item.content}}</text>
+          
+          <view class="joke-footer">
+            <view class="joke-stats">
+              <text class="stat-icon">❤️</text>
+              <text class="stat-num">{{item.likes}}</text>
+            </view>
+            <view class="joke-arrow">
+              <text class="arrow-icon">›</text>
+            </view>
           </view>
         </view>
       </view>
     </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{!loading && jokes.length > 0}}" bindtap="loadMore">
+      <text class="load-text">{{hasMore ? '加载更多' : '已经到底啦~'}}</text>
+    </view>
   </view>
 
-  <!-- 底部装饰 -->
-  <view class="footer-decoration">
-    <text class="footer-text">😂 每天开心一笑 😂</text>
-  </view>
-
-  <!-- 随机笑话按钮 -->
-  <view class="random-btn" bindtap="showRandomJoke">
-    <text class="random-icon">🎲</text>
+  <!-- 随机笑话悬浮按钮 -->
+  <view class="float-btn bounce-in" bindtap="showRandomJoke">
+    <view class="float-gradient"></view>
+    <text class="float-icon">🎲</text>
+    <text class="float-text">随机</text>
   </view>
 </view>
 
 <!-- 随机笑话弹窗 -->
-<view class="modal-mask" wx:if="{{showModal}}" bindtap="hideModal">
-  <view class="modal-content" catchtap="preventClose">
+<view class="modal-overlay {{showModal ? 'show' : ''}}" bindtap="hideModal">
+  <view class="modal-container bounce-in" catchtap="preventClose">
     <view class="modal-header">
-      <text class="modal-title">🎉 随机笑话</text>
-      <view class="modal-close" bindtap="hideModal">
-        <text class="close-icon">✕</text>
-      </view>
+      <view class="modal-gradient"></view>
+      <text class="modal-emoji">{{randomJoke.category === '职场' ? '💼' : randomJoke.category === '生活' ? '🌈' : randomJoke.category === '家庭' ? '🏠' : '📚'}}</text>
     </view>
+    
     <view class="modal-body">
-      <view class="modal-category">{{randomJoke.category}}</view>
-      <view class="modal-joke-title">{{randomJoke.title}}</view>
-      <view class="modal-joke-content">{{randomJoke.content}}</view>
+      <view class="modal-tag">{{randomJoke.category}}</view>
+      <text class="modal-title">{{randomJoke.title}}</text>
+      <text class="modal-content">{{randomJoke.content}}</text>
     </view>
+    
     <view class="modal-footer">
-      <view class="modal-btn secondary" bindtap="getAnotherRandom">
+      <view class="modal-btn outline" bindtap="getAnotherRandom">
+        <text class="btn-icon">🔄</text>
         <text class="btn-text">换一个</text>
       </view>
       <view class="modal-btn primary" bindtap="hideModal">
+        <text class="btn-icon">😊</text>
         <text class="btn-text">开心了</text>
       </view>
+    </view>
+    
+    <view class="modal-close" bindtap="hideModal">
+      <text class="close-icon">✕</text>
     </view>
   </view>
 </view>

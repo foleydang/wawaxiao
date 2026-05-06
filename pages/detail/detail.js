@@ -1,4 +1,3 @@
-// pages/detail/detail.js
 const { api } = require('../../utils/api.js')
 
 Page({
@@ -20,23 +19,15 @@ Page({
       const res = await api.getJokeById(id)
       const joke = res.data
       
-      // 获取更多推荐（从缓存中随机选）
       const cachedJokes = wx.getStorageSync('cachedJokes') || []
       const otherJokes = cachedJokes.filter(j => j.id !== id)
       const shuffled = otherJokes.sort(() => Math.random() - 0.5)
       const moreJokes = shuffled.slice(0, 4)
       
-      this.setData({
-        joke,
-        moreJokes
-      })
-      
-      wx.setNavigationBarTitle({
-        title: joke.title
-      })
+      this.setData({ joke, moreJokes })
+      wx.setNavigationBarTitle({ title: joke.title })
       
     } catch (err) {
-      // 使用缓存数据
       const cachedJokes = wx.getStorageSync('cachedJokes') || []
       const joke = cachedJokes.find(j => j.id === id)
       
@@ -45,25 +36,27 @@ Page({
         const shuffled = otherJokes.sort(() => Math.random() - 0.5)
         const moreJokes = shuffled.slice(0, 4)
         
-        this.setData({
-          joke,
-          moreJokes
-        })
-        
-        wx.setNavigationBarTitle({
-          title: joke.title
-        })
-      } else {
-        wx.showToast({ title: '笑话加载失败', icon: 'none' })
+        this.setData({ joke, moreJokes })
+        wx.setNavigationBarTitle({ title: joke.title })
       }
     }
   },
 
   checkLikeStatus(id) {
-    // 检查本地收藏状态
     const favorites = wx.getStorageSync('favorites') || []
-    const liked = favorites.includes(id)
-    this.setData({ liked })
+    this.setData({ liked: favorites.includes(id) })
+  },
+
+  formatDate(timestamp) {
+    if (!timestamp) return '刚刚'
+    const date = new Date(timestamp)
+    const now = new Date()
+    const diff = now - date
+    
+    if (diff < 60000) return '刚刚'
+    if (diff < 3600000) return Math.floor(diff/60000) + '分钟前'
+    if (diff < 86400000) return Math.floor(diff/3600000) + '小时前'
+    return date.toLocaleDateString()
   },
 
   async toggleLike() {
@@ -74,26 +67,21 @@ Page({
     const id = this.data.joke.id
     
     try {
-      // 调用API点赞
       const res = await api.toggleLike(id)
-      
-      // 更新笑话的点赞数
       const joke = this.data.joke
       joke.likes = res.data.likes
       
-      // 更新本地收藏
       let newFavorites
       if (this.data.liked) {
         newFavorites = favorites.filter(fid => fid !== id)
-        wx.showToast({ title: '已取消喜欢', icon: 'none', duration: 1500 })
+        wx.showToast({ title: '已取消喜欢', icon: 'none' })
       } else {
         newFavorites = [...favorites, id]
-        wx.showToast({ title: '已喜欢 ❤️', icon: 'none', duration: 1500 })
+        wx.showToast({ title: '已喜欢 ❤️', icon: 'none' })
       }
       
       wx.setStorageSync('favorites', newFavorites)
       
-      // 更新缓存中的笑话数据
       const cachedJokes = wx.getStorageSync('cachedJokes') || []
       const cachedIndex = cachedJokes.findIndex(j => j.id === id)
       if (cachedIndex >= 0) {
@@ -101,28 +89,20 @@ Page({
         wx.setStorageSync('cachedJokes', cachedJokes)
       }
       
-      this.setData({
-        liked: !this.data.liked,
-        joke,
-        likeLoading: false
-      })
+      this.setData({ liked: !this.data.liked, joke, likeLoading: false })
       
     } catch (err) {
-      // 网络失败，只更新本地收藏
       let newFavorites
       if (this.data.liked) {
         newFavorites = favorites.filter(fid => fid !== id)
-        wx.showToast({ title: '已取消收藏', icon: 'none', duration: 1500 })
+        wx.showToast({ title: '已取消收藏', icon: 'none' })
       } else {
         newFavorites = [...favorites, id]
-        wx.showToast({ title: '已收藏 ❤️', icon: 'none', duration: 1500 })
+        wx.showToast({ title: '已收藏 ❤️', icon: 'none' })
       }
       
       wx.setStorageSync('favorites', newFavorites)
-      this.setData({
-        liked: !this.data.liked,
-        likeLoading: false
-      })
+      this.setData({ liked: !this.data.liked, likeLoading: false })
     }
   },
 
@@ -134,25 +114,13 @@ Page({
   },
 
   goToDetail(e) {
-    const id = e.currentTarget.dataset.id
-    wx.redirectTo({
-      url: `/pages/detail/detail?id=${id}`
-    })
+    wx.redirectTo({ url: `/pages/detail/detail?id=${e.currentTarget.dataset.id}` })
   },
 
   onShareAppMessage() {
     return {
       title: `${this.data.joke.title} - 哇哇笑`,
-      path: `/pages/detail/detail?id=${this.data.joke.id}`,
-      imageUrl: '/images/share.png'
-    }
-  },
-
-  onShareTimeline() {
-    return {
-      title: `${this.data.joke.title} - 哇哇笑`,
-      query: `id=${this.data.joke.id}`,
-      imageUrl: '/images/share.png'
+      path: `/pages/detail/detail?id=${this.data.joke.id}`
     }
   }
 })

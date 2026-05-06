@@ -2,32 +2,39 @@
   "pages": [
     "pages/index/index",
     "pages/detail/detail",
-    "pages/favorites/favorites"
+    "pages/favorites/favorites",
+    "pages/submit/submit"
   ],
   "window": {
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#FF6B6B",
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#667eea",
     "navigationBarTitleText": "哇哇笑",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#FFF5F5"
+    "backgroundColor": "#f8f9fe"
   },
   "tabBar": {
-    "color": "#999999",
-    "selectedColor": "#FF6B6B",
-    "backgroundColor": "#FFFFFF",
+    "color": "#8888a8",
+    "selectedColor": "#667eea",
+    "backgroundColor": "#ffffff",
     "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "开心一下",
-        "iconPath": "images/happy.png",
-        "selectedIconPath": "images/happy-active.png"
+        "text": "发现",
+        "iconPath": "images/discover.png",
+        "selectedIconPath": "images/discover-active.png"
       },
       {
         "pagePath": "pages/favorites/favorites",
-        "text": "我的收藏",
-        "iconPath": "images/favorite.png",
-        "selectedIconPath": "images/favorite-active.png"
+        "text": "收藏",
+        "iconPath": "images/heart.png",
+        "selectedIconPath": "images/heart-active.png"
+      },
+      {
+        "pagePath": "pages/submit/submit",
+        "text": "投稿",
+        "iconPath": "images/edit.png",
+        "selectedIconPath": "images/edit-active.png"
       }
     ]
   },
