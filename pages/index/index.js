@@ -37,7 +37,7 @@ Page({
       pageClass: getCurrentTheme() === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
-    this.loadJokes()
+    this.refreshFreshCount()
   },
 
   onPullDownRefresh() {
@@ -63,35 +63,44 @@ Page({
       
       wx.setStorageSync('cachedJokes', jokes)
       
-      this.updateData(jokes)
+      this.setData({ allJokes: jokes })
+      this.updateFreshCount()
+      this.updateHotJokes()
+      this.pickCurrentJoke()
       this.setData({ loading: false })
       
     } catch (err) {
       console.log('API加载失败，使用缓存:', err)
       const cached = wx.getStorageSync('cachedJokes') || []
       const jokes = this.processJokes(cached)
-      this.updateData(jokes)
-      this.setData({ loading: false })
+      this.setData({ allJokes: jokes, loading: false })
+      this.updateFreshCount()
+      this.updateHotJokes()
+      this.pickCurrentJoke()
     }
   },
 
-  updateData(jokes) {
-    if (!jokes || jokes.length === 0) {
-      this.setData({
-        allJokes: [],
-        freshJokes: [],
-        hotJokes: [],
-        freshCount: 0,
-        currentJoke: null
-      })
-      return
-    }
-    
+  // 更新未看数量
+  updateFreshCount() {
     const seenIds = getSeenIds()
-    const freshJokes = jokes.filter(j => !seenIds.includes(j.id))
+    const freshJokes = this.data.allJokes.filter(j => !seenIds.includes(j.id))
+    this.setData({
+      freshJokes,
+      freshCount: freshJokes.length
+    })
+  },
+
+  // 刷新未看数量（onShow时调用）
+  refreshFreshCount() {
+    this.updateFreshCount()
+  },
+
+  // 更新热门推荐
+  updateHotJokes() {
+    const jokes = this.data.allJokes
+    const likedJokes = jokes.filter(j => j.likes > 0)
     
     let hotJokes
-    const likedJokes = jokes.filter(j => j.likes > 0)
     if (likedJokes.length >= 4) {
       hotJokes = likedJokes.sort((a, b) => b.likes - a.likes).slice(0, 4)
     } else if (likedJokes.length > 0) {
@@ -103,28 +112,25 @@ Page({
       hotJokes = jokes.sort(() => Math.random() - 0.5).slice(0, 4)
     }
     
-    let currentJoke = null
-    if (this.data.currentJoke) {
-      const updated = jokes.find(j => j.id === this.data.currentJoke.id)
-      if (updated) currentJoke = updated
-    }
+    this.setData({ hotJokes })
+  },
+
+  // 选择当前笑话
+  pickCurrentJoke() {
+    const freshJokes = this.data.freshJokes
     
-    if (!currentJoke && freshJokes.length > 0) {
-      currentJoke = freshJokes[0]
-    } else if (!currentJoke && jokes.length > 0) {
-      currentJoke = jokes[Math.floor(Math.random() * jokes.length)]
-    }
-    
-    this.setData({
-      allJokes: jokes,
-      freshJokes,
-      hotJokes,
-      freshCount: freshJokes.length,
-      currentJoke
-    })
-    
-    if (currentJoke) {
+    // 如果有未看过的笑话，优先显示
+    if (freshJokes.length > 0) {
+      const currentJoke = freshJokes[0]
+      this.setData({ currentJoke })
       this.checkStatus(currentJoke.id)
+    } else if (this.data.allJokes.length > 0) {
+      // 如果都看完了，随机显示一个
+      const randomJoke = this.data.allJokes[Math.floor(Math.random() * this.data.allJokes.length)]
+      this.setData({ currentJoke: randomJoke })
+      this.checkStatus(randomJoke.id)
+    } else {
+      this.setData({ currentJoke: null })
     }
   },
 
@@ -137,36 +143,41 @@ Page({
     })
   },
 
+  // 下一个笑话
   nextJoke() {
-    const seenIds = getSeenIds()
-    const freshJokes = this.data.allJokes.filter(j => !seenIds.includes(j.id))
-    
-    if (freshJokes.length === 0) {
-      wx.showToast({ title: '都看完了', icon: 'none' })
-      this.setData({
-        currentJoke: null,
-        freshJokes: [],
-        freshCount: 0
-      })
+    const currentJoke = this.data.currentJoke
+    if (!currentJoke) {
+      wx.showToast({ title: '没有笑话了', icon: 'none' })
       return
     }
     
-    const randomJoke = freshJokes[Math.floor(Math.random() * freshJokes.length)]
-    markSeen(randomJoke.id)
+    // 标记当前笑话为已看过
+    markSeen(currentJoke.id)
     
-    const newSeenIds = getSeenIds()
-    const newFreshJokes = this.data.allJokes.filter(j => !newSeenIds.includes(j.id))
+    // 更新未看列表
+    this.updateFreshCount()
+    
+    // 选择下一个笑话
+    const freshJokes = this.data.freshJokes
+    
+    if (freshJokes.length === 0) {
+      // 都看完了
+      wx.showToast({ title: '都看完了', icon: 'none' })
+      this.setData({ currentJoke: null })
+      return
+    }
+    
+    // 随机选择一个未看过的笑话
+    const nextJoke = freshJokes[Math.floor(Math.random() * freshJokes.length)]
     
     this.setData({
-      currentJoke: randomJoke,
-      freshJokes: newFreshJokes,
-      freshCount: newFreshJokes.length,
+      currentJoke: nextJoke,
       liked: false,
       disliked: false
     })
     
-    this.checkStatus(randomJoke.id)
-    wx.showToast({ title: '已看过', icon: 'none', duration: 1000 })
+    this.checkStatus(nextJoke.id)
+    wx.showToast({ title: '换一个', icon: 'none', duration: 1000 })
   },
 
   async toggleLike() {

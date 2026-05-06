@@ -40,7 +40,7 @@ Page({
       pageClass: getCurrentTheme() === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
-    this.loadJokes()
+    this.updateSeenStatus()
   },
 
   onPullDownRefresh() {
@@ -89,6 +89,13 @@ Page({
         loading: false
       })
     }
+  },
+
+  updateSeenStatus() {
+    const jokes = this.processJokes(this.data.allJokes)
+    this.setData({
+      jokes: this.filterJokes(jokes, this.data.currentCategory)
+    })
   },
 
   filterJokes(jokes, category) {

@@ -1,62 +1,32 @@
-// 已看过存储 - 位图(Bitmap)方案
-// 支持1000+条笑话，仅需125字节存储空间
+// 已看过存储 - 使用普通数组方案
+// 更简单可靠，适合小程序环境
 
-// 初始化位图（1000条笑话 = 125字节）
-function initBitmap(size = 1000) {
-  const byteCount = Math.ceil(size / 8)
-  const str = '0'.repeat(byteCount)
-  wx.setStorageSync('seenBitmap', str)
-  return str
-}
-
-// 获取位图
-function getBitmap() {
-  return wx.getStorageSync('seenBitmap') || initBitmap()
+// 获取已看过的ID列表
+function getSeenIds() {
+  const seenIds = wx.getStorageSync('seenIds') || []
+  return seenIds
 }
 
 // 标记已看过
 function markSeen(id) {
-  if (id < 1 || id > 1000) return
+  if (!id) return
   
-  let str = getBitmap()
-  const byteIndex = Math.floor(id / 8)
-  const bitIndex = id % 8
-  
-  // 转换为数组操作
-  const bytes = str.split('').map(c => parseInt(c))
-  bytes[byteIndex] = bytes[byteIndex] | (1 << bitIndex)
-  
-  // 存储回字符串
-  wx.setStorageSync('seenBitmap', bytes.join(''))
+  let seenIds = getSeenIds()
+  if (!seenIds.includes(id)) {
+    seenIds.push(id)
+    wx.setStorageSync('seenIds', seenIds)
+  }
 }
 
 // 检查是否已看过
 function hasSeen(id) {
-  if (id < 1 || id > 1000) return false
-  
-  const str = getBitmap()
-  const byteIndex = Math.floor(id / 8)
-  const bitIndex = id % 8
-  
-  const byte = parseInt(str[byteIndex]) || 0
-  return (byte & (1 << bitIndex)) !== 0
-}
-
-// 获取所有已看过的ID列表
-function getSeenIds() {
-  const str = getBitmap()
-  const seenIds = []
-  
-  for (let i = 1; i <= 1000; i++) {
-    if (hasSeen(i)) seenIds.push(i)
-  }
-  
-  return seenIds
+  if (!id) return false
+  return getSeenIds().includes(id)
 }
 
 // 清空所有已看过记录
 function clearAllSeen() {
-  initBitmap()
+  wx.setStorageSync('seenIds', [])
 }
 
 // 获取已看过数量
@@ -65,10 +35,9 @@ function getSeenCount() {
 }
 
 module.exports = {
-  initBitmap,
+  getSeenIds,
   markSeen,
   hasSeen,
-  getSeenIds,
   clearAllSeen,
   getSeenCount
 }
