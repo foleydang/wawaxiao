@@ -1,4 +1,5 @@
 const { api } = require('../../utils/api.js')
+const { markSeen, hasSeen } = require('../../utils/seen.js')
 
 const CAT_COLORS = {
   '职场': '#f093fb',
@@ -7,25 +8,12 @@ const CAT_COLORS = {
   '校园': '#fa709a'
 }
 
-function getSeenIds() {
-  const str = wx.getStorageSync('seenJokesStr') || ''
-  return str ? str.split(',').map(Number) : []
-}
-
-function addSeenId(id) {
-  let ids = getSeenIds()
-  if (!ids.includes(id)) {
-    ids.unshift(id)
-    if (ids.length > 30) ids = ids.slice(0, 30)
-    wx.setStorageSync('seenJokesStr', ids.join(','))
-  }
-}
-
 Page({
   data: {
-    joke: { color: '#667eea' },
+    joke: { color: '#667eea', likes: 0, dislikes: 0 },
     moreJokes: [],
     liked: false,
+    disliked: false,
     hasSeen: false
   },
 
@@ -33,6 +21,7 @@ Page({
     const id = parseInt(options.id)
     this.loadJoke(id)
     this.checkLike(id)
+    this.checkDislike(id)
     this.checkSeen(id)
     this.startTime = Date.now()
   },
@@ -40,13 +29,18 @@ Page({
   onUnload() {
     // 停留超过3秒标记已看过
     const time = Math.round((Date.now() - this.startTime) / 1000)
-    if (time >= 3) {
-      addSeenId(this.data.joke.id)
+    if (time >= 3 && this.data.joke.id) {
+      markSeen(this.data.joke.id)
     }
   },
 
   processJoke(j) {
-    return { ...j, color: CAT_COLORS[j.category] || '#667eea' }
+    return {
+      ...j,
+      color: CAT_COLORS[j.category] || '#667eea',
+      likes: j.likes || 0,
+      dislikes: j.dislikes || 0
+    }
   },
 
   async loadJoke(id) {
@@ -69,30 +63,72 @@ Page({
   },
 
   checkLike(id) {
-    const favs = wx.getStorageSync('favorites') || []
+    const favs = wx.getStorageSync('likes') || []
     this.setData({ liked: favs.includes(id) })
   },
 
+  checkDislike(id) {
+    const dislikes = wx.getStorageSync('dislikes') || []
+    this.setData({ disliked: dislikes.includes(id) })
+  },
+
   checkSeen(id) {
-    const seen = getSeenIds()
-    this.setData({ hasSeen: seen.includes(id) })
+    this.setData({ hasSeen: hasSeen(id) })
   },
 
   async toggleLike() {
     const id = this.data.joke.id
-    let favs = wx.getStorageSync('favorites') || []
+    let likes = wx.getStorageSync('likes') || []
+    let dislikes = wx.getStorageSync('dislikes') || []
     
-    try { await api.toggleLike(id) } catch (err) {}
-    
-    if (this.data.liked) {
-      favs = favs.filter(f => f !== id)
-    } else {
-      favs = [...favs, id]
+    // 如果已不喜欢，先取消不喜欢
+    if (dislikes.includes(id)) {
+      dislikes = dislikes.filter(d => d !== id)
+      wx.setStorageSync('dislikes', dislikes)
+      this.setData({ disliked: false })
     }
     
-    wx.setStorageSync('favorites', favs)
+    // 切换喜欢
+    if (this.data.liked) {
+      likes = likes.filter(l => l !== id)
+    } else {
+      likes = [...likes, id]
+    }
+    
+    wx.setStorageSync('likes', likes)
     this.setData({ liked: !this.data.liked })
+    
+    // 同步到服务器（可选）
+    try {
+      await api.toggleLike(id, this.data.liked)
+    } catch (err) {}
+    
     wx.showToast({ title: this.data.liked ? '已喜欢' : '已取消', icon: 'none' })
+  },
+
+  async toggleDislike() {
+    const id = this.data.joke.id
+    let likes = wx.getStorageSync('likes') || []
+    let dislikes = wx.getStorageSync('dislikes') || []
+    
+    // 如果已喜欢，先取消喜欢
+    if (likes.includes(id)) {
+      likes = likes.filter(l => l !== id)
+      wx.setStorageSync('likes', likes)
+      this.setData({ liked: false })
+    }
+    
+    // 切换不喜欢
+    if (this.data.disliked) {
+      dislikes = dislikes.filter(d => d !== id)
+    } else {
+      dislikes = [...dislikes, id]
+    }
+    
+    wx.setStorageSync('dislikes', dislikes)
+    this.setData({ disliked: !this.data.disliked })
+    
+    wx.showToast({ title: this.data.disliked ? '已不喜欢' : '已取消', icon: 'none' })
   },
 
   goBack() { wx.navigateBack() },

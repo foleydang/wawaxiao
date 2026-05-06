@@ -1,27 +1,11 @@
 const { api } = require('../../utils/api.js')
+const { markSeen, hasSeen, getSeenIds, getSeenCount } = require('../../utils/seen.js')
 
-// 分类颜色
 const CAT_COLORS = {
   '职场': '#f093fb',
   '生活': '#4facfe',
   '家庭': '#43e97b',
   '校园': '#fa709a'
-}
-
-// 已看过存储 - 使用紧凑字符串格式 "id1,id2,id3"
-// 最多保留30条，按时间倒序
-function getSeenIds() {
-  const str = wx.getStorageSync('seenJokesStr') || ''
-  return str ? str.split(',').map(Number) : []
-}
-
-function addSeenId(id) {
-  let ids = getSeenIds()
-  if (!ids.includes(id)) {
-    ids.unshift(id)
-    if (ids.length > 30) ids = ids.slice(0, 30)
-    wx.setStorageSync('seenJokesStr', ids.join(','))
-  }
 }
 
 Page({
@@ -41,7 +25,8 @@ Page({
     showModal: false,
     randomJoke: null,
     loading: true,
-    showSeen: false
+    showSeen: false,
+    seenCount: 0
   },
 
   onLoad() {
@@ -50,6 +35,7 @@ Page({
 
   onShow() {
     this.updateSeenStatus()
+    this.setData({ seenCount: getSeenCount() })
   },
 
   onPullDownRefresh() {
@@ -57,20 +43,18 @@ Page({
     setTimeout(() => wx.stopPullDownRefresh(), 500)
   },
 
-  // 处理笑话数据 - preview只取第一行
   processJokes(jokes) {
     return jokes.map(j => ({
       ...j,
       color: CAT_COLORS[j.category] || '#667eea',
-      preview: j.content.split('\n')[0].substring(0, 40) + '...'
+      preview: j.content.split('\n')[0].substring(0, 40) + '...',
+      hasSeen: hasSeen(j.id)
     }))
   },
 
-  // 按是否看过分类
   categorizeJokes(jokes) {
-    const seenIds = getSeenIds()
-    const todayJokes = jokes.filter(j => !seenIds.includes(j.id))
-    const seenJokes = jokes.filter(j => seenIds.includes(j.id))
+    const todayJokes = jokes.filter(j => !j.hasSeen)
+    const seenJokes = jokes.filter(j => j.hasSeen)
     return { todayJokes, seenJokes }
   },
 
@@ -78,7 +62,7 @@ Page({
     this.setData({ loading: true })
     
     try {
-      const res = await api.getJokes({ limit: 50 })
+      const res = await api.getJokes({ limit: 100 })
       const jokes = this.processJokes(res.data.list)
       const { todayJokes, seenJokes } = this.categorizeJokes(jokes)
       
@@ -87,7 +71,8 @@ Page({
         todayJokes,
         seenJokes,
         filteredJokes: this.filterByCategory(jokes),
-        loading: false
+        loading: false,
+        seenCount: getSeenCount()
       })
       
       wx.setStorageSync('cachedJokes', jokes)
@@ -102,7 +87,8 @@ Page({
         todayJokes,
         seenJokes,
         filteredJokes: this.filterByCategory(jokes),
-        loading: false
+        loading: false,
+        seenCount: getSeenCount()
       })
     }
   },
@@ -115,7 +101,8 @@ Page({
       allJokes: jokes,
       todayJokes,
       seenJokes,
-      filteredJokes: this.filterByCategory(jokes)
+      filteredJokes: this.filterByCategory(jokes),
+      seenCount: getSeenCount()
     })
   },
 
@@ -144,7 +131,7 @@ Page({
 
   goToDetail(e) {
     const id = e.currentTarget.dataset.id
-    addSeenId(id)
+    markSeen(id)
     wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
   },
 
@@ -159,7 +146,7 @@ Page({
     if (pool.length === 0) return
     
     const randomJoke = pool[Math.floor(Math.random() * pool.length)]
-    addSeenId(randomJoke.id)
+    markSeen(randomJoke.id)
     
     this.setData({ showModal: true, randomJoke })
   },

@@ -1,10 +1,13 @@
 .page {
-  min-height: 100vh;
+  height: 100vh;
   background: var(--bg);
-  padding-bottom: calc(48rpx + var(--safe-bottom));
 }
 
-/* 导航 */
+.main-scroll {
+  height: 100vh;
+  padding-bottom: var(--safe-bottom);
+}
+
 .nav-bar {
   padding: calc(20rpx + var(--safe-top)) 32rpx 32rpx;
 }
@@ -37,7 +40,6 @@
   top: -6rpx;
 }
 
-/* 主卡片 */
 .main-card {
   margin: 32rpx;
   padding: 24rpx;
@@ -95,10 +97,6 @@
   line-height: 1.4;
 }
 
-.content-scroll {
-  max-height: 480rpx;
-}
-
 .main-content {
   font-size: 34rpx;
   color: var(--text-secondary);
@@ -109,6 +107,7 @@
 .stats-row {
   display: flex;
   justify-content: center;
+  gap: 60rpx;
   margin-top: 24rpx;
   padding-top: 20rpx;
   border-top: 1rpx solid var(--border);
@@ -132,11 +131,10 @@
   margin-top: 6rpx;
 }
 
-/* 操作 */
 .action-row {
   display: flex;
   padding: 20rpx 32rpx;
-  gap: 16rpx;
+  gap: 12rpx;
 }
 
 .action-btn {
@@ -148,6 +146,20 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
+  background: var(--bg-light);
+  border: 1rpx solid var(--border);
+}
+
+.action-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.dislike-bg {
+  background: rgba(255,100,100,0.15);
 }
 
 .action-text {
@@ -157,11 +169,11 @@
   font-weight: 500;
 }
 
-.action-btn.liked .action-text {
+.action-btn.liked .action-text,
+.action-btn.disliked .action-text {
   color: var(--text);
 }
 
-/* 更多 */
 .more-section {
   padding: 32rpx;
 }
@@ -217,10 +229,18 @@
 }
 
 .more-meta {
+  display: flex;
+  align-items: center;
   padding-left: 16rpx;
+  gap: 12rpx;
 }
 
 .more-cat {
   font-size: 26rpx;
   color: var(--text-secondary);
+}
+
+.more-likes {
+  font-size: 26rpx;
+  color: var(--text-muted);
 }
