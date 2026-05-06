@@ -1,5 +1,6 @@
 const { api } = require('../../utils/api.js')
-const { markSeen, hasSeen, getSeenIds, getSeenCount } = require('../../utils/seen.js')
+const { markSeen, hasSeen, getSeenCount } = require('../../utils/seen.js')
+const { getCurrentTheme, toggleTheme, getThemeIcon } = require('../../utils/theme.js')
 
 const CAT_COLORS = {
   '职场': '#f093fb',
@@ -26,16 +27,26 @@ Page({
     randomJoke: null,
     loading: true,
     showSeen: false,
-    seenCount: 0
+    seenCount: 0,
+    currentTheme: 'dark',
+    themeIcon: '🌙'
   },
 
   onLoad() {
+    this.setData({
+      currentTheme: getCurrentTheme(),
+      themeIcon: getThemeIcon()
+    })
     this.loadJokes()
   },
 
   onShow() {
     this.updateSeenStatus()
-    this.setData({ seenCount: getSeenCount() })
+    this.setData({ 
+      seenCount: getSeenCount(),
+      currentTheme: getCurrentTheme(),
+      themeIcon: getThemeIcon()
+    })
   },
 
   onPullDownRefresh() {
@@ -48,13 +59,15 @@ Page({
       ...j,
       color: CAT_COLORS[j.category] || '#667eea',
       preview: j.content.split('\n')[0].substring(0, 40) + '...',
+      hasImage: j.images && j.images.length > 0,
       hasSeen: hasSeen(j.id)
     }))
   },
 
   categorizeJokes(jokes) {
-    const todayJokes = jokes.filter(j => !j.hasSeen)
-    const seenJokes = jokes.filter(j => j.hasSeen)
+    const seenIds = getSeenIds()
+    const todayJokes = jokes.filter(j => !seenIds.includes(j.id))
+    const seenJokes = jokes.filter(j => seenIds.includes(j.id))
     return { todayJokes, seenJokes }
   },
 
@@ -62,7 +75,7 @@ Page({
     this.setData({ loading: true })
     
     try {
-      const res = await api.getJokes({ limit: 100 })
+      const res = await api.getJokes({ limit: 50 })
       const jokes = this.processJokes(res.data.list)
       const { todayJokes, seenJokes } = this.categorizeJokes(jokes)
       
@@ -129,6 +142,15 @@ Page({
     this.setData({ showSeen: !this.data.showSeen })
   },
 
+  toggleTheme() {
+    const newTheme = toggleTheme()
+    this.setData({
+      currentTheme: newTheme,
+      themeIcon: newTheme === 'dark' ? '🌙' : '☀️'
+    })
+    wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
+  },
+
   goToDetail(e) {
     const id = e.currentTarget.dataset.id
     markSeen(id)
@@ -158,3 +180,8 @@ Page({
 
   preventClose() {}
 })
+
+function getSeenIds() {
+  const str = wx.getStorageSync('seenBitmap') || ''
+  return str ? str.split(',').map(Number) : []
+}

@@ -1,9 +1,12 @@
-<view class="page">
+<view class="page {{currentTheme}}">
   <scroll-view class="main-scroll" scroll-y show-scrollbar="{{false}}">
     <!-- 导航 -->
     <view class="nav-bar">
       <view class="back-btn glass" bindtap="goBack">
         <view class="back-arrow"></view>
+      </view>
+      <view class="theme-btn glass" bindtap="toggleTheme">
+        <text class="theme-icon">{{themeIcon}}</text>
       </view>
     </view>
 
@@ -15,10 +18,30 @@
         <view class="meta-dot" style="background: {{joke.color}}"></view>
         <text class="meta-category">{{joke.category}}</text>
         <view class="meta-badge hot" wx:if="{{joke.isHot}}">HOT</view>
+        <view class="meta-badge seen" wx:if="{{hasSeen}}">已看过</view>
+        <view class="meta-badge image" wx:if="{{joke.images}}">🖼️ 图</view>
       </view>
 
       <text class="main-title">{{joke.title}}</text>
-      <text class="main-content">{{joke.content}}</text>
+
+      <!-- 图片区域 -->
+      <view class="image-section" wx:if="{{joke.images && joke.images.length > 0}}">
+        <image 
+          class="joke-image"
+          wx:for="{{joke.images}}"
+          wx:key="*this"
+          src="{{item}}"
+          mode="widthFix"
+          bindtap="previewImage"
+          data-url="{{item}}"
+          data-urls="{{joke.images}}"
+        />
+      </view>
+
+      <!-- 文字内容 -->
+      <scroll-view class="content-scroll" scroll-y>
+        <text class="main-content">{{joke.content}}</text>
+      </scroll-view>
 
       <!-- 统计 -->
       <view class="stats-row">
@@ -31,13 +54,13 @@
           <text class="stat-label">不喜欢</text>
         </view>
         <view class="stat">
-          <text class="stat-value">{{joke.shares}}</text>
+          <text class="stat-value">{{joke.shares || 0}}</text>
           <text class="stat-label">分享</text>
         </view>
       </view>
     </view>
 
-    <!-- 操作按钮（带数量） -->
+    <!-- 操作按钮 -->
     <view class="action-row">
       <view class="action-btn {{liked ? 'liked' : ''}}" bindtap="toggleLike">
         <view class="action-bg gradient-btn" wx:if="{{liked}}"></view>
@@ -53,7 +76,7 @@
       
       <view class="action-btn" bindtap="shareJoke">
         <text class="action-icon">📤</text>
-        <text class="action-text">{{joke.shares}}</text>
+        <text class="action-text">{{joke.shares || 0}}</text>
       </view>
     </view>
 
@@ -76,7 +99,8 @@
           <text class="more-name">{{item.title}}</text>
           <view class="more-meta">
             <text class="more-cat">{{item.category}}</text>
-            <text class="more-stats">{{item.likes}}/{{item.dislikes}}</text>
+            <text class="more-image" wx:if="{{item.hasImage}}">🖼️</text>
+            <text class="more-likes">{{item.likes}}/{{item.dislikes}}</text>
           </view>
         </view>
       </view>

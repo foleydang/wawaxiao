@@ -1,15 +1,20 @@
-/* app.wxss - 极简现代风格 v3 */
+/* app.wxss - 支持夜间/日间模式 */
 
+/* 夜间模式变量 */
 page {
-  --primary: #667eea;
-  --accent: #f093fb;
-  --bg: #0f0f23;
+  /* 默认夜间模式 */
+  --bg-dark: #0f0f23;
   --bg-light: #1a1a2e;
   --card: rgba(255,255,255,0.05);
   --border: rgba(255,255,255,0.1);
   --text: #ffffff;
   --text-secondary: rgba(255,255,255,0.7);
   --text-muted: rgba(255,255,255,0.4);
+  --primary: #667eea;
+  --accent: #f093fb;
+  
+  /* 日间模式变量（通过JS动态修改） */
+  --bg: var(--bg-dark);
   
   --safe-top: env(safe-area-inset-top);
   --safe-bottom: env(safe-area-inset-bottom);
@@ -23,6 +28,17 @@ page {
   font-size: 32rpx;
   line-height: 1.65;
   font-weight: 400;
+}
+
+/* 日间模式类 */
+page.light-mode {
+  --bg: #f5f7fa;
+  --bg-light: #ffffff;
+  --card: rgba(0,0,0,0.02);
+  --border: rgba(0,0,0,0.08);
+  --text: #1a1a2e;
+  --text-secondary: rgba(0,0,0,0.6);
+  --text-muted: rgba(0,0,0,0.3);
 }
 
 /* 渐变 */

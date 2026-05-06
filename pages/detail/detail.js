@@ -1,5 +1,6 @@
 const { api } = require('../../utils/api.js')
 const { markSeen, hasSeen } = require('../../utils/seen.js')
+const { getCurrentTheme, toggleTheme, getThemeIcon } = require('../../utils/theme.js')
 
 const CAT_COLORS = {
   '职场': '#f093fb',
@@ -10,16 +11,25 @@ const CAT_COLORS = {
 
 Page({
   data: {
-    joke: { color: '#667eea', likes: 0, dislikes: 0, shares: 0 },
+    joke: { color: '#667eea', likes: 0, dislikes: 0, shares: 0, images: [] },
     moreJokes: [],
     liked: false,
-    disliked: false
+    disliked: false,
+    hasSeen: false,
+    currentTheme: 'dark',
+    themeIcon: '🌙'
   },
 
   onLoad(options) {
     const id = parseInt(options.id)
+    this.setData({
+      currentTheme: getCurrentTheme(),
+      themeIcon: getThemeIcon()
+    })
     this.loadJoke(id)
-    this.checkUserStatus(id)
+    this.checkLike(id)
+    this.checkDislike(id)
+    this.checkSeen(id)
     this.startTime = Date.now()
   },
 
@@ -36,7 +46,9 @@ Page({
       color: CAT_COLORS[j.category] || '#667eea',
       likes: j.likes || 0,
       dislikes: j.dislikes || 0,
-      shares: j.shares || 0
+      shares: j.shares || 0,
+      images: j.images || [],
+      hasImage: j.images && j.images.length > 0
     }
   },
 
@@ -59,116 +71,100 @@ Page({
     }
   },
 
-  checkUserStatus(id) {
-    const userId = this.getUserId()
-    const likes = wx.getStorageSync(`likes_${userId}`) || []
-    const dislikes = wx.getStorageSync(`dislikes_${userId}`) || []
-    
+  checkLike(id) {
+    const favs = wx.getStorageSync('likes') || []
+    this.setData({ liked: favs.includes(id) })
+  },
+
+  checkDislike(id) {
+    const dislikes = wx.getStorageSync('dislikes') || []
+    this.setData({ disliked: dislikes.includes(id) })
+  },
+
+  checkSeen(id) {
+    this.setData({ hasSeen: hasSeen(id) })
+  },
+
+  toggleTheme() {
+    const newTheme = toggleTheme()
     this.setData({
-      liked: likes.includes(id),
-      disliked: dislikes.includes(id)
+      currentTheme: newTheme,
+      themeIcon: newTheme === 'dark' ? '🌙' : '☀️'
     })
   },
 
-  getUserId() {
-    let userId = wx.getStorageSync('userId')
-    if (!userId) {
-      userId = 'user_' + Date.now()
-      wx.setStorageSync('userId', userId)
-    }
-    return userId
+  previewImage(e) {
+    const url = e.currentTarget.dataset.url
+    const urls = e.currentTarget.dataset.urls || [url]
+    wx.previewImage({ current: url, urls })
   },
 
   async toggleLike() {
     const id = this.data.joke.id
-    const userId = this.getUserId()
+    let likes = wx.getStorageSync('likes') || []
+    let dislikes = wx.getStorageSync('dislikes') || []
     
-    let likes = wx.getStorageSync(`likes_${userId}`) || []
-    let dislikes = wx.getStorageSync(`dislikes_${userId}`) || []
-    
-    // 如果已不喜欢，先取消
     if (dislikes.includes(id)) {
       dislikes = dislikes.filter(d => d !== id)
-      wx.setStorageSync(`dislikes_${userId}`, dislikes)
+      wx.setStorageSync('dislikes', dislikes)
       this.setData({ disliked: false })
     }
     
-    // 更新本地状态
     const wasLiked = this.data.liked
     if (wasLiked) {
       likes = likes.filter(l => l !== id)
     } else {
       likes = [...likes, id]
     }
-    wx.setStorageSync(`likes_${userId}`, likes)
     
-    // 更新页面显示的数字
+    wx.setStorageSync('likes', likes)
+    
     const joke = this.data.joke
     joke.likes = wasLiked ? joke.likes - 1 : joke.likes + 1
     
-    this.setData({
-      liked: !wasLiked,
-      joke
-    })
+    this.setData({ liked: !wasLiked, joke })
     
-    // 同步到服务器
-    try {
-      await api.toggleLike(id, !wasLiked)
-    } catch (err) {}
+    try { await api.toggleLike(id, this.data.liked) } catch (err) {}
     
-    wx.showToast({ title: wasLiked ? '已取消' : '已喜欢', icon: 'none', duration: 1000 })
+    wx.showToast({ title: this.data.liked ? '已喜欢' : '已取消', icon: 'none' })
   },
 
   async toggleDislike() {
     const id = this.data.joke.id
-    const userId = this.getUserId()
+    let likes = wx.getStorageSync('likes') || []
+    let dislikes = wx.getStorageSync('dislikes') || []
     
-    let likes = wx.getStorageSync(`likes_${userId}`) || []
-    let dislikes = wx.getStorageSync(`dislikes_${userId}`) || []
-    
-    // 如果已喜欢，先取消
     if (likes.includes(id)) {
       likes = likes.filter(l => l !== id)
-      wx.setStorageSync(`likes_${userId}`, likes)
+      wx.setStorageSync('likes', likes)
       this.setData({ liked: false })
     }
     
-    // 更新本地状态
     const wasDisliked = this.data.disliked
     if (wasDisliked) {
       dislikes = dislikes.filter(d => d !== id)
     } else {
       dislikes = [...dislikes, id]
     }
-    wx.setStorageSync(`dislikes_${userId}`, dislikes)
     
-    // 更新页面显示的数字
+    wx.setStorageSync('dislikes', dislikes)
+    
     const joke = this.data.joke
     joke.dislikes = wasDisliked ? joke.dislikes - 1 : joke.dislikes + 1
     
-    this.setData({
-      disliked: !wasDisliked,
-      joke
-    })
+    this.setData({ disliked: !wasDisliked, joke })
     
-    // 同步到服务器
-    try {
-      await api.toggleDislike(id, !wasDisliked)
-    } catch (err) {}
+    try { await api.toggleDislike(id, this.data.disliked) } catch (err) {}
     
-    wx.showToast({ title: wasDisliked ? '已取消' : '已不喜欢', icon: 'none', duration: 1000 })
+    wx.showToast({ title: this.data.disliked ? '已不喜欢' : '已取消', icon: 'none' })
   },
 
   async shareJoke() {
-    // 增加分享次数
     const joke = this.data.joke
     joke.shares += 1
     this.setData({ joke })
     
-    // 同步到服务器
-    try {
-      await api.incrementShare(joke.id)
-    } catch (err) {}
+    try { await api.incrementShare(joke.id) } catch (err) {}
     
     wx.showShareMenu({ menus: ['shareAppMessage'] })
   },
@@ -180,10 +176,6 @@ Page({
   },
 
   onShareAppMessage() {
-    return {
-      title: this.data.joke.title,
-      path: `/pages/detail/detail?id=${this.data.joke.id}`,
-      imageUrl: '/images/share.png'
-    }
+    return { title: this.data.joke.title, path: `/pages/detail/detail?id=${this.data.joke.id}` }
   }
 })
