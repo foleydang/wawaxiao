@@ -1,7 +1,39 @@
 /* search.wxss */
 
-.container {
+.page-wrapper {
   min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.page-wrapper.light-mode {
+  background: #f8f9fa !important;
+  color: #1a1a2e !important;
+}
+
+.page-wrapper.light-mode .glass {
+  background: rgba(0,0,0,0.04) !important;
+  border-color: rgba(0,0,0,0.1) !important;
+}
+
+.page-wrapper.light-mode .result-title {
+  color: #1a1a2e !important;
+}
+
+.page-wrapper.light-mode .result-count,
+.page-wrapper.light-mode .result-preview,
+.page-wrapper.light-mode .result-stats {
+  color: #555555 !important;
+}
+
+.page-wrapper.light-mode .result-cat,
+.page-wrapper.light-mode .history-title,
+.page-wrapper.light-mode .history-text {
+  color: #888888 !important;
+}
+
+.page-wrapper.light-mode .empty-title {
+  color: #555555 !important;
 }
 
 .header {
@@ -125,7 +157,6 @@
 
 .result-title {
   font-size: 30rpx;
-  color: var(--text);
   font-weight: 500;
   margin-bottom: 4rpx;
   display: -webkit-box;

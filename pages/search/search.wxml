@@ -1,6 +1,4 @@
-<page class="{{pageClass}}">
-
-<view class="container">
+<view class="page-wrapper {{pageClass}}">
   <!-- 顶部 -->
   <view class="header">
     <view class="back-btn glass" bindtap="goBack">
@@ -81,5 +79,3 @@
     </view>
   </view>
 </view>
-
-</page>

@@ -1,8 +1,39 @@
 /* favorites.wxss */
 
-.container {
+.page-wrapper {
   min-height: 100vh;
   padding-bottom: calc(40rpx + var(--safe-bottom));
+  background: var(--bg);
+  color: var(--text);
+}
+
+.page-wrapper.light-mode {
+  background: #f8f9fa !important;
+  color: #1a1a2e !important;
+}
+
+.page-wrapper.light-mode .glass {
+  background: rgba(0,0,0,0.04) !important;
+  border-color: rgba(0,0,0,0.1) !important;
+}
+
+.page-wrapper.light-mode .header-title,
+.page-wrapper.light-mode .fav-title {
+  color: #1a1a2e !important;
+}
+
+.page-wrapper.light-mode .header-count,
+.page-wrapper.light-mode .fav-preview,
+.page-wrapper.light-mode .fav-stats {
+  color: #555555 !important;
+}
+
+.page-wrapper.light-mode .empty-title {
+  color: #555555 !important;
+}
+
+.page-wrapper.light-mode .empty-desc {
+  color: #888888 !important;
 }
 
 .header {
@@ -28,7 +59,6 @@
 .header-title {
   font-size: 34rpx;
   font-weight: 600;
-  color: var(--text);
 }
 
 .header-count {
@@ -91,7 +121,6 @@
 
 .empty-btn-text {
   font-size: 30rpx;
-  color: var(--text);
   font-weight: 500;
 }
 
@@ -122,7 +151,6 @@
 
 .fav-title {
   font-size: 30rpx;
-  color: var(--text);
   font-weight: 500;
   margin-bottom: 4rpx;
   display: -webkit-box;

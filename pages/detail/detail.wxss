@@ -1,8 +1,36 @@
 /* detail.wxss */
 
-.container {
+.page-wrapper {
   min-height: 100vh;
   padding-bottom: calc(40rpx + var(--safe-bottom));
+  background: var(--bg);
+  color: var(--text);
+}
+
+.page-wrapper.light-mode {
+  background: #f8f9fa !important;
+  color: #1a1a2e !important;
+}
+
+.page-wrapper.light-mode .glass {
+  background: rgba(0,0,0,0.04) !important;
+  border-color: rgba(0,0,0,0.1) !important;
+}
+
+.page-wrapper.light-mode .main-title,
+.page-wrapper.light-mode .more-title {
+  color: #1a1a2e !important;
+}
+
+.page-wrapper.light-mode .meta-cat,
+.page-wrapper.light-mode .main-content,
+.page-wrapper.light-mode .stat-label,
+.page-wrapper.light-mode .action-num {
+  color: #555555 !important;
+}
+
+.page-wrapper.light-mode .more-cat {
+  color: #888888 !important;
 }
 
 .nav-bar {
@@ -85,22 +113,19 @@
 .main-title {
   font-size: 36rpx;
   font-weight: 600;
-  color: var(--text);
-  margin-bottom: 32rpx;  /* 加大间距 */
+  margin-bottom: 32rpx;
   line-height: 1.4;
-  display: block;  /* 确保换行 */
+  display: block;
 }
 
-/* 内容 */
 .main-content {
   font-size: 30rpx;
   color: var(--text-secondary);
   line-height: 1.75;
   white-space: pre-wrap;
-  margin-bottom: 24rpx;  /* 内容和图片之间有间距 */
+  margin-bottom: 24rpx;
 }
 
-/* 图片区域（放在内容下面） */
 .image-area {
   margin-top: 24rpx;
   margin-bottom: 24rpx;
@@ -131,7 +156,6 @@
 .stat-num {
   font-size: 30rpx;
   font-weight: 600;
-  color: var(--text);
 }
 
 .stat-label {
@@ -207,7 +231,6 @@
 
 .more-title {
   font-size: 28rpx;
-  color: var(--text);
   font-weight: 500;
 }
 
@@ -234,7 +257,6 @@
 
 .more-name {
   font-size: 26rpx;
-  color: var(--text);
   font-weight: 500;
   padding-left: 12rpx;
   margin-bottom: 6rpx;

@@ -17,26 +17,12 @@ page {
   --text-secondary: rgba(255,255,255,0.7);
   --text-muted: rgba(255,255,255,0.4);
   
-  background: var(--bg);
-  color: var(--text);
+  background: #0f0f23;
+  color: #ffffff;
   
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
   font-size: 32rpx;
   line-height: 1.7;
-}
-
-/* 日间模式 */
-page.light-mode {
-  --bg: #f8f9fa;
-  --bg-light: #ffffff;
-  --card: rgba(0,0,0,0.04);
-  --border: rgba(0,0,0,0.1);
-  --text: #1a1a2e;
-  --text-secondary: #555555;
-  --text-muted: #888888;
-  
-  background: var(--bg);
-  color: var(--text);
 }
 
 /* 通用样式 */
@@ -46,6 +32,48 @@ page.light-mode {
   border-radius: 14rpx;
 }
 
+/* 日间模式 - 通过页面容器的class切换 */
+.page-wrapper.light-mode {
+  --bg: #f8f9fa;
+  --bg-light: #ffffff;
+  --card: rgba(0,0,0,0.04);
+  --border: rgba(0,0,0,0.1);
+  --text: #1a1a2e;
+  --text-secondary: #555555;
+  --text-muted: #888888;
+  
+  background: #f8f9fa !important;
+  color: #1a1a2e !important;
+}
+
+/* 日间模式 - 强制覆盖 */
+.page-wrapper.light-mode .glass {
+  background: rgba(0,0,0,0.04) !important;
+  border-color: rgba(0,0,0,0.1) !important;
+}
+
+.page-wrapper.light-mode .brand-name,
+.page-wrapper.light-mode .section-title,
+.page-wrapper.light-mode .card-title,
+.page-wrapper.light-mode .hot-title,
+.page-wrapper.light-mode .category-name {
+  color: #1a1a2e !important;
+}
+
+.page-wrapper.light-mode .meta-cat,
+.page-wrapper.light-mode .card-content,
+.page-wrapper.light-mode .section-count,
+.page-wrapper.light-mode .action-num,
+.page-wrapper.light-mode .hot-stats,
+.page-wrapper.light-mode .category-count {
+  color: #555555 !important;
+}
+
+.page-wrapper.light-mode .hot-cat {
+  color: #888888 !important;
+}
+
+/* 动画 */
 .fade-up {
   animation: fadeUp 0.35s ease-out;
 }

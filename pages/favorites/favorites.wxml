@@ -1,6 +1,4 @@
-<page class="{{pageClass}}">
-
-<view class="container">
+<view class="page-wrapper {{pageClass}}">
   <!-- 顶部 -->
   <view class="header">
     <view class="header-left">
@@ -49,5 +47,3 @@
     </view>
   </view>
 </view>
-
-</page>

@@ -1,6 +1,4 @@
-<page class="{{pageClass}}">
-
-<view class="container">
+<view class="page-wrapper {{pageClass}}">
   <!-- 导航 -->
   <view class="nav-bar">
     <view class="back-btn glass" bindtap="goBack">
@@ -24,10 +22,10 @@
 
     <text class="main-title">{{joke.title}}</text>
     
-    <!-- 内容（先显示文字） -->
+    <!-- 内容 -->
     <text class="main-content">{{joke.content}}</text>
 
-    <!-- 图片（放在内容下面） -->
+    <!-- 图片 -->
     <view class="image-area" wx:if="{{joke.hasImage}}">
       <image 
         class="joke-img"
@@ -102,5 +100,3 @@
     </view>
   </view>
 </view>
-
-</page>

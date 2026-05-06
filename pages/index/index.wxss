@@ -1,8 +1,16 @@
 /* index.wxss */
 
-.container {
+/* 页面容器 */
+.page-wrapper {
   min-height: 100vh;
   padding-bottom: calc(40rpx + var(--safe-bottom));
+  background: var(--bg);
+  color: var(--text);
+}
+
+.page-wrapper.light-mode {
+  background: var(--bg);
+  color: var(--text);
 }
 
 /* 顶部 */
@@ -29,7 +37,6 @@
 .brand-name {
   font-size: 34rpx;
   font-weight: 600;
-  color: var(--text);
 }
 
 .header-right {
@@ -81,7 +88,6 @@
 
 .section-title {
   font-size: 30rpx;
-  color: var(--text);
   font-weight: 500;
 }
 
@@ -133,7 +139,6 @@
 .card-title {
   font-size: 36rpx;
   font-weight: 600;
-  color: var(--text);
   margin-bottom: 24rpx;
   line-height: 1.4;
   display: block;
@@ -248,7 +253,6 @@
 
 .hot-title {
   font-size: 28rpx;
-  color: var(--text);
   font-weight: 500;
   padding-left: 12rpx;
   margin-bottom: 8rpx;
@@ -312,7 +316,6 @@
 
 .category-name {
   font-size: 30rpx;
-  color: var(--text);
   font-weight: 500;
 }
 
