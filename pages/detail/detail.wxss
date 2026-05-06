@@ -1,3 +1,5 @@
+/* pages/detail/detail.wxss */
+
 .page {
   height: 100vh;
   background: var(--bg);
@@ -71,13 +73,21 @@
   font-weight: 500;
 }
 
-.meta-badge.hot {
+.meta-badge {
   font-size: 24rpx;
-  color: var(--accent);
-  background: rgba(240,147,251,0.15);
+  margin-left: 16rpx;
   padding: 4rpx 10rpx;
   border-radius: 6rpx;
-  margin-left: 16rpx;
+}
+
+.meta-badge.hot {
+  color: var(--accent);
+  background: rgba(240,147,251,0.15);
+}
+
+.meta-badge.seen {
+  color: var(--text-muted);
+  background: var(--card);
 }
 
 .main-title {
@@ -87,13 +97,21 @@
   margin-bottom: 24rpx;
   display: block;
   line-height: 1.4;
+  /* 标题允许换行 */
+  word-break: break-all;
+}
+
+.content-scroll {
+  max-height: 480rpx;
 }
 
 .main-content {
   font-size: 34rpx;
   color: var(--text-secondary);
   line-height: 1.8;
+  /* 内容保持换行 */
   white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .stats-row {
@@ -131,48 +149,22 @@
 
 .action-btn {
   flex: 1;
-  height: 80rpx;
-  border-radius: 16rpx;
+  height: 72rpx;
+  border-radius: 12rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12rpx;
   position: relative;
   overflow: hidden;
   background: var(--bg-light);
   border: 1rpx solid var(--border);
 }
 
-.action-btn.liked {
-  border: none;
-}
-
-.action-btn.disliked {
-  border: none;
-}
-
-.action-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-.dislike-bg {
-  background: rgba(255,100,100,0.2);
-}
-
-.action-icon {
-  font-size: 32rpx;
-  position: relative;
-}
-
 .action-text {
   font-size: 32rpx;
-  font-weight: 600;
   color: var(--text-secondary);
   position: relative;
+  font-weight: 500;
 }
 
 .action-btn.liked .action-text,
@@ -180,7 +172,7 @@
   color: var(--text);
 }
 
-/* 更多推荐 */
+/* 更多 */
 .more-section {
   padding: 32rpx;
 }
@@ -233,11 +225,17 @@
   margin-bottom: 8rpx;
   padding-left: 16rpx;
   display: block;
+  /* 允许换行，最多2行 */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-all;
 }
 
 .more-meta {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   padding-left: 16rpx;
 }
 
@@ -249,4 +247,5 @@
 .more-stats {
   font-size: 26rpx;
   color: var(--text-muted);
+  margin-left: auto;
 }

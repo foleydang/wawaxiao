@@ -6,6 +6,7 @@
   padding-bottom: calc(120rpx + var(--safe-bottom));
 }
 
+/* ========== 顶部 ========== */
 .header {
   padding: calc(56rpx + var(--safe-top)) 32rpx 32rpx;
   display: flex;
@@ -45,26 +46,7 @@
   color: var(--text-secondary);
 }
 
-.search-arrow {
-  width: 18rpx;
-  height: 3rpx;
-  background: var(--text-secondary);
-  margin-left: 12rpx;
-  position: relative;
-}
-
-.search-arrow::after {
-  content: '';
-  width: 10rpx;
-  height: 10rpx;
-  border-right: 3rpx solid var(--text-secondary);
-  border-bottom: 3rpx solid var(--text-secondary);
-  transform: rotate(-45deg);
-  position: absolute;
-  right: -6rpx;
-  top: -5rpx;
-}
-
+/* ========== 分类 ========== */
 .categories {
   padding: 12rpx 32rpx 28rpx;
   white-space: nowrap;
@@ -102,6 +84,7 @@
   font-weight: 500;
 }
 
+/* ========== 板块 ========== */
 .section {
   padding: 28rpx 0;
 }
@@ -162,10 +145,10 @@
   border-radius: 8rpx;
 }
 
-/* 今日新鲜 */
+/* ========== 今日新鲜（紧凑） ========== */
 .today-scroll {
   padding: 12rpx 32rpx;
-  white-space: nowrap;
+  white-space: nowrap;  /* 横向滚动区域保持nowrap */
 }
 
 .today-card {
@@ -192,33 +175,38 @@
   color: var(--text);
   line-height: 1.4;
   margin-bottom: 12rpx;
+  /* 允许换行，最多显示2行 */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-all;
 }
 
-.today-stats {
+.today-meta {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 6rpx;
 }
 
-.stat-num {
+.today-cat {
   font-size: 26rpx;
   color: var(--text-secondary);
-  font-weight: 500;
 }
 
-.stat-label {
-  font-size: 24rpx;
+.today-likes {
+  font-size: 26rpx;
   color: var(--text-muted);
 }
 
-/* 笑话卡片 */
+/* ========== 笑话卡片（允许换行） ========== */
 .joke-list {
   padding: 12rpx 32rpx;
 }
 
 .joke-card {
   display: flex;
-  align-items: center;
+  align-items: flex-start;  /* 改为flex-start，允许内容撑高 */
   background: var(--card);
   border: 1rpx solid var(--border);
   border-radius: 16rpx;
@@ -236,6 +224,7 @@
   min-height: 48rpx;
   border-radius: 3rpx;
   margin-right: 20rpx;
+  align-self: stretch;  /* 色条撑满整个卡片高度 */
 }
 
 .seen-color {
@@ -251,12 +240,25 @@
   font-size: 32rpx;
   font-weight: 500;
   color: var(--text);
-  margin-bottom: 6rpx;
+  margin-bottom: 8rpx;
+  /* 允许换行，最多2行 */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-all;
 }
 
 .joke-preview {
   font-size: 28rpx;
   color: var(--text-secondary);
+  line-height: 1.4;
+  /* 允许换行，最多2行 */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-all;
 }
 
 .joke-right {
@@ -265,31 +267,17 @@
   align-items: flex-end;
   gap: 8rpx;
   padding-left: 16rpx;
+  align-self: center;  /* 右侧信息垂直居中 */
 }
 
-.stats-mini {
-  display: flex;
-  align-items: center;
-  gap: 4rpx;
+.joke-dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
 }
 
-.mini-num {
+.joke-likes {
   font-size: 26rpx;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.mini-num.bad {
-  color: rgba(255,100,100,0.6);
-}
-
-.mini-sep {
-  font-size: 24rpx;
-  color: var(--text-muted);
-}
-
-.mini-share {
-  font-size: 24rpx;
   color: var(--text-muted);
 }
 
@@ -301,7 +289,7 @@
   border-radius: 4rpx;
 }
 
-/* 骨架屏 */
+/* ========== 骨架屏 ========== */
 .skeleton-wrap {
   padding: 32rpx;
 }
@@ -322,7 +310,7 @@
   width: 50%;
 }
 
-/* 悬浮按钮 */
+/* ========== 悬浮按钮 ========== */
 .float-btn {
   position: fixed;
   right: 32rpx;
@@ -364,7 +352,7 @@
   font-weight: 500;
 }
 
-/* 弹窗 */
+/* ========== 弹窗 ========== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -431,7 +419,7 @@
   font-size: 32rpx;
   color: var(--text-secondary);
   line-height: 1.7;
-  white-space: pre-wrap;
+  white-space: pre-wrap;  /* 弹窗内容保持换行 */
 }
 
 .modal-footer {
