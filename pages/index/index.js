@@ -64,7 +64,8 @@ Page({
       
       wx.setStorageSync('cachedJokes', jokes)
       
-      const currentJoke = freshJokes.length > 0 ? freshJokes[Math.floor(Math.random() * freshJokes.length)] : null
+      // 显示第一条未看过的
+      const currentJoke = freshJokes.length > 0 ? freshJokes[0] : null
       
       this.setData({
         allJokes: jokes,
@@ -84,7 +85,7 @@ Page({
       const jokes = this.processJokes(cached)
       const { freshJokes } = this.splitBySeen(jokes)
       
-      const currentJoke = freshJokes.length > 0 ? freshJokes[Math.floor(Math.random() * freshJokes.length)] : null
+      const currentJoke = freshJokes.length > 0 ? freshJokes[0] : null
       
       this.setData({
         allJokes: jokes,
@@ -106,6 +107,7 @@ Page({
     const jokes = this.processJokes(this.data.allJokes)
     const { freshJokes } = this.splitBySeen(jokes)
     
+    // 如果当前笑话已被看过，自动换下一个
     let currentJoke = this.data.currentJoke
     if (currentJoke && getSeenIds().includes(currentJoke.id)) {
       currentJoke = freshJokes.length > 0 ? freshJokes[Math.floor(Math.random() * freshJokes.length)] : null
@@ -132,26 +134,41 @@ Page({
     })
   },
 
+  // 修复：确保随机到未看过的笑话
   nextJoke() {
-    const fresh = this.data.freshJokes
-    if (fresh.length === 0) {
-      wx.showToast({ title: '都看完了', icon: 'none' })
-      return
-    }
-    
-    const randomJoke = fresh[Math.floor(Math.random() * fresh.length)]
-    markSeen(randomJoke.id)
-    
+    // 先更新已看列表
     const jokes = this.processJokes(this.data.allJokes)
     const { freshJokes } = this.splitBySeen(jokes)
     
+    if (freshJokes.length === 0) {
+      wx.showToast({ title: '都看完了', icon: 'none' })
+      this.setData({
+        currentJoke: null,
+        freshJokes: [],
+        freshCount: 0
+      })
+      return
+    }
+    
+    // 随机选一条真正未看过的
+    const randomIndex = Math.floor(Math.random() * freshJokes.length)
+    const randomJoke = freshJokes[randomIndex]
+    
+    // 标记为已看过
+    markSeen(randomJoke.id)
+    
+    // 再次更新已看列表（排除刚看过的）
+    const { freshJokes: updatedFresh } = this.splitBySeen(jokes)
+    
     this.setData({
       currentJoke: randomJoke,
-      freshJokes,
-      freshCount: freshJokes.length,
+      freshJokes: updatedFresh,
+      freshCount: updatedFresh.length,
       liked: false,
       disliked: false
     })
+    
+    this.checkStatus(randomJoke.id)
   },
 
   toggleLike() {

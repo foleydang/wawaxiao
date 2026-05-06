@@ -23,8 +23,11 @@
     </view>
 
     <text class="main-title">{{joke.title}}</text>
+    
+    <!-- 内容（先显示文字） -->
+    <text class="main-content">{{joke.content}}</text>
 
-    <!-- 图片（限制尺寸） -->
+    <!-- 图片（放在内容下面） -->
     <view class="image-area" wx:if="{{joke.hasImage}}">
       <image 
         class="joke-img"
@@ -38,9 +41,6 @@
         data-urls="{{joke.images}}"
       />
     </view>
-
-    <!-- 内容 -->
-    <text class="main-content">{{joke.content}}</text>
 
     <!-- 统计 -->
     <view class="stats-bar">

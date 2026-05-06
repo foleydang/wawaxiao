@@ -27,7 +27,10 @@
     
     <text class="card-title">{{currentJoke.title}}</text>
     
-    <!-- 图片 -->
+    <!-- 内容（先显示文字） -->
+    <text class="card-content">{{currentJoke.content}}</text>
+    
+    <!-- 图片（放在内容下面） -->
     <view class="card-images" wx:if="{{currentJoke.hasImage}}">
       <image 
         class="card-img"
@@ -41,8 +44,6 @@
         data-urls="{{currentJoke.images}}"
       />
     </view>
-    
-    <text class="card-content">{{currentJoke.content}}</text>
     
     <!-- 操作按钮 -->
     <view class="card-actions">
