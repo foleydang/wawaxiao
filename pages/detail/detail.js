@@ -1,6 +1,6 @@
 const { api } = require('../../utils/api.js')
 const { markSeen } = require('../../utils/seen.js')
-const { getCurrentTheme, toggleTheme, initTheme, getThemeIcon } = require('../../utils/theme.js')
+const { getCurrentTheme, toggleTheme, getThemeIcon, initTheme } = require('../../utils/theme.js')
 
 const CAT_COLORS = {
   '职场': '#f093fb',
@@ -16,7 +16,8 @@ Page({
     moreJokes: [],
     liked: false,
     disliked: false,
-    themeIcon: '🌙'
+    themeIcon: '🌙',
+    showShareTip: false
   },
 
   onLoad(options) {
@@ -30,6 +31,10 @@ Page({
     this.loadJoke(id)
     this.checkStatus(id)
     this.startTime = Date.now()
+    
+    // 显示分享提示（3秒后自动隐藏）
+    this.setData({ showShareTip: true })
+    setTimeout(() => this.setData({ showShareTip: false }), 3000)
   },
 
   onShow() {
@@ -149,22 +154,38 @@ Page({
     wx.showToast({ title: wasDisliked ? '取消' : '不喜欢', icon: 'none' })
   },
 
-  onShare() {
-    const joke = this.data.joke
-    joke.shares++
-    this.setData({ joke })
-  },
-
   goBack() { wx.navigateBack() },
 
   goToDetail(e) {
     wx.redirectTo({ url: `/pages/detail/detail?id=${e.currentTarget.dataset.id}` })
   },
 
+  // 分享给朋友
   onShareAppMessage() {
+    const joke = this.data.joke
+    
+    // 增加分享数
+    joke.shares++
+    this.setData({ joke })
+    
     return {
-      title: this.data.joke.title,
-      path: `/pages/detail/detail?id=${this.data.joke.id}`
+      title: `【哇哇笑】${joke.title}`,
+      path: `/pages/detail/detail?id=${joke.id}`,
+      imageUrl: joke.hasImage ? joke.images[0] : ''
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    const joke = this.data.joke
+    
+    joke.shares++
+    this.setData({ joke })
+    
+    return {
+      title: `【哇哇笑】${joke.title}\n${joke.content.substring(0, 50)}`,
+      query: `id=${joke.id}`,
+      imageUrl: joke.hasImage ? joke.images[0] : ''
     }
   }
 })

@@ -69,10 +69,16 @@
       <text class="action-num">{{joke.dislikes}}</text>
     </view>
     
-    <button class="action-btn" open-type="share" bindtap="onShare">
+    <!-- 分享按钮：使用 open-type="share" -->
+    <button class="action-btn share-btn" open-type="share">
       <text class="action-icon">📤</text>
       <text class="action-num">{{joke.shares}}</text>
     </button>
+  </view>
+
+  <!-- 分享提示 -->
+  <view class="share-tip" wx:if="{{showShareTip}}">
+    <text class="share-tip-text">点击右上角「...」也可分享给朋友</text>
   </view>
 
   <!-- 更多 -->
