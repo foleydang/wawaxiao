@@ -9,13 +9,6 @@ const CAT_COLORS = {
   '校园': '#fa709a'
 }
 
-const CAT_ICONS = {
-  '职场': '💼',
-  '生活': '☕',
-  '家庭': '🏠',
-  '校园': '📚'
-}
-
 Page({
   data: {
     pageClass: '',
@@ -27,13 +20,7 @@ Page({
     liked: false,
     disliked: false,
     loading: true,
-    themeIcon: '🌙',
-    categories: [
-      { name: '职场', color: '#f093fb', icon: '💼', count: 0 },
-      { name: '生活', color: '#4facfe', icon: '☕', count: 0 },
-      { name: '家庭', color: '#43e97b', icon: '🏠', count: 0 },
-      { name: '校园', color: '#fa709a', icon: '📚', count: 0 }
-    ]
+    themeIcon: '🌙'
   },
 
   onLoad() {
@@ -87,29 +74,24 @@ Page({
     
     const seenIds = getSeenIds()
     const freshJokes = jokes.filter(j => !seenIds.includes(j.id))
-    const hotJokes = jokes.filter(j => j.isHot).slice(0, 6)
+    // 热门推荐：只取4条，按likes排序
+    const hotJokes = jokes
+      .filter(j => j.isHot || j.likes > 70)
+      .sort((a, b) => b.likes - a.likes)
+      .slice(0, 4)
     
-    // 当前显示第一条未看过的
     let currentJoke = freshJokes.length > 0 ? freshJokes[0] : null
     
-    // 如果当前笑话已被看过，换下一个
     if (this.data.currentJoke && seenIds.includes(this.data.currentJoke.id)) {
       currentJoke = freshJokes.length > 0 ? freshJokes[Math.floor(Math.random() * freshJokes.length)] : null
     }
-    
-    // 更新分类计数
-    const categories = this.data.categories.map(c => ({
-      ...c,
-      count: jokes.filter(j => j.category === c.name).length
-    }))
     
     this.setData({
       allJokes: jokes,
       freshJokes,
       hotJokes,
       freshCount: freshJokes.length,
-      currentJoke,
-      categories
+      currentJoke
     })
     
     if (currentJoke) {
@@ -127,7 +109,6 @@ Page({
   },
 
   nextJoke() {
-    // 获取最新的未看列表
     const seenIds = getSeenIds()
     const freshJokes = this.data.allJokes.filter(j => !seenIds.includes(j.id))
     
@@ -141,13 +122,10 @@ Page({
       return
     }
     
-    // 随机选一条
     const randomJoke = freshJokes[Math.floor(Math.random() * freshJokes.length)]
     
-    // 标记为已看过
     markSeen(randomJoke.id)
     
-    // 重新计算未看列表
     const newSeenIds = getSeenIds()
     const newFreshJokes = this.data.allJokes.filter(j => !newSeenIds.includes(j.id))
     
@@ -235,18 +213,8 @@ Page({
     wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
   },
 
-  goToCategory(e) {
-    const category = e.currentTarget.dataset.category
-    wx.switchTab({ url: '/pages/library/library' })
-    // 需要在 library 页面处理分类切换
-  },
-
   goToSearch() {
     wx.navigateTo({ url: '/pages/search/search' })
-  },
-
-  goToLibrary() {
-    wx.switchTab({ url: '/pages/library/library' })
   },
 
   onShareAppMessage() {

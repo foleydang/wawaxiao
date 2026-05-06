@@ -9,8 +9,32 @@
 }
 
 .page-wrapper.light-mode {
-  background: var(--bg);
-  color: var(--text);
+  background: #f8f9fa !important;
+  color: #1a1a2e !important;
+}
+
+.page-wrapper.light-mode .glass {
+  background: rgba(0,0,0,0.04) !important;
+  border-color: rgba(0,0,0,0.1) !important;
+}
+
+.page-wrapper.light-mode .brand-name,
+.page-wrapper.light-mode .section-title,
+.page-wrapper.light-mode .card-title,
+.page-wrapper.light-mode .hot-title {
+  color: #1a1a2e !important;
+}
+
+.page-wrapper.light-mode .meta-cat,
+.page-wrapper.light-mode .card-content,
+.page-wrapper.light-mode .section-count,
+.page-wrapper.light-mode .action-num,
+.page-wrapper.light-mode .hot-stats {
+  color: #555555 !important;
+}
+
+.page-wrapper.light-mode .hot-cat {
+  color: #888888 !important;
 }
 
 /* 顶部 */
@@ -223,7 +247,7 @@
   font-weight: 500;
 }
 
-/* 热门推荐 */
+/* 热门推荐（两行排列） */
 .hot-section {
   padding: 24rpx 0;
 }
@@ -236,7 +260,7 @@
 }
 
 .hot-card {
-  width: calc(50% - 6rpx);
+  width: calc(50% - 6rpx);  /* 两列布局 */
   padding: 16rpx;
   border-radius: 14rpx;
   position: relative;
@@ -258,7 +282,7 @@
   margin-bottom: 8rpx;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 2;  /* 标题最多2行 */
   overflow: hidden;
 }
 
@@ -276,51 +300,4 @@
 .hot-stats {
   font-size: 22rpx;
   color: var(--text-secondary);
-}
-
-/* 分类 */
-.category-section {
-  padding: 24rpx 0;
-}
-
-.category-grid {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0 28rpx;
-  gap: 12rpx;
-}
-
-.category-card {
-  width: calc(50% - 6rpx);
-  padding: 20rpx;
-  border-radius: 14rpx;
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.category-color {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4rpx;
-  height: 100%;
-  border-radius: 2rpx;
-}
-
-.category-icon {
-  font-size: 32rpx;
-  margin-left: 12rpx;
-  margin-right: 12rpx;
-}
-
-.category-name {
-  font-size: 30rpx;
-  font-weight: 500;
-}
-
-.category-count {
-  font-size: 24rpx;
-  color: var(--text-secondary);
-  margin-left: auto;
 }

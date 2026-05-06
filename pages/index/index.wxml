@@ -78,7 +78,7 @@
     </view>
   </view>
 
-  <!-- 热门推荐 -->
+  <!-- 热门推荐（只显示4条，两行排列） -->
   <view class="hot-section" wx:if="{{hotJokes.length > 0}}">
     <view class="section-header">
       <view class="section-left">
@@ -101,31 +101,6 @@
           <text class="hot-cat">{{item.category}}</text>
           <text class="hot-stats">{{item.likes}}❤️</text>
         </view>
-      </view>
-    </view>
-  </view>
-
-  <!-- 分类快捷入口 -->
-  <view class="category-section">
-    <view class="section-header">
-      <view class="section-left">
-        <view class="section-dot"></view>
-        <text class="section-title">分类浏览</text>
-      </view>
-    </view>
-    
-    <view class="category-grid">
-      <view 
-        class="category-card glass"
-        wx:for="{{categories}}"
-        wx:key="name"
-        bindtap="goToCategory"
-        data-category="{{item.name}}"
-      >
-        <view class="category-color" style="background: {{item.color}}"></view>
-        <text class="category-icon">{{item.icon}}</text>
-        <text class="category-name">{{item.name}}</text>
-        <text class="category-count">{{item.count}}条</text>
       </view>
     </view>
   </view>
