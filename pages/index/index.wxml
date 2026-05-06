@@ -19,8 +19,6 @@
   <!-- 加载状态 -->
   <view class="loading-state" wx:if="{{loading}}">
     <view class="skeleton skeleton-card"></view>
-    <view class="skeleton skeleton-title"></view>
-    <view class="skeleton skeleton-content"></view>
   </view>
 
   <!-- 今日新鲜 -->
@@ -33,21 +31,18 @@
       <text class="section-count">{{todayNewCount > 0 ? todayNewCount + '条最新' : freshCount + '条未看'}}</text>
     </view>
     
-    <!-- 推荐卡片 -->
-    <view class="recommend-card glass fade-in">
+    <view class="recommend-card glass">
       <view class="card-color" style="background: {{currentJoke.color}}"></view>
       
       <view class="card-meta">
         <view class="meta-dot" style="background: {{currentJoke.color}}"></view>
         <text class="meta-cat">{{currentJoke.category}}</text>
         <view class="meta-badge" wx:if="{{currentJoke.isTodayNew}}">NEW</view>
-        <view class="meta-badge" wx:if="{{currentJoke.isHot}}">HOT</view>
       </view>
       
       <text class="card-title">{{currentJoke.title}}</text>
       <text class="card-content">{{currentJoke.content}}</text>
       
-      <!-- 图片 -->
       <view class="card-images" wx:if="{{currentJoke.hasImage}}">
         <image 
           class="card-img"
@@ -62,14 +57,13 @@
         />
       </view>
       
-      <!-- 操作按钮 -->
       <view class="card-actions">
-        <view class="action-btn {{liked ? 'liked' : ''}} btn-press" bindtap="toggleLike">
+        <view class="action-btn {{liked ? 'liked' : ''}}" bindtap="toggleLike">
           <text class="action-icon">{{liked ? '❤️' : '🤍'}}</text>
           <text class="action-num">{{currentJoke.likes}}</text>
         </view>
         
-        <view class="action-btn {{disliked ? 'disliked' : ''}} btn-press" bindtap="toggleDislike">
+        <view class="action-btn {{disliked ? 'disliked' : ''}}" bindtap="toggleDislike">
           <text class="action-icon">{{disliked ? '👎' : '👎🏻'}}</text>
           <text class="action-num">{{currentJoke.dislikes}}</text>
         </view>
@@ -79,24 +73,24 @@
           <text class="action-num">{{currentJoke.shares}}</text>
         </button>
         
-        <view class="action-btn next-btn btn-press" bindtap="nextJoke">
+        <view class="action-btn next-btn" bindtap="nextJoke">
           <text class="next-text">下一个</text>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 空状态：没有笑话 -->
+  <!-- 空状态 -->
   <view class="empty-state" wx:if="{{!loading && !currentJoke}}">
     <view class="empty-icon glass">😊</view>
     <text class="empty-title">都看完了</text>
     <text class="empty-desc">明天会有新笑话哦</text>
-    <view class="empty-btn glass btn-press" bindtap="goToLibrary">
+    <view class="empty-btn glass" bindtap="goToLibrary">
       <text class="empty-btn-text">笑话库</text>
     </view>
   </view>
 
-  <!-- 热门推荐 - 2x2网格 -->
+  <!-- 热门推荐 -->
   <view class="hot-section" wx:if="{{!loading && hotJokes.length > 0}}">
     <view class="section-header">
       <view class="section-left">
@@ -105,7 +99,6 @@
       </view>
     </view>
     
-    <!-- 使用grid布局强制2x2 -->
     <view class="hot-grid">
       <view 
         class="hot-card glass"
@@ -115,13 +108,8 @@
         data-id="{{item.id}}"
       >
         <view class="hot-color" style="background: {{item.color}}"></view>
-        <view class="hot-content">
-          <text class="hot-title">{{item.title}}</text>
-          <view class="hot-meta">
-            <text class="hot-cat">{{item.category}}</text>
-            <text class="hot-likes">{{item.likes}}❤️</text>
-          </view>
-        </view>
+        <text class="hot-title">{{item.title}}</text>
+        <text class="hot-likes">{{item.likes}}❤️</text>
       </view>
     </view>
   </view>
