@@ -64,7 +64,7 @@ Page({
     
     try {
       const res = await api.getJokes({ limit: 50 })
-      const jokes = this.processJokes(res.data.list)
+      const jokes = this.processJokes(res.data.list || res.data)
       
       const cats = this.data.categories.map(c => ({
         ...c,
@@ -120,7 +120,6 @@ Page({
 
   switchCategory(e) {
     const category = e.currentTarget.dataset.category
-    
     this.setData({
       currentCategory: category,
       jokes: this.filterByCategory(this.data.allJokes)

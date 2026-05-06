@@ -1,15 +1,11 @@
-// 主题切换 - 使用页面实例动态修改
+// 主题切换
 
 const THEMES = {
   dark: {
-    name: 'dark',
-    label: '夜间模式',
     navBg: '#0f0f23',
     navText: 'white'
   },
   light: {
-    name: 'light',
-    label: '日间模式',
     navBg: '#f5f7fa',
     navText: 'black'
   }
@@ -31,29 +27,33 @@ function applyTheme(themeName) {
   
   const theme = THEMES[themeName]
   
-  // 1. 设置导航栏颜色
+  // 设置导航栏颜色
   wx.setNavigationBarColor({
     backgroundColor: theme.navBg,
     frontColor: theme.navText === 'white' ? '#ffffff' : '#000000',
     animation: { duration: 200, timingFunc: 'easeIn' }
   })
   
-  // 2. 设置页面根元素的class（通过页面实例）
-  const pages = getCurrentPages()
-  if (pages.length > 0) {
-    const page = pages[pages.length - 1]
-    
-    // 小程序：通过setData触发页面重新渲染
-    // 同时需要在页面wxml中使用page-class绑定
-    page.setData({
-      pageClass: themeName === 'light' ? 'light-mode' : ''
+  // 设置TabBar颜色（仅对当前页面生效）
+  if (themeName === 'light') {
+    wx.setTabBarStyle({
+      backgroundColor: '#f5f7fa',
+      color: '#8888a8',
+      selectedColor: '#1a1a2e',
+      borderStyle: 'black'
+    })
+  } else {
+    wx.setTabBarStyle({
+      backgroundColor: '#0f0f23',
+      color: '#8888a8',
+      selectedColor: '#ffffff',
+      borderStyle: 'white'
     })
   }
 }
 
 function initTheme() {
-  const themeName = getCurrentTheme()
-  applyTheme(themeName)
+  applyTheme(getCurrentTheme())
 }
 
 function getThemeIcon() {

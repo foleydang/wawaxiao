@@ -15,12 +15,10 @@ Page({
     currentJoke: null,
     allJokes: [],
     freshJokes: [],
-    seenJokes: [],
     freshCount: 0,
     liked: false,
     disliked: false,
     loading: true,
-    showSeen: false,
     themeIcon: '🌙'
   },
 
@@ -53,8 +51,7 @@ Page({
   splitBySeen(jokes) {
     const seenIds = getSeenIds()
     const freshJokes = jokes.filter(j => !seenIds.includes(j.id))
-    const seenJokes = jokes.filter(j => seenIds.includes(j.id))
-    return { freshJokes, seenJokes }
+    return { freshJokes }
   },
 
   async loadJokes() {
@@ -62,17 +59,16 @@ Page({
     
     try {
       const res = await api.getJokes({ limit: 50 })
-      const jokes = this.processJokes(res.data.list)
-      const { freshJokes, seenJokes } = this.splitBySeen(jokes)
+      const jokes = this.processJokes(res.data.list || res.data)
+      const { freshJokes } = this.splitBySeen(jokes)
       
       wx.setStorageSync('cachedJokes', jokes)
       
-      const currentJoke = freshJokes.length > 0 ? freshJokes[0] : null
+      const currentJoke = freshJokes.length > 0 ? freshJokes[Math.floor(Math.random() * freshJokes.length)] : null
       
       this.setData({
         allJokes: jokes,
         freshJokes,
-        seenJokes,
         freshCount: freshJokes.length,
         currentJoke,
         loading: false
@@ -83,16 +79,16 @@ Page({
       }
       
     } catch (err) {
+      console.error(err)
       const cached = wx.getStorageSync('cachedJokes') || []
       const jokes = this.processJokes(cached)
-      const { freshJokes, seenJokes } = this.splitBySeen(jokes)
+      const { freshJokes } = this.splitBySeen(jokes)
       
-      const currentJoke = freshJokes.length > 0 ? freshJokes[0] : null
+      const currentJoke = freshJokes.length > 0 ? freshJokes[Math.floor(Math.random() * freshJokes.length)] : null
       
       this.setData({
         allJokes: jokes,
         freshJokes,
-        seenJokes,
         freshCount: freshJokes.length,
         currentJoke,
         loading: false
@@ -108,7 +104,7 @@ Page({
     if (this.data.allJokes.length === 0) return
     
     const jokes = this.processJokes(this.data.allJokes)
-    const { freshJokes, seenJokes } = this.splitBySeen(jokes)
+    const { freshJokes } = this.splitBySeen(jokes)
     
     let currentJoke = this.data.currentJoke
     if (currentJoke && getSeenIds().includes(currentJoke.id)) {
@@ -118,7 +114,6 @@ Page({
     this.setData({
       allJokes: jokes,
       freshJokes,
-      seenJokes,
       freshCount: freshJokes.length,
       currentJoke
     })
@@ -147,12 +142,12 @@ Page({
     const randomJoke = fresh[Math.floor(Math.random() * fresh.length)]
     markSeen(randomJoke.id)
     
-    const { freshJokes, seenJokes } = this.splitBySeen(this.data.allJokes)
+    const jokes = this.processJokes(this.data.allJokes)
+    const { freshJokes } = this.splitBySeen(jokes)
     
     this.setData({
       currentJoke: randomJoke,
       freshJokes,
-      seenJokes,
       freshCount: freshJokes.length,
       liked: false,
       disliked: false
@@ -213,10 +208,6 @@ Page({
     wx.showToast({ title: wasDisliked ? '取消' : '不喜欢', icon: 'none' })
   },
 
-  toggleShowSeen() {
-    this.setData({ showSeen: !this.data.showSeen })
-  },
-
   toggleTheme() {
     const newTheme = toggleTheme()
     this.setData({
@@ -226,18 +217,10 @@ Page({
     wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 
-  // 修复：传递所有图片数组
   previewImage(e) {
     const url = e.currentTarget.dataset.url
     const urls = e.currentTarget.dataset.urls
-    wx.previewImage({ 
-      current: url, 
-      urls: urls || [url] 
-    })
-  },
-
-  goToDetail(e) {
-    wx.navigateTo({ url: `/pages/detail/detail?id=${e.currentTarget.dataset.id}` })
+    wx.previewImage({ current: url, urls: urls || [url] })
   },
 
   goToLibrary() {

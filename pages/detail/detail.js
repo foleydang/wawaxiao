@@ -91,14 +91,10 @@ Page({
     wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 
-  // 修复：传递所有图片数组
   previewImage(e) {
     const url = e.currentTarget.dataset.url
     const urls = e.currentTarget.dataset.urls
-    wx.previewImage({ 
-      current: url, 
-      urls: urls || [url] 
-    })
+    wx.previewImage({ current: url, urls: urls || [url] })
   },
 
   toggleLike() {

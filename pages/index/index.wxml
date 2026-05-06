@@ -1,7 +1,7 @@
 <page class="{{pageClass}}">
 
 <view class="container">
-  <!-- 顶部：标题 + 主题 -->
+  <!-- 顶部 -->
   <view class="header">
     <view class="brand">
       <view class="brand-dot"></view>
@@ -14,7 +14,7 @@
     </view>
   </view>
 
-  <!-- 推荐笑话卡片 -->
+  <!-- 推荐卡片 -->
   <view class="recommend-card glass" wx:if="{{currentJoke}}">
     <view class="card-color" style="background: {{currentJoke.color}}"></view>
     
@@ -27,7 +27,7 @@
     
     <text class="card-title">{{currentJoke.title}}</text>
     
-    <!-- 图片（限制尺寸） -->
+    <!-- 图片 -->
     <view class="card-images" wx:if="{{currentJoke.hasImage}}">
       <image 
         class="card-img"
@@ -62,8 +62,7 @@
       </button>
       
       <view class="action-btn next-btn" bindtap="nextJoke">
-        <text class="action-icon">⚡</text>
-        <text class="action-text">下一个</text>
+        <text class="next-text">下一个</text>
       </view>
     </view>
   </view>
@@ -89,36 +88,8 @@
     </view>
   </view>
 
-  <!-- 更多推荐（已看过的） -->
-  <view class="seen-section" wx:if="{{seenJokes.length > 0 && showSeen}}">
-    <view class="section-header" bindtap="toggleShowSeen">
-      <view class="section-title-wrap">
-        <view class="title-bar seen"></view>
-        <text class="section-title">再看一次 {{showSeen ? '▼' : '▶'}}</text>
-      </view>
-      <text class="section-count">{{seenJokes.length}}条</text>
-    </view>
-    
-    <scroll-view class="seen-scroll" scroll-x show-scrollbar="{{false}}" wx:if="{{showSeen}}">
-      <view 
-        class="seen-card glass"
-        wx:for="{{seenJokes}}"
-        wx:key="id"
-        bindtap="goToDetail"
-        data-id="{{item.id}}"
-      >
-        <view class="seen-color" style="background: {{item.color}}"></view>
-        <text class="seen-title">{{item.title}}</text>
-        <view class="seen-meta">
-          <text class="seen-cat">{{item.category}}</text>
-          <text class="seen-stats">{{item.likes}}</text>
-        </view>
-      </view>
-    </scroll-view>
-  </view>
-
   <!-- 提示 -->
-  <view class="tip" wx:if="{{freshCount > 0}}">
+  <view class="tip" wx:if="{{freshCount > 0 && currentJoke}}">
     <text class="tip-text">点击「下一个」随机换一条新笑话</text>
   </view>
 </view>
