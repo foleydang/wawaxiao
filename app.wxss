@@ -1,44 +1,49 @@
-/* app.wxss - 支持夜间/日间模式 */
+/* app.wxss - 支持动态切换主题 */
 
-/* 夜间模式变量 */
 page {
-  /* 默认夜间模式 */
-  --bg-dark: #0f0f23;
-  --bg-light: #1a1a2e;
-  --card: rgba(255,255,255,0.05);
-  --border: rgba(255,255,255,0.1);
-  --text: #ffffff;
-  --text-secondary: rgba(255,255,255,0.7);
-  --text-muted: rgba(255,255,255,0.4);
-  --primary: #667eea;
-  --accent: #f093fb;
-  
-  /* 日间模式变量（通过JS动态修改） */
-  --bg: var(--bg-dark);
-  
+  /* 安全区域 */
   --safe-top: env(safe-area-inset-top);
   --safe-bottom: env(safe-area-inset-bottom);
+  
+  /* 主题色 */
+  --primary: #667eea;
+  --accent: #f093fb;
   
   --radius: 12rpx;
   --radius-lg: 20rpx;
   
-  background: var(--bg);
-  color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
   font-size: 32rpx;
   line-height: 1.65;
   font-weight: 400;
 }
 
-/* 日间模式类 */
-page.light-mode {
+/* 夜间模式（默认） */
+.page.dark {
+  --bg: #0f0f23;
+  --bg-light: #1a1a2e;
+  --card: rgba(255,255,255,0.05);
+  --border: rgba(255,255,255,0.1);
+  --text: #ffffff;
+  --text-secondary: rgba(255,255,255,0.7);
+  --text-muted: rgba(255,255,255,0.4);
+  
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* 日间模式 */
+.page.light {
   --bg: #f5f7fa;
   --bg-light: #ffffff;
-  --card: rgba(0,0,0,0.02);
+  --card: rgba(0,0,0,0.03);
   --border: rgba(0,0,0,0.08);
   --text: #1a1a2e;
   --text-secondary: rgba(0,0,0,0.6);
   --text-muted: rgba(0,0,0,0.3);
+  
+  background: var(--bg);
+  color: var(--text);
 }
 
 /* 渐变 */
@@ -68,15 +73,6 @@ page.light-mode {
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(24rpx); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-.scale-in {
-  animation: scaleIn 0.3s ease;
-}
-
-@keyframes scaleIn {
-  from { transform: scale(0.92); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
 }
 
 /* 骨架屏 */

@@ -1,6 +1,6 @@
 const { api } = require('../../utils/api.js')
 const { markSeen } = require('../../utils/seen.js')
-const { getCurrentTheme, toggleTheme, getThemeIcon } = require('../../utils/theme.js')
+const { getCurrentTheme, toggleTheme, getThemeIcon, initTheme } = require('../../utils/theme.js')
 
 const CAT_COLORS = {
   '职场': '#f093fb',
@@ -20,6 +20,8 @@ Page({
   },
 
   onLoad(options) {
+    initTheme()
+    
     const id = parseInt(options.id)
     this.setData({
       currentTheme: getCurrentTheme(),
@@ -28,6 +30,14 @@ Page({
     this.loadJoke(id)
     this.checkStatus(id)
     this.startTime = Date.now()
+  },
+
+  onShow() {
+    const theme = getCurrentTheme()
+    this.setData({
+      currentTheme: theme,
+      themeIcon: getThemeIcon()
+    })
   },
 
   onUnload() {
@@ -74,10 +84,7 @@ Page({
 
   toggleTheme() {
     const newTheme = toggleTheme()
-    this.setData({
-      currentTheme: newTheme,
-      themeIcon: newTheme === 'dark' ? '🌙' : '☀️'
-    })
+    wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 
   previewImage(e) {
@@ -90,7 +97,6 @@ Page({
     let likes = wx.getStorageSync('userLikes') || []
     let dislikes = wx.getStorageSync('userDislikes') || []
     
-    // 取消不喜欢
     if (dislikes.includes(id)) {
       dislikes = dislikes.filter(d => d !== id)
       wx.setStorageSync('userDislikes', dislikes)
@@ -118,7 +124,6 @@ Page({
     let likes = wx.getStorageSync('userLikes') || []
     let dislikes = wx.getStorageSync('userDislikes') || []
     
-    // 取消喜欢
     if (likes.includes(id)) {
       likes = likes.filter(l => l !== id)
       wx.setStorageSync('userLikes', likes)

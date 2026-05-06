@@ -1,37 +1,20 @@
-// 主题切换工具
+// 主题切换工具 - 小程序动态切换方案
 
 const THEMES = {
   dark: {
     name: 'dark',
     label: '夜间模式',
-    icon: '🌙',
-    // CSS变量值
-    vars: {
-      '--bg': '#0f0f23',
-      '--bg-light': '#1a1a2e',
-      '--card': 'rgba(255,255,255,0.05)',
-      '--border': 'rgba(255,255,255,0.1)',
-      '--text': '#ffffff',
-      '--text-secondary': 'rgba(255,255,255,0.7)',
-      '--text-muted': 'rgba(255,255,255,0.4)',
-      '--primary': '#667eea',
-      '--accent': '#f093fb'
+    navBar: {
+      backgroundColor: '#0f0f23',
+      textStyle: 'white'
     }
   },
   light: {
     name: 'light',
     label: '日间模式',
-    icon: '☀️',
-    vars: {
-      '--bg': '#f5f7fa',
-      '--bg-light': '#ffffff',
-      '--card': 'rgba(0,0,0,0.02)',
-      '--border': 'rgba(0,0,0,0.08)',
-      '--text': '#1a1a2e',
-      '--text-secondary': 'rgba(0,0,0,0.6)',
-      '--text-muted': 'rgba(0,0,0,0.3)',
-      '--primary': '#667eea',
-      '--accent': '#f093fb'
+    navBar: {
+      backgroundColor: '#f5f7fa',
+      textStyle: 'black'
     }
   }
 }
@@ -43,13 +26,21 @@ function getCurrentTheme() {
 function setTheme(themeName) {
   wx.setStorageSync('theme', themeName)
   
-  // 更新页面样式
+  // 设置导航栏颜色
+  const theme = THEMES[themeName]
+  wx.setNavigationBarColor({
+    backgroundColor: theme.navBar.backgroundColor,
+    frontColor: theme.navBar.textStyle === 'white' ? '#ffffff' : '#000000',
+    animation: { duration: 200, timingFunc: 'easeIn' }
+  })
+  
+  // 设置页面class
   const pages = getCurrentPages()
   if (pages.length > 0) {
-    const currentPage = pages[pages.length - 1]
-    currentPage.setData({ 
+    const page = pages[pages.length - 1]
+    page.setData({ 
       currentTheme: themeName,
-      themeIcon: THEMES[themeName].icon
+      themeIcon: themeName === 'dark' ? '🌙' : '☀️'
     })
   }
 }
@@ -61,19 +52,28 @@ function toggleTheme() {
   return newTheme
 }
 
-function getThemeVars(themeName) {
-  return THEMES[themeName || getCurrentTheme()].vars
+function getThemeIcon() {
+  return getCurrentTheme() === 'dark' ? '🌙' : '☀️'
 }
 
-function getThemeIcon() {
-  return THEMES[getCurrentTheme()].icon
+function initTheme() {
+  const themeName = getCurrentTheme()
+  const theme = THEMES[themeName]
+  
+  // 初始化导航栏
+  wx.setNavigationBarColor({
+    backgroundColor: theme.navBar.backgroundColor,
+    frontColor: theme.navBar.textStyle === 'white' ? '#ffffff' : '#000000',
+    animation: { duration: 0 }
+  })
+  
+  return themeName
 }
 
 module.exports = {
-  THEMES,
   getCurrentTheme,
   setTheme,
   toggleTheme,
-  getThemeVars,
-  getThemeIcon
+  getThemeIcon,
+  initTheme
 }

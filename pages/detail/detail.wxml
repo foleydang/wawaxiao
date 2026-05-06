@@ -1,6 +1,6 @@
 <view class="page {{currentTheme}}">
   <scroll-view class="main-scroll" scroll-y show-scrollbar="{{false}}">
-    <!-- 导航 -->
+    <!-- 导航：返回 + 主题 -->
     <view class="nav-bar">
       <view class="back-btn glass" bindtap="goBack">
         <view class="back-arrow"></view>

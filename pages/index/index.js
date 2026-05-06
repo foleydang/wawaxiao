@@ -1,6 +1,6 @@
 const { api } = require('../../utils/api.js')
-const { markSeen, hasSeen, getSeenIds } = require('../../utils/seen.js')
-const { getCurrentTheme, toggleTheme, getThemeIcon } = require('../../utils/theme.js')
+const { markSeen, getSeenIds } = require('../../utils/seen.js')
+const { getCurrentTheme, toggleTheme, getThemeIcon, initTheme } = require('../../utils/theme.js')
 
 const CAT_COLORS = {
   '职场': '#f093fb',
@@ -20,8 +20,8 @@ Page({
     ],
     currentCategory: '全部',
     allJokes: [],
-    todayJokes: [],    // 未看过的（真正的新鲜）
-    seenJokes: [],      // 已看过的
+    todayJokes: [],
+    seenJokes: [],
     filteredJokes: [],
     showModal: false,
     randomJoke: null,
@@ -32,6 +32,9 @@ Page({
   },
 
   onLoad() {
+    // 初始化主题
+    initTheme()
+    
     this.setData({
       currentTheme: getCurrentTheme(),
       themeIcon: getThemeIcon()
@@ -40,6 +43,12 @@ Page({
   },
 
   onShow() {
+    // 每次显示页面时更新主题
+    const theme = getCurrentTheme()
+    this.setData({
+      currentTheme: theme,
+      themeIcon: getThemeIcon()
+    })
     this.updateSeenStatus()
   },
 
@@ -59,8 +68,8 @@ Page({
 
   splitBySeen(jokes) {
     const seenIds = getSeenIds()
-    const todayJokes = jokes.filter(j => !seenIds.includes(j.id))  // 未看过
-    const seenJokes = jokes.filter(j => seenIds.includes(j.id))     // 已看过
+    const todayJokes = jokes.filter(j => !seenIds.includes(j.id))
+    const seenJokes = jokes.filter(j => seenIds.includes(j.id))
     return { todayJokes, seenJokes }
   },
 
@@ -72,7 +81,6 @@ Page({
       const jokes = this.processJokes(res.data.list)
       const { todayJokes, seenJokes } = this.splitBySeen(jokes)
       
-      // 更新分类计数（只计算未看过）
       const cats = this.data.categories.map(c => ({
         ...c,
         count: c.name === '全部' 
@@ -167,10 +175,7 @@ Page({
 
   toggleTheme() {
     const newTheme = toggleTheme()
-    this.setData({
-      currentTheme: newTheme,
-      themeIcon: newTheme === 'dark' ? '🌙' : '☀️'
-    })
+    wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 
   goToDetail(e) {
@@ -184,7 +189,6 @@ Page({
   },
 
   showRandom() {
-    // 优先未看过的
     const unseen = this.data.todayJokes
     const pool = unseen.length > 0 ? unseen : this.data.allJokes
     
