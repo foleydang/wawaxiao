@@ -4,8 +4,7 @@
   min-height: 100vh;
 }
 
-/* 搜索栏 */
-.search-header {
+.header {
   padding: calc(16rpx + var(--safe-top)) 28rpx 28rpx;
   display: flex;
   align-items: center;
@@ -45,27 +44,11 @@
   display: flex;
   align-items: center;
   padding: 10rpx 16rpx;
-  border-radius: 12rpx;
 }
 
 .search-icon {
-  width: 14rpx;
-  height: 14rpx;
-  border: 2rpx solid var(--text-secondary);
-  border-radius: 50%;
-  position: relative;
+  font-size: 20rpx;
   margin-right: 12rpx;
-}
-
-.search-icon::after {
-  content: '';
-  width: 8rpx;
-  height: 2rpx;
-  background: var(--text-secondary);
-  position: absolute;
-  right: -6rpx;
-  bottom: -2rpx;
-  transform: rotate(45deg);
 }
 
 .search-input {
@@ -94,16 +77,16 @@
 }
 
 .theme-btn {
-  width: 44rpx;
-  height: 44rpx;
-  border-radius: 22rpx;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 20rpx;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .theme-icon {
-  font-size: 24rpx;
+  font-size: 20rpx;
 }
 
 /* 结果 */
@@ -123,16 +106,15 @@
 .result-card {
   display: flex;
   align-items: flex-start;
-  padding: 14rpx;
+  padding: 16rpx;
   margin-bottom: 12rpx;
-  border-radius: 14rpx;
 }
 
 .result-color {
   width: 4rpx;
-  min-height: 44rpx;
+  min-height: 48rpx;
   border-radius: 2rpx;
-  margin-right: 14rpx;
+  margin-right: 16rpx;
   align-self: stretch;
 }
 
@@ -142,7 +124,7 @@
 }
 
 .result-title {
-  font-size: 28rpx;
+  font-size: 30rpx;
   color: var(--text);
   font-weight: 500;
   margin-bottom: 4rpx;
@@ -153,7 +135,7 @@
 }
 
 .result-preview {
-  font-size: 24rpx;
+  font-size: 26rpx;
   color: var(--text-secondary);
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -165,9 +147,9 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  padding-left: 14rpx;
+  padding-left: 16rpx;
   align-self: center;
-  gap: 4rpx;
+  gap: 6rpx;
 }
 
 .result-cat {
@@ -180,12 +162,12 @@
   color: var(--text-secondary);
 }
 
-/* 空状态 */
+/* 空结果 */
 .empty {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 120rpx;
+  padding: 100rpx 28rpx;
 }
 
 .empty-title {
@@ -233,7 +215,6 @@
 
 .history-item {
   padding: 8rpx 16rpx;
-  border-radius: 8rpx;
 }
 
 .history-text {

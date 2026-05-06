@@ -1,5 +1,6 @@
-/* app.wxss - 全局样式，较大字体 */
+/* app.wxss - 全局样式 */
 
+/* 夜间模式（默认） */
 page {
   --safe-top: env(safe-area-inset-top);
   --safe-bottom: env(safe-area-inset-bottom);
@@ -7,10 +8,7 @@ page {
   --primary: #667eea;
   --accent: #f093fb;
   
-  --radius: 12rpx;
-  --radius-lg: 20rpx;
-  
-  /* 夜间模式变量（默认） */
+  /* 夜间模式颜色 */
   --bg: #0f0f23;
   --bg-light: #1a1a2e;
   --card: rgba(255,255,255,0.05);
@@ -27,22 +25,25 @@ page {
   line-height: 1.7;
 }
 
-/* 日间模式类 */
+/* 日间模式 */
 page.light-mode {
-  --bg: #f5f7fa;
+  --bg: #f8f9fa;
   --bg-light: #ffffff;
-  --card: rgba(0,0,0,0.03);
-  --border: rgba(0,0,0,0.08);
+  --card: rgba(0,0,0,0.04);
+  --border: rgba(0,0,0,0.1);
   --text: #1a1a2e;
-  --text-secondary: rgba(0,0,0,0.6);
-  --text-muted: rgba(0,0,0,0.3);
+  --text-secondary: #555555;
+  --text-muted: #888888;
+  
+  background: var(--bg);
+  color: var(--text);
 }
 
 /* 通用样式 */
 .glass {
   background: var(--card);
   border: 1rpx solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: 14rpx;
 }
 
 .fade-up {
@@ -50,7 +51,7 @@ page.light-mode {
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20rpx); }
+  from { opacity: 0; transform: translateY(16rpx); }
   to { opacity: 1; transform: translateY(0); }
 }
 

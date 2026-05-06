@@ -1,14 +1,14 @@
 <page class="{{pageClass}}">
 
 <view class="container">
-  <!-- 搜索栏 -->
-  <view class="search-header">
+  <!-- 顶部 -->
+  <view class="header">
     <view class="back-btn glass" bindtap="goBack">
       <view class="back-arrow"></view>
     </view>
     
     <view class="search-box glass">
-      <view class="search-icon"></view>
+      <text class="search-icon">🔍</text>
       <input 
         class="search-input"
         type="text"
@@ -28,7 +28,7 @@
     </view>
   </view>
 
-  <!-- 结果 -->
+  <!-- 搜索结果 -->
   <view class="results" wx:if="{{results.length > 0}}">
     <view class="result-header">
       <text class="result-count">找到{{results.length}}条</text>
@@ -48,18 +48,18 @@
       </view>
       <view class="result-right">
         <text class="result-cat">{{item.category}}</text>
-        <text class="result-stats">{{item.likes}}{{item.hasImage ? '图' : ''}}</text>
+        <text class="result-stats">{{item.likes}}</text>
       </view>
     </view>
   </view>
 
-  <!-- 空状态 -->
+  <!-- 空结果 -->
   <view class="empty" wx:if="{{searched && results.length === 0}}">
     <text class="empty-title">没有找到"{{keyword}}"相关笑话</text>
     <text class="empty-desc">换个关键词试试</text>
   </view>
 
-  <!-- 历史 -->
+  <!-- 搜索历史 -->
   <view class="history" wx:if="{{!searched && history.length > 0}}">
     <view class="history-header">
       <text class="history-title">搜索历史</text>

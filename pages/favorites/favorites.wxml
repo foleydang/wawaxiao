@@ -1,12 +1,12 @@
 <page class="{{pageClass}}">
 
 <view class="container">
-  <!-- 头部 -->
+  <!-- 顶部 -->
   <view class="header">
     <view class="header-left">
-      <view class="title-bar"></view>
+      <view class="header-dot"></view>
       <text class="header-title">喜欢</text>
-      <text class="header-count">{{favorites.length}}</text>
+      <text class="header-count">{{favorites.length}}条</text>
     </view>
     
     <view class="theme-btn glass" bindtap="toggleTheme">
@@ -17,7 +17,7 @@
   <!-- 空状态 -->
   <view class="empty" wx:if="{{favorites.length === 0}}">
     <view class="empty-icon glass">
-      <text class="empty-heart">♡</text>
+      <text class="empty-face">♡</text>
     </view>
     <text class="empty-title">还没有喜欢的笑话</text>
     <text class="empty-desc">看到好笑的记得点喜欢哦</text>
@@ -41,10 +41,7 @@
         <text class="fav-preview">{{item.preview}}</text>
       </view>
       <view class="fav-right">
-        <view class="fav-meta">
-          <text class="fav-cat">{{item.category}}</text>
-          <text class="fav-stats">{{item.likes}}{{item.hasImage ? '图' : ''}}</text>
-        </view>
+        <text class="fav-stats">{{item.likes}}</text>
         <view class="delete-btn glass" catchtap="deleteFavorite" data-id="{{item.id}}">
           <text class="delete-text">×</text>
         </view>

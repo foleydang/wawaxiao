@@ -3,11 +3,17 @@
 const THEMES = {
   dark: {
     navBg: '#0f0f23',
-    navText: 'white'
+    navText: 'white',
+    tabBg: '#0f0f23',
+    tabColor: '#8888a8',
+    tabSelected: '#ffffff'
   },
   light: {
-    navBg: '#f5f7fa',
-    navText: 'black'
+    navBg: '#f8f9fa',
+    navText: 'black',
+    tabBg: '#f8f9fa',
+    tabColor: '#888888',
+    tabSelected: '#1a1a2e'
   }
 }
 
@@ -34,22 +40,13 @@ function applyTheme(themeName) {
     animation: { duration: 200, timingFunc: 'easeIn' }
   })
   
-  // 设置TabBar颜色（仅对当前页面生效）
-  if (themeName === 'light') {
-    wx.setTabBarStyle({
-      backgroundColor: '#f5f7fa',
-      color: '#8888a8',
-      selectedColor: '#1a1a2e',
-      borderStyle: 'black'
-    })
-  } else {
-    wx.setTabBarStyle({
-      backgroundColor: '#0f0f23',
-      color: '#8888a8',
-      selectedColor: '#ffffff',
-      borderStyle: 'white'
-    })
-  }
+  // 设置TabBar颜色
+  wx.setTabBarStyle({
+    backgroundColor: theme.tabBg,
+    color: theme.tabColor,
+    selectedColor: theme.tabSelected,
+    borderStyle: themeName === 'light' ? 'black' : 'white'
+  })
 }
 
 function initTheme() {
