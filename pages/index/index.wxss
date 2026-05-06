@@ -117,6 +117,10 @@
   background: var(--accent);
 }
 
+.section-dot.today {
+  background: #43e97b;  /* 今日最新用绿色 */
+}
+
 .section-title {
   font-size: 30rpx;
   font-weight: 500;

@@ -15,8 +15,10 @@ Page({
     currentJoke: null,
     allJokes: [],
     freshJokes: [],
+    todayNewJokes: [],  // 今日最新
     hotJokes: [],
     freshCount: 0,
+    todayNewCount: 0,   // 今日新增数量
     liked: false,
     disliked: false,
     loading: true,
@@ -46,11 +48,14 @@ Page({
   },
 
   processJokes(jokes) {
+    const today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime()
+    
     return jokes.map(j => ({
       ...j,
       color: CAT_COLORS[j.category] || '#667eea',
       hasImage: j.images && j.images.length > 0,
-      images: j.images || []
+      images: j.images || [],
+      isTodayNew: j.createdAt && j.createdAt >= today  // 今日最新标记
     }))
   },
 
@@ -58,13 +63,14 @@ Page({
     this.setData({ loading: true })
     
     try {
-      const res = await api.getJokes({ limit: 100 })
+      const res = await api.getJokes({ limit: 200 })
       const jokes = this.processJokes(res.data.list || res.data)
       
       wx.setStorageSync('cachedJokes', jokes)
       
       this.setData({ allJokes: jokes })
       this.updateFreshCount()
+      this.updateTodayNew()
       this.updateHotJokes()
       this.pickCurrentJoke()
       this.setData({ loading: false })
@@ -75,9 +81,19 @@ Page({
       const jokes = this.processJokes(cached)
       this.setData({ allJokes: jokes, loading: false })
       this.updateFreshCount()
+      this.updateTodayNew()
       this.updateHotJokes()
       this.pickCurrentJoke()
     }
+  },
+
+  // 更新今日新增
+  updateTodayNew() {
+    const todayNewJokes = this.data.allJokes.filter(j => j.isTodayNew)
+    this.setData({
+      todayNewJokes,
+      todayNewCount: todayNewJokes.length
+    })
   },
 
   // 更新未看数量
@@ -93,6 +109,7 @@ Page({
   // 刷新未看数量（onShow时调用）
   refreshFreshCount() {
     this.updateFreshCount()
+    this.updateTodayNew()
   },
 
   // 更新热门推荐
@@ -115,17 +132,25 @@ Page({
     this.setData({ hotJokes })
   },
 
-  // 选择当前笑话
+  // 选择当前笑话（优先今日最新）
   pickCurrentJoke() {
+    const todayNewJokes = this.data.todayNewJokes
     const freshJokes = this.data.freshJokes
     
-    // 如果有未看过的笑话，优先显示
-    if (freshJokes.length > 0) {
+    // 优先显示今日最新且未看过的
+    const todayNewFresh = todayNewJokes.filter(j => freshJokes.some(f => f.id === j.id))
+    
+    if (todayNewFresh.length > 0) {
+      const currentJoke = todayNewFresh[0]
+      this.setData({ currentJoke })
+      this.checkStatus(currentJoke.id)
+    } else if (freshJokes.length > 0) {
+      // 如果今日最新都看过了，显示其他未看过的
       const currentJoke = freshJokes[0]
       this.setData({ currentJoke })
       this.checkStatus(currentJoke.id)
     } else if (this.data.allJokes.length > 0) {
-      // 如果都看完了，随机显示一个
+      // 都看完了，随机显示一个
       const randomJoke = this.data.allJokes[Math.floor(Math.random() * this.data.allJokes.length)]
       this.setData({ currentJoke: randomJoke })
       this.checkStatus(randomJoke.id)
@@ -156,12 +181,12 @@ Page({
     
     // 更新未看列表
     this.updateFreshCount()
+    this.updateTodayNew()
     
     // 选择下一个笑话
     const freshJokes = this.data.freshJokes
     
     if (freshJokes.length === 0) {
-      // 都看完了
       wx.showToast({ title: '都看完了', icon: 'none' })
       this.setData({ currentJoke: null })
       return
@@ -210,7 +235,7 @@ Page({
       joke.dislikes = res.data.dislikes
       this.setData({ liked: newLiked, currentJoke: joke })
     } catch (err) {
-      console.log('API更新失败，本地已保存:', err)
+      console.log('API更新失败:', err)
       const joke = this.data.currentJoke
       joke.likes = wasLiked ? joke.likes - 1 : joke.likes + 1
       this.setData({ liked: newLiked, currentJoke: joke })
@@ -249,7 +274,7 @@ Page({
       joke.dislikes = res.data.dislikes
       this.setData({ disliked: newDisliked, currentJoke: joke })
     } catch (err) {
-      console.log('API更新失败，本地已保存:', err)
+      console.log('API更新失败:', err)
       const joke = this.data.currentJoke
       joke.dislikes = wasDisliked ? joke.dislikes - 1 : joke.dislikes + 1
       this.setData({ disliked: newDisliked, currentJoke: joke })

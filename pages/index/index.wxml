@@ -27,10 +27,10 @@
   <view class="section" wx:if="{{!loading && currentJoke}}">
     <view class="section-header">
       <view class="section-left">
-        <view class="section-dot"></view>
-        <text class="section-title">今日新鲜</text>
+        <view class="section-dot {{currentJoke.isTodayNew ? 'today' : ''}}"></view>
+        <text class="section-title">{{currentJoke.isTodayNew ? '今日最新' : '今日新鲜'}}</text>
       </view>
-      <text class="section-count">{{freshCount}}条未看</text>
+      <text class="section-count">{{todayNewCount > 0 ? todayNewCount + '条最新' : freshCount + '条未看'}}</text>
     </view>
     
     <!-- 推荐卡片 -->
@@ -40,6 +40,7 @@
       <view class="card-meta">
         <view class="meta-dot" style="background: {{currentJoke.color}}"></view>
         <text class="meta-cat">{{currentJoke.category}}</text>
+        <view class="meta-badge" wx:if="{{currentJoke.isTodayNew}}">NEW</view>
         <view class="meta-badge" wx:if="{{currentJoke.isHot}}">HOT</view>
       </view>
       
@@ -89,7 +90,7 @@
   <view class="empty-state" wx:if="{{!loading && !currentJoke}}">
     <view class="empty-icon glass">😊</view>
     <text class="empty-title">都看完了</text>
-    <text class="empty-desc">去看看笑话库吧</text>
+    <text class="empty-desc">明天会有新笑话哦</text>
     <view class="empty-btn glass btn-press" bindtap="goToLibrary">
       <text class="empty-btn-text">笑话库</text>
     </view>
