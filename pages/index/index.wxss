@@ -99,12 +99,15 @@
   line-height: 1.4;
 }
 
+/* 图片区域（限制尺寸） */
 .card-images {
   margin-bottom: 24rpx;
 }
 
 .card-img {
   width: 100%;
+  max-width: 600rpx;
+  max-height: 400rpx;
   border-radius: 16rpx;
   margin-bottom: 16rpx;
 }

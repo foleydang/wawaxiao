@@ -27,16 +27,18 @@
     
     <text class="card-title">{{currentJoke.title}}</text>
     
-    <!-- 图片 -->
+    <!-- 图片（限制尺寸） -->
     <view class="card-images" wx:if="{{currentJoke.hasImage}}">
       <image 
         class="card-img"
         wx:for="{{currentJoke.images}}"
+        wx:for-item="imgUrl"
         wx:key="*this"
-        src="{{item}}"
+        src="{{imgUrl}}"
         mode="widthFix"
         bindtap="previewImage"
-        data-url="{{item}}"
+        data-url="{{imgUrl}}"
+        data-urls="{{currentJoke.images}}"
       />
     </view>
     

@@ -12,12 +12,11 @@ const CAT_COLORS = {
 Page({
   data: {
     pageClass: '',
-    joke: { color: '#667eea', likes: 0, dislikes: 0, shares: 0, hasImage: false },
+    joke: { color: '#667eea', likes: 0, dislikes: 0, shares: 0, hasImage: false, images: [] },
     moreJokes: [],
     liked: false,
     disliked: false,
-    themeIcon: '🌙',
-    showShareTip: false
+    themeIcon: '🌙'
   },
 
   onLoad(options) {
@@ -31,9 +30,6 @@ Page({
     this.loadJoke(id)
     this.checkStatus(id)
     this.startTime = Date.now()
-    
-    this.setData({ showShareTip: true })
-    setTimeout(() => this.setData({ showShareTip: false }), 3000)
   },
 
   onShow() {
@@ -53,7 +49,8 @@ Page({
     return {
       ...j,
       color: CAT_COLORS[j.category] || '#667eea',
-      hasImage: j.images && j.images.length > 0
+      hasImage: j.images && j.images.length > 0,
+      images: j.images || []
     }
   },
 
@@ -94,9 +91,14 @@ Page({
     wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 
+  // 修复：传递所有图片数组
   previewImage(e) {
     const url = e.currentTarget.dataset.url
-    wx.previewImage({ current: url, urls: this.data.joke.images })
+    const urls = e.currentTarget.dataset.urls
+    wx.previewImage({ 
+      current: url, 
+      urls: urls || [url] 
+    })
   },
 
   toggleLike() {

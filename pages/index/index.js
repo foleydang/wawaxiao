@@ -45,7 +45,8 @@ Page({
     return jokes.map(j => ({
       ...j,
       color: CAT_COLORS[j.category] || '#667eea',
-      hasImage: j.images && j.images.length > 0
+      hasImage: j.images && j.images.length > 0,
+      images: j.images || []
     }))
   },
 
@@ -66,7 +67,6 @@ Page({
       
       wx.setStorageSync('cachedJokes', jokes)
       
-      // 自动显示第一条未看过的
       const currentJoke = freshJokes.length > 0 ? freshJokes[0] : null
       
       this.setData({
@@ -110,7 +110,6 @@ Page({
     const jokes = this.processJokes(this.data.allJokes)
     const { freshJokes, seenJokes } = this.splitBySeen(jokes)
     
-    // 如果当前笑话已被看过，自动换下一个
     let currentJoke = this.data.currentJoke
     if (currentJoke && getSeenIds().includes(currentJoke.id)) {
       currentJoke = freshJokes.length > 0 ? freshJokes[Math.floor(Math.random() * freshJokes.length)] : null
@@ -145,13 +144,9 @@ Page({
       return
     }
     
-    // 随机选一条未看过的
     const randomJoke = fresh[Math.floor(Math.random() * fresh.length)]
-    
-    // 标记为看过
     markSeen(randomJoke.id)
     
-    // 更新状态
     const { freshJokes, seenJokes } = this.splitBySeen(this.data.allJokes)
     
     this.setData({
@@ -231,9 +226,14 @@ Page({
     wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 
+  // 修复：传递所有图片数组
   previewImage(e) {
     const url = e.currentTarget.dataset.url
-    wx.previewImage({ current: url, urls: this.data.currentJoke.images })
+    const urls = e.currentTarget.dataset.urls
+    wx.previewImage({ 
+      current: url, 
+      urls: urls || [url] 
+    })
   },
 
   goToDetail(e) {
