@@ -1,122 +1,116 @@
 .page {
   min-height: 100vh;
   background: var(--bg);
-  padding-bottom: calc(40rpx + var(--safe-bottom));
-}
-
-.safe-area-top {
-  height: var(--safe-top);
+  padding-bottom: calc(48rpx + var(--safe-bottom));
 }
 
 /* 导航 */
 .nav-bar {
-  display: flex;
-  align-items: center;
-  padding: 16rpx 24rpx;
+  padding: calc(20rpx + var(--safe-top)) 32rpx 32rpx;
 }
 
 .back-btn {
-  width: 40rpx;
-  height: 40rpx;
-  background: var(--card);
-  border-radius: 20rpx;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 24rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 16rpx;
 }
 
 .back-arrow {
-  width: 12rpx;
-  height: 2rpx;
+  width: 16rpx;
+  height: 3rpx;
   background: var(--text-secondary);
   position: relative;
 }
 
 .back-arrow::after {
   content: '';
-  width: 8rpx;
-  height: 8rpx;
-  border-left: 2rpx solid var(--text-secondary);
-  border-bottom: 2rpx solid var(--text-secondary);
+  width: 12rpx;
+  height: 12rpx;
+  border-left: 3rpx solid var(--text-secondary);
+  border-bottom: 3rpx solid var(--text-secondary);
   transform: rotate(45deg);
   position: absolute;
-  left: 0;
-  top: -4rpx;
-}
-
-.nav-title {
-  font-size: 30rpx;
-  color: var(--text);
-  font-weight: 500;
+  left: 2rpx;
+  top: -6rpx;
 }
 
 /* 主卡片 */
 .main-card {
-  margin: 24rpx;
-  padding: 20rpx;
+  margin: 32rpx;
+  padding: 24rpx;
+  border-radius: 20rpx;
 }
 
 .color-bar {
-  height: 4rpx;
-  border-radius: 2rpx;
-  margin-bottom: 20rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+  margin-bottom: 24rpx;
 }
 
 .meta-row {
   display: flex;
   align-items: center;
-  margin-bottom: 16rpx;
+  margin-bottom: 20rpx;
 }
 
 .meta-dot {
-  width: 6rpx;
-  height: 6rpx;
-  border-radius: 3rpx;
-  margin-right: 8rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  margin-right: 12rpx;
 }
 
 .meta-category {
-  font-size: 24rpx;
+  font-size: 28rpx;
   color: var(--text-secondary);
   font-weight: 500;
 }
 
 .meta-badge {
-  font-size: 20rpx;
+  font-size: 24rpx;
+  margin-left: 16rpx;
+  padding: 4rpx 10rpx;
+  border-radius: 6rpx;
+}
+
+.meta-badge.hot {
   color: var(--accent);
-  margin-left: 12rpx;
-  letter-spacing: 1rpx;
+  background: rgba(240,147,251,0.15);
 }
 
 .meta-badge.seen {
   color: var(--text-muted);
+  background: var(--card);
 }
 
 .main-title {
-  font-size: 36rpx;
+  font-size: 40rpx;
   font-weight: 600;
   color: var(--text);
-  margin-bottom: 20rpx;
+  margin-bottom: 24rpx;
   display: block;
+  line-height: 1.4;
 }
 
 .content-scroll {
-  max-height: 400rpx;
+  max-height: 480rpx;
 }
 
 .main-content {
-  font-size: 30rpx;
+  font-size: 34rpx;
   color: var(--text-secondary);
-  line-height: 1.7;
+  line-height: 1.8;
   white-space: pre-wrap;
 }
 
 .stats-row {
   display: flex;
-  justify-content: space-around;
-  margin-top: 20rpx;
-  padding-top: 16rpx;
+  justify-content: center;
+  margin-top: 24rpx;
+  padding-top: 20rpx;
   border-top: 1rpx solid var(--border);
 }
 
@@ -127,93 +121,80 @@
 }
 
 .stat-value {
-  font-size: 28rpx;
+  font-size: 34rpx;
   font-weight: 600;
   color: var(--text);
 }
 
 .stat-label {
-  font-size: 22rpx;
-  color: var(--text-muted);
-  margin-top: 4rpx;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  margin-top: 6rpx;
 }
 
 /* 操作 */
 .action-row {
   display: flex;
-  padding: 16rpx 24rpx;
-  gap: 12rpx;
+  padding: 20rpx 32rpx;
+  gap: 16rpx;
 }
 
 .action-btn {
   flex: 1;
-  height: 64rpx;
-  border-radius: var(--radius);
+  height: 72rpx;
+  border-radius: 12rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
-  background: var(--card);
-  border: 1rpx solid var(--border);
-}
-
-.action-btn.liked {
-  border: none;
-}
-
-.action-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
 .action-text {
-  font-size: 28rpx;
+  font-size: 32rpx;
   color: var(--text-secondary);
   position: relative;
+  font-weight: 500;
 }
 
 .action-btn.liked .action-text {
   color: var(--text);
-  font-weight: 500;
 }
 
 /* 更多 */
 .more-section {
-  padding: 24rpx;
+  padding: 32rpx;
 }
 
 .more-header {
   display: flex;
   align-items: center;
-  margin-bottom: 16rpx;
+  margin-bottom: 20rpx;
 }
 
 .more-bar {
-  width: 4rpx;
-  height: 20rpx;
+  width: 6rpx;
+  height: 24rpx;
   background: var(--primary);
-  border-radius: 2rpx;
-  margin-right: 12rpx;
+  border-radius: 3rpx;
+  margin-right: 16rpx;
 }
 
 .more-title {
-  font-size: 26rpx;
+  font-size: 32rpx;
   color: var(--text);
   font-weight: 500;
 }
 
 .more-grid {
   display: flex;
-  gap: 12rpx;
+  gap: 16rpx;
 }
 
 .more-card {
-  width: calc(50% - 6rpx);
-  padding: 16rpx;
+  width: calc(50% - 8rpx);
+  padding: 20rpx;
+  border-radius: 16rpx;
   position: relative;
   overflow: hidden;
 }
@@ -222,33 +203,24 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 4rpx;
+  width: 6rpx;
   height: 100%;
 }
 
 .more-name {
-  font-size: 26rpx;
+  font-size: 30rpx;
   color: var(--text);
   font-weight: 500;
   margin-bottom: 8rpx;
-  padding-left: 12rpx;
+  padding-left: 16rpx;
   display: block;
 }
 
 .more-meta {
-  display: flex;
-  align-items: center;
-  padding-left: 12rpx;
-}
-
-.more-dot {
-  width: 6rpx;
-  height: 6rpx;
-  border-radius: 3rpx;
-  margin-right: 8rpx;
+  padding-left: 16rpx;
 }
 
 .more-cat {
-  font-size: 22rpx;
-  color: var(--text-muted);
+  font-size: 26rpx;
+  color: var(--text-secondary);
 }

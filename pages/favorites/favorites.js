@@ -17,7 +17,7 @@ Page({
     const favorites = favs.map(id => cached.find(j => j.id === id)).filter(Boolean).map(j => ({
       ...j,
       color: CAT_COLORS[j.category] || '#667eea',
-      preview: j.content.substring(0, 40)
+      preview: j.content.split('\n')[0].substring(0, 35) + '...'
     }))
     this.setData({ favorites })
   },

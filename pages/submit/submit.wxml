@@ -1,7 +1,7 @@
 <view class="page">
   <!-- 头部 -->
   <view class="header">
-    <view class="header-line"></view>
+    <view class="header-line gradient-btn"></view>
     <text class="header-title gradient-text">投稿</text>
     <text class="header-desc">分享你的笑话</text>
   </view>
@@ -13,7 +13,7 @@
       <text class="form-label">分类</text>
       <view class="cat-grid">
         <view 
-          class="cat-btn {{form.category === item.name ? 'active' : ''}}"
+          class="cat-btn glass {{form.category === item.name ? 'active' : ''}}"
           wx:for="{{categories}}"
           wx:key="name"
           bindtap="selectCategory"
@@ -28,14 +28,14 @@
     <!-- 标题 -->
     <view class="form-section">
       <text class="form-label">标题</text>
-      <input class="form-input" placeholder="给笑话起个名" maxlength="50" value="{{form.title}}" bindinput="inputTitle"/>
+      <input class="form-input glass" placeholder="给笑话起个名" maxlength="50" value="{{form.title}}" bindinput="inputTitle"/>
       <text class="form-count">{{form.title.length}}/50</text>
     </view>
 
     <!-- 内容 -->
     <view class="form-section">
       <text class="form-label">内容</text>
-      <textarea class="form-textarea" placeholder="笑话内容..." maxlength="500" value="{{form.content}}" bindinput="inputContent"/>
+      <textarea class="form-textarea glass" placeholder="笑话内容..." maxlength="500" value="{{form.content}}" bindinput="inputContent"/>
       <text class="form-count textarea-count">{{form.content.length}}/500</text>
     </view>
   </view>
@@ -53,7 +53,7 @@
 <!-- 成功弹窗 -->
 <view class="modal-overlay {{showSuccess ? 'show' : ''}}" bindtap="hideSuccess">
   <view class="modal glass scale-in" catchtap="preventClose">
-    <view class="success-icon">
+    <view class="success-icon gradient-btn">
       <view class="success-line"></view>
     </view>
     <text class="success-title">已提交</text>

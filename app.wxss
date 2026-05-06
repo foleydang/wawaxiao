@@ -1,15 +1,15 @@
-/* app.wxss - 极简现代风格 v2 */
+/* app.wxss - 极简现代风格 v3 */
 
 page {
   --primary: #667eea;
   --accent: #f093fb;
   --bg: #0f0f23;
   --bg-light: #1a1a2e;
-  --card: rgba(255,255,255,0.04);
-  --border: rgba(255,255,255,0.08);
+  --card: rgba(255,255,255,0.05);
+  --border: rgba(255,255,255,0.1);
   --text: #ffffff;
-  --text-secondary: rgba(255,255,255,0.65);
-  --text-muted: rgba(255,255,255,0.35);
+  --text-secondary: rgba(255,255,255,0.7);
+  --text-muted: rgba(255,255,255,0.4);
   
   --safe-top: env(safe-area-inset-top);
   --safe-bottom: env(safe-area-inset-bottom);
@@ -19,9 +19,10 @@ page {
   
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 30rpx;
-  line-height: 1.6;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  font-size: 32rpx;
+  line-height: 1.65;
+  font-weight: 400;
 }
 
 /* 渐变 */
@@ -53,11 +54,23 @@ page {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 安全区域占位 */
-.safe-top {
-  height: var(--safe-top);
+.scale-in {
+  animation: scaleIn 0.3s ease;
 }
 
-.safe-bottom {
-  padding-bottom: var(--safe-bottom);
+@keyframes scaleIn {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* 骨架屏 */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-light) 25%, var(--card) 50%, var(--bg-light) 75%);
+  background-size: 200% 100%;
+  animation: skeleton 1.2s infinite linear;
+}
+
+@keyframes skeleton {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }

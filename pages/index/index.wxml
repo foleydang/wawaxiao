@@ -1,4 +1,3 @@
-<!--pages/index/index.wxml - 极简深色风格 v2-->
 <view class="page">
   <!-- 顶部安全区域 + 内容 -->
   <view class="header">
@@ -29,7 +28,7 @@
     </view>
   </scroll-view>
 
-  <!-- 今日精选（排除已看过） -->
+  <!-- 今日精选（紧凑版） -->
   <view class="section" wx:if="{{todayJokes.length > 0}}">
     <view class="section-header">
       <view class="section-title-wrap">
@@ -47,17 +46,17 @@
         bindtap="goToDetail"
         data-id="{{item.id}}"
       >
-        <view class="today-bg" style="background: linear-gradient(135deg, {{item.color}}40 0%, {{item.color}}20 100%)"></view>
+        <view class="today-color" style="background: {{item.color}}"></view>
         <text class="today-title">{{item.title}}</text>
         <view class="today-meta">
-          <view class="today-dot" style="background: {{item.color}}"></view>
-          <text class="today-category">{{item.category}}</text>
+          <text class="today-cat">{{item.category}}</text>
+          <text class="today-likes">{{item.likes}}</text>
         </view>
       </view>
     </scroll-view>
   </view>
 
-  <!-- 再看一次（已看过的热门） -->
+  <!-- 再看一次 -->
   <view class="section" wx:if="{{seenJokes.length > 0 && showSeen}}">
     <view class="section-header">
       <view class="section-title-wrap">
@@ -65,37 +64,31 @@
         <text class="section-title seen-text">再看一次</text>
       </view>
       <view class="toggle-seen" bindtap="toggleShowSeen">
-        <text class="toggle-text">{{showSeen ? '隐藏' : '展开'}}</text>
+        <text class="toggle-text">隐藏</text>
       </view>
     </view>
     
-    <view class="seen-list">
+    <view class="joke-list">
       <view 
         class="joke-card fade-up"
         wx:for="{{seenJokes}}"
         wx:key="id"
         bindtap="goToDetail"
         data-id="{{item.id}}"
-        style="animation-delay: {{index * 0.04}}s"
       >
         <view class="joke-color seen-color"></view>
         <view class="joke-body">
-          <view class="joke-top">
-            <view class="joke-dot" style="background: {{item.color}}"></view>
-            <text class="joke-category">{{item.category}}</text>
-            <view class="seen-badge">已看过</view>
-          </view>
           <text class="joke-title">{{item.title}}</text>
           <text class="joke-preview">{{item.preview}}</text>
         </view>
         <view class="joke-right">
-          <text class="joke-likes">{{item.likes}}</text>
+          <view class="seen-badge">已看过</view>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 全部笑话列表 -->
+  <!-- 笑话库（统一两行） -->
   <view class="section">
     <view class="section-header">
       <view class="section-title-wrap">
@@ -107,7 +100,7 @@
 
     <!-- 骨架屏 -->
     <view class="skeleton-wrap" wx:if="{{loading}}">
-      <view class="skeleton-card" wx:for="{{3}}" wx:key="index">
+      <view class="skeleton-card glass" wx:for="{{3}}" wx:key="index">
         <view class="skeleton-bar skeleton"></view>
         <view class="skeleton-bar short skeleton"></view>
       </view>
@@ -121,23 +114,15 @@
         wx:key="id"
         bindtap="goToDetail"
         data-id="{{item.id}}"
-        style="animation-delay: {{index * 0.04}}s"
       >
         <view class="joke-color" style="background: {{item.color}}"></view>
         <view class="joke-body">
-          <view class="joke-top">
-            <view class="joke-dot" style="background: {{item.color}}"></view>
-            <text class="joke-category">{{item.category}}</text>
-            <view class="hot-badge" wx:if="{{item.isHot}}">HOT</view>
-          </view>
           <text class="joke-title">{{item.title}}</text>
           <text class="joke-preview">{{item.preview}}</text>
         </view>
         <view class="joke-right">
+          <view class="joke-dot" style="background: {{item.color}}"></view>
           <text class="joke-likes">{{item.likes}}</text>
-          <view class="seen-mark" wx:if="{{item.hasSeen}}">
-            <view class="seen-dot"></view>
-          </view>
         </view>
       </view>
     </view>
@@ -158,10 +143,7 @@
   <view class="modal glass scale-in" catchtap="preventClose">
     <view class="modal-header">
       <view class="modal-bar" style="background: {{randomJoke.color}}"></view>
-      <view class="modal-top">
-        <view class="modal-dot" style="background: {{randomJoke.color}}"></view>
-        <text class="modal-category">{{randomJoke.category}}</text>
-      </view>
+      <text class="modal-category">{{randomJoke.category}}</text>
     </view>
     
     <view class="modal-body">
@@ -170,7 +152,7 @@
     </view>
     
     <view class="modal-footer">
-      <view class="modal-btn outline" bindtap="showRandom">
+      <view class="modal-btn outline glass" bindtap="showRandom">
         <text class="modal-btn-text">换一个</text>
       </view>
       <view class="modal-btn primary gradient-btn" bindtap="hideModal">
