@@ -96,7 +96,7 @@
     </view>
   </view>
 
-  <!-- 热门推荐 -->
+  <!-- 热门推荐 - 2x2网格 -->
   <view class="hot-section" wx:if="{{!loading && hotJokes.length > 0}}">
     <view class="section-header">
       <view class="section-left">
@@ -105,19 +105,22 @@
       </view>
     </view>
     
+    <!-- 使用grid布局强制2x2 -->
     <view class="hot-grid">
       <view 
-        class="hot-card glass fade-up btn-press"
+        class="hot-card glass"
         wx:for="{{hotJokes}}"
         wx:key="id"
         bindtap="goToDetail"
         data-id="{{item.id}}"
       >
         <view class="hot-color" style="background: {{item.color}}"></view>
-        <text class="hot-title">{{item.title}}</text>
-        <view class="hot-meta">
-          <text class="hot-cat">{{item.category}}</text>
-          <text class="hot-stats">{{item.likes}}❤️</text>
+        <view class="hot-content">
+          <text class="hot-title">{{item.title}}</text>
+          <view class="hot-meta">
+            <text class="hot-cat">{{item.category}}</text>
+            <text class="hot-likes">{{item.likes}}❤️</text>
+          </view>
         </view>
       </view>
     </view>

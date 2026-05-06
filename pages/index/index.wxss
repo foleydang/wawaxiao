@@ -29,7 +29,7 @@
 .page-wrapper.light-mode .card-content,
 .page-wrapper.light-mode .section-count,
 .page-wrapper.light-mode .action-num,
-.page-wrapper.light-mode .hot-stats,
+.page-wrapper.light-mode .hot-likes,
 .page-wrapper.light-mode .empty-desc {
   color: #555555 !important;
 }
@@ -296,28 +296,26 @@
   font-weight: 500;
 }
 
-/* 热门推荐 - 2行2列布局 */
+/* 热门推荐 - 强制2x2网格 */
 .hot-section {
-  padding: 24rpx 0;
+  padding: 24rpx 0 0 0;
 }
 
 .hot-grid {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0 28rpx;
+  display: grid;
+  grid-template-columns: 1fr 1fr;  /* 强制2列 */
+  grid-template-rows: auto auto;   /* 2行 */
   gap: 12rpx;
+  padding: 0 28rpx 28rpx 28rpx;
 }
 
 .hot-card {
-  width: calc(50% - 6rpx);  /* 强制每行2个 */
-  height: 120rpx;  /* 固定高度，让内容紧凑 */
+  height: 140rpx;  /* 固定高度 */
   padding: 16rpx;
   border-radius: 14rpx;
   position: relative;
-  overflow: hidden;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
 }
 
 .hot-color {
@@ -326,25 +324,33 @@
   left: 0;
   width: 4rpx;
   height: 100%;
+  border-radius: 2rpx 0 0 2rpx;
+}
+
+.hot-content {
+  flex: 1;
+  padding-left: 12rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
 }
 
 .hot-title {
   font-size: 28rpx;
   font-weight: 500;
-  padding-left: 12rpx;
+  line-height: 1.3;
   margin-bottom: 8rpx;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
-  line-height: 1.3;
 }
 
 .hot-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-left: 12rpx;
 }
 
 .hot-cat {
@@ -352,7 +358,7 @@
   color: var(--text-muted);
 }
 
-.hot-stats {
+.hot-likes {
   font-size: 22rpx;
   color: var(--text-secondary);
 }
