@@ -16,73 +16,67 @@
       
       <view class="meta-row">
         <view class="meta-dot" style="background: {{joke.color}}"></view>
-        <text class="meta-category">{{joke.category}}</text>
-        <view class="meta-badge hot" wx:if="{{joke.isHot}}">HOT</view>
-        <view class="meta-badge seen" wx:if="{{hasSeen}}">已看过</view>
-        <view class="meta-badge image" wx:if="{{joke.images}}">🖼️ 图</view>
+        <text class="meta-cat">{{joke.category}}</text>
+        <view class="meta-badge" wx:if="{{joke.isHot}}">HOT</view>
+        <view class="meta-badge" wx:if="{{joke.hasImage}}">图</view>
       </view>
 
       <text class="main-title">{{joke.title}}</text>
 
-      <!-- 图片区域 -->
-      <view class="image-section" wx:if="{{joke.images && joke.images.length > 0}}">
+      <!-- 图片 -->
+      <view class="image-area" wx:if="{{joke.hasImage}}">
         <image 
-          class="joke-image"
+          class="joke-img"
           wx:for="{{joke.images}}"
           wx:key="*this"
           src="{{item}}"
           mode="widthFix"
           bindtap="previewImage"
           data-url="{{item}}"
-          data-urls="{{joke.images}}"
         />
       </view>
 
-      <!-- 文字内容 -->
-      <scroll-view class="content-scroll" scroll-y>
-        <text class="main-content">{{joke.content}}</text>
-      </scroll-view>
+      <!-- 内容 -->
+      <text class="main-content">{{joke.content}}</text>
 
       <!-- 统计 -->
-      <view class="stats-row">
+      <view class="stats-bar">
         <view class="stat">
-          <text class="stat-value">{{joke.likes}}</text>
+          <text class="stat-num">{{joke.likes}}</text>
           <text class="stat-label">喜欢</text>
         </view>
         <view class="stat">
-          <text class="stat-value">{{joke.dislikes}}</text>
+          <text class="stat-num">{{joke.dislikes}}</text>
           <text class="stat-label">不喜欢</text>
         </view>
         <view class="stat">
-          <text class="stat-value">{{joke.shares || 0}}</text>
+          <text class="stat-num">{{joke.shares}}</text>
           <text class="stat-label">分享</text>
         </view>
       </view>
     </view>
 
-    <!-- 操作按钮 -->
-    <view class="action-row">
+    <!-- 操作 -->
+    <view class="action-bar">
       <view class="action-btn {{liked ? 'liked' : ''}}" bindtap="toggleLike">
-        <view class="action-bg gradient-btn" wx:if="{{liked}}"></view>
         <text class="action-icon">{{liked ? '❤️' : '🤍'}}</text>
-        <text class="action-text">{{joke.likes}}</text>
+        <text class="action-num">{{joke.likes}}</text>
       </view>
       
       <view class="action-btn {{disliked ? 'disliked' : ''}}" bindtap="toggleDislike">
-        <view class="action-bg dislike-bg" wx:if="{{disliked}}"></view>
         <text class="action-icon">{{disliked ? '👎' : '👎🏻'}}</text>
-        <text class="action-text">{{joke.dislikes}}</text>
+        <text class="action-num">{{joke.dislikes}}</text>
       </view>
       
-      <view class="action-btn" bindtap="shareJoke">
+      <button class="action-btn" open-type="share" bindtap="onShare">
         <text class="action-icon">📤</text>
-        <text class="action-text">{{joke.shares || 0}}</text>
-      </view>
+        <text class="action-num">{{joke.shares}}</text>
+      </button>
     </view>
 
-    <!-- 更多推荐 -->
-    <view class="more-section" wx:if="{{moreJokes.length > 0}}">
-      <view class="more-header">
+    <!-- 更多 -->
+    <view class="more-area" wx:if="{{moreJokes.length > 0}}">
+      <view class="more-head">
         <view class="more-bar"></view>
         <text class="more-title">再看点别的</text>
       </view>
@@ -99,8 +93,7 @@
           <text class="more-name">{{item.title}}</text>
           <view class="more-meta">
             <text class="more-cat">{{item.category}}</text>
-            <text class="more-image" wx:if="{{item.hasImage}}">🖼️</text>
-            <text class="more-likes">{{item.likes}}/{{item.dislikes}}</text>
+            <text class="more-stats">{{item.likes}}{{item.hasImage ? '图' : ''}}</text>
           </view>
         </view>
       </view>

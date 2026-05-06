@@ -1,5 +1,5 @@
 const { api } = require('../../utils/api.js')
-const { markSeen, hasSeen, getSeenCount } = require('../../utils/seen.js')
+const { markSeen, hasSeen, getSeenIds } = require('../../utils/seen.js')
 const { getCurrentTheme, toggleTheme, getThemeIcon } = require('../../utils/theme.js')
 
 const CAT_COLORS = {
@@ -12,22 +12,21 @@ const CAT_COLORS = {
 Page({
   data: {
     categories: [
-      { name: '全部', color: '#667eea' },
-      { name: '职场', color: '#f093fb' },
-      { name: '生活', color: '#4facfe' },
-      { name: '家庭', color: '#43e97b' },
-      { name: '校园', color: '#fa709a' }
+      { name: '全部', color: '#667eea', count: 0 },
+      { name: '职场', color: '#f093fb', count: 0 },
+      { name: '生活', color: '#4facfe', count: 0 },
+      { name: '家庭', color: '#43e97b', count: 0 },
+      { name: '校园', color: '#fa709a', count: 0 }
     ],
     currentCategory: '全部',
     allJokes: [],
-    todayJokes: [],
-    seenJokes: [],
+    todayJokes: [],    // 未看过的（真正的新鲜）
+    seenJokes: [],      // 已看过的
     filteredJokes: [],
     showModal: false,
     randomJoke: null,
     loading: true,
     showSeen: false,
-    seenCount: 0,
     currentTheme: 'dark',
     themeIcon: '🌙'
   },
@@ -42,11 +41,6 @@ Page({
 
   onShow() {
     this.updateSeenStatus()
-    this.setData({ 
-      seenCount: getSeenCount(),
-      currentTheme: getCurrentTheme(),
-      themeIcon: getThemeIcon()
-    })
   },
 
   onPullDownRefresh() {
@@ -58,16 +52,15 @@ Page({
     return jokes.map(j => ({
       ...j,
       color: CAT_COLORS[j.category] || '#667eea',
-      preview: j.content.split('\n')[0].substring(0, 40) + '...',
-      hasImage: j.images && j.images.length > 0,
-      hasSeen: hasSeen(j.id)
+      preview: j.content.split('\n')[0].substring(0, 35),
+      hasImage: j.images && j.images.length > 0
     }))
   },
 
-  categorizeJokes(jokes) {
+  splitBySeen(jokes) {
     const seenIds = getSeenIds()
-    const todayJokes = jokes.filter(j => !seenIds.includes(j.id))
-    const seenJokes = jokes.filter(j => seenIds.includes(j.id))
+    const todayJokes = jokes.filter(j => !seenIds.includes(j.id))  // 未看过
+    const seenJokes = jokes.filter(j => seenIds.includes(j.id))     // 已看过
     return { todayJokes, seenJokes }
   },
 
@@ -77,15 +70,23 @@ Page({
     try {
       const res = await api.getJokes({ limit: 50 })
       const jokes = this.processJokes(res.data.list)
-      const { todayJokes, seenJokes } = this.categorizeJokes(jokes)
+      const { todayJokes, seenJokes } = this.splitBySeen(jokes)
+      
+      // 更新分类计数（只计算未看过）
+      const cats = this.data.categories.map(c => ({
+        ...c,
+        count: c.name === '全部' 
+          ? todayJokes.length 
+          : todayJokes.filter(j => j.category === c.name).length
+      }))
       
       this.setData({
         allJokes: jokes,
         todayJokes,
         seenJokes,
         filteredJokes: this.filterByCategory(jokes),
-        loading: false,
-        seenCount: getSeenCount()
+        categories: cats,
+        loading: false
       })
       
       wx.setStorageSync('cachedJokes', jokes)
@@ -93,29 +94,43 @@ Page({
     } catch (err) {
       const cached = wx.getStorageSync('cachedJokes') || []
       const jokes = this.processJokes(cached)
-      const { todayJokes, seenJokes } = this.categorizeJokes(jokes)
+      const { todayJokes, seenJokes } = this.splitBySeen(jokes)
+      
+      const cats = this.data.categories.map(c => ({
+        ...c,
+        count: c.name === '全部' 
+          ? todayJokes.length 
+          : todayJokes.filter(j => j.category === c.name).length
+      }))
       
       this.setData({
         allJokes: jokes,
         todayJokes,
         seenJokes,
         filteredJokes: this.filterByCategory(jokes),
-        loading: false,
-        seenCount: getSeenCount()
+        categories: cats,
+        loading: false
       })
     }
   },
 
   updateSeenStatus() {
     const jokes = this.processJokes(this.data.allJokes)
-    const { todayJokes, seenJokes } = this.categorizeJokes(jokes)
+    const { todayJokes, seenJokes } = this.splitBySeen(jokes)
+    
+    const cats = this.data.categories.map(c => ({
+      ...c,
+      count: c.name === '全部' 
+        ? todayJokes.length 
+        : todayJokes.filter(j => j.category === c.name).length
+    }))
     
     this.setData({
       allJokes: jokes,
       todayJokes,
       seenJokes,
       filteredJokes: this.filterByCategory(jokes),
-      seenCount: getSeenCount()
+      categories: cats
     })
   },
 
@@ -128,13 +143,21 @@ Page({
   switchCategory(e) {
     const category = e.currentTarget.dataset.category
     const filteredJokes = this.filterByCategory(this.data.allJokes)
-    const { todayJokes, seenJokes } = this.categorizeJokes(filteredJokes)
+    const { todayJokes, seenJokes } = this.splitBySeen(filteredJokes)
+    
+    const cats = this.data.categories.map(c => ({
+      ...c,
+      count: c.name === '全部' 
+        ? todayJokes.length 
+        : todayJokes.filter(j => j.category === c.name).length
+    }))
     
     this.setData({
       currentCategory: category,
       filteredJokes,
       todayJokes,
-      seenJokes
+      seenJokes,
+      categories: cats
     })
   },
 
@@ -148,7 +171,6 @@ Page({
       currentTheme: newTheme,
       themeIcon: newTheme === 'dark' ? '🌙' : '☀️'
     })
-    wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 
   goToDetail(e) {
@@ -162,6 +184,7 @@ Page({
   },
 
   showRandom() {
+    // 优先未看过的
     const unseen = this.data.todayJokes
     const pool = unseen.length > 0 ? unseen : this.data.allJokes
     
@@ -178,10 +201,10 @@ Page({
     this.updateSeenStatus()
   },
 
+  previewImage(e) {
+    const url = e.currentTarget.dataset.url
+    wx.previewImage({ current: url, urls: [url] })
+  },
+
   preventClose() {}
 })
-
-function getSeenIds() {
-  const str = wx.getStorageSync('seenBitmap') || ''
-  return str ? str.split(',').map(Number) : []
-}
