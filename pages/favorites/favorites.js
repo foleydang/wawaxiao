@@ -1,56 +1,40 @@
-const { api } = require('../../utils/api.js')
+const CATEGORY_COLORS = {
+  '职场': '#f093fb',
+  '生活': '#4facfe',
+  '家庭': '#43e97b',
+  '校园': '#fa709a'
+}
 
 Page({
-  data: {
-    favorites: []
-  },
+  data: { favorites: [] },
 
-  onLoad() {
-    this.loadFavorites()
-  },
+  onLoad() { this.loadFavorites() },
+  onShow() { this.loadFavorites() },
 
-  onShow() {
-    this.loadFavorites()
-  },
-
-  async loadFavorites() {
-    const favoriteIds = wx.getStorageSync('favorites') || []
-    
-    try {
-      // 尝试从缓存获取完整数据
-      const cachedJokes = wx.getStorageSync('cachedJokes') || []
-      const favorites = favoriteIds.map(id => cachedJokes.find(j => j.id === id)).filter(Boolean)
-      
-      this.setData({ favorites })
-    } catch (err) {
-      console.log('加载收藏失败:', err)
-    }
+  loadFavorites() {
+    const favs = wx.getStorageSync('favorites') || []
+    const cached = wx.getStorageSync('cachedJokes') || []
+    const favorites = favs.map(id => cached.find(j => j.id === id)).filter(Boolean).map(j => ({
+      ...j,
+      color: CATEGORY_COLORS[j.category] || '#667eea',
+      preview: j.content.substring(0, 40)
+    }))
+    this.setData({ favorites })
   },
 
   goToDetail(e) {
-    const id = e.currentTarget.dataset.id
-    wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
+    wx.navigateTo({ url: `/pages/detail/detail?id=${e.currentTarget.dataset.id}` })
   },
 
   removeFavorite(e) {
     const id = e.currentTarget.dataset.id
-    const favorites = wx.getStorageSync('favorites') || []
-    const newFavorites = favorites.filter(fid => fid !== id)
-    
-    wx.setStorageSync('favorites', newFavorites)
-    wx.showToast({ title: '已取消收藏', icon: 'none' })
-    
+    const favs = wx.getStorageSync('favorites') || []
+    wx.setStorageSync('favorites', favs.filter(f => f !== id))
     this.loadFavorites()
+    wx.showToast({ title: '已取消', icon: 'none' })
   },
 
   goToIndex() {
     wx.switchTab({ url: '/pages/index/index' })
-  },
-
-  onShareAppMessage() {
-    return {
-      title: '哇哇笑 - 每天开心一笑！',
-      path: '/pages/index/index'
-    }
   }
 })

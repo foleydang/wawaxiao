@@ -1,70 +1,49 @@
 const { api } = require('../../utils/api.js')
 
+const CATEGORIES = [
+  { name: '职场', color: '#f093fb' },
+  { name: '生活', color: '#4facfe' },
+  { name: '家庭', color: '#43e97b' },
+  { name: '校园', color: '#fa709a' }
+]
+
 Page({
   data: {
-    categories: ['职场', '生活', '家庭', '校园'],
-    form: {
-      category: '生活',
-      title: '',
-      content: '',
-      author: ''
-    },
+    categories: CATEGORIES,
+    form: { category: '生活', title: '', content: '' },
     canSubmit: false,
     showSuccess: false
   },
 
-  onInputChange() {
+  checkCanSubmit() {
     const { category, title, content } = this.data.form
-    const canSubmit = category && title.length >= 2 && content.length >= 10
-    this.setData({ canSubmit })
+    this.setData({ canSubmit: title.length >= 2 && content.length >= 10 })
   },
 
   selectCategory(e) {
     this.setData({ 'form.category': e.currentTarget.dataset.category })
-    this.onInputChange()
   },
 
   inputTitle(e) {
     this.setData({ 'form.title': e.detail.value })
-    this.onInputChange()
+    this.checkCanSubmit()
   },
 
   inputContent(e) {
     this.setData({ 'form.content': e.detail.value })
-    this.onInputChange()
-  },
-
-  inputAuthor(e) {
-    this.setData({ 'form.author': e.detail.value })
+    this.checkCanSubmit()
   },
 
   async submitJoke() {
     if (!this.data.canSubmit) return
-    
-    wx.showLoading({ title: '提交中...' })
-    
+    wx.showLoading({ title: '提交中' })
     try {
       await api.submitJoke(this.data.form)
-      
       wx.hideLoading()
-      
-      this.setData({
-        showSuccess: true,
-        form: {
-          category: '生活',
-          title: '',
-          content: '',
-          author: ''
-        },
-        canSubmit: false
-      })
-      
+      this.setData({ showSuccess: true, form: { category: '生活', title: '', content: '' }, canSubmit: false })
     } catch (err) {
       wx.hideLoading()
-      wx.showToast({
-        title: err.message || '提交失败',
-        icon: 'none'
-      })
+      wx.showToast({ title: '失败', icon: 'none' })
     }
   },
 

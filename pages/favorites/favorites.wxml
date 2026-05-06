@@ -1,70 +1,45 @@
-<view class="container">
-  <!-- 背景装饰 -->
-  <view class="bg-gradient"></view>
-
+<view class="page">
   <!-- 空状态 -->
-  <view class="empty-state" wx:if="{{favorites.length === 0}}">
-    <view class="empty-icon-wrap">
-      <text class="empty-icon">💔</text>
+  <view class="empty" wx:if="{{favorites.length === 0}}">
+    <view class="empty-icon">
+      <view class="icon-line"></view>
     </view>
-    <text class="empty-title">还没有收藏</text>
-    <text class="empty-desc">去发现页找找喜欢的笑话吧</text>
-    <view class="empty-btn" bindtap="goToIndex">
-      <view class="btn-gradient"></view>
-      <text class="btn-text">去看看</text>
+    <text class="empty-title">NO LIKES</text>
+    <text class="empty-desc">还没有收藏任何笑话</text>
+    <view class="empty-btn gradient-btn" bindtap="goToIndex">
+      <text class="btn-text">去发现</text>
     </view>
   </view>
 
   <!-- 收藏列表 -->
-  <view class="favorite-section" wx:else>
-    <view class="section-header">
-      <view class="header-left">
-        <text class="header-icon">❤️</text>
-        <text class="header-title">我的收藏</text>
-      </view>
-      <text class="header-count">{{favorites.length}}条</text>
+  <view class="list" wx:else>
+    <!-- 标题 -->
+    <view class="list-header">
+      <view class="header-line"></view>
+      <text class="header-title">LIKED</text>
+      <text class="header-count">{{favorites.length}}</text>
     </view>
 
-    <view class="favorite-list">
-      <view 
-        class="favorite-card fade-in"
-        wx:for="{{favorites}}"
-        wx:key="id"
-        bindtap="goToDetail"
-        data-id="{{item.id}}"
-        style="animation-delay: {{index * 0.05}}s"
-      >
-        <!-- 左侧图标 -->
-        <view class="card-avatar">
-          <text class="avatar-emoji">{{item.category === '职场' ? '💼' : item.category === '生活' ? '🌈' : item.category === '家庭' ? '🏠' : '📚'}}</text>
-        </view>
-        
-        <!-- 内容 -->
-        <view class="card-content">
-          <view class="card-tags">
-            <text class="card-tag">{{item.category}}</text>
-            <text class="card-tag hot" wx:if="{{item.isHot}}">🔥</text>
-          </view>
-          <text class="card-title">{{item.title}}</text>
-          <text class="card-preview">{{item.content.substring(0, 40)}}...</text>
-        </view>
-        
-        <!-- 操作 -->
-        <view class="card-actions">
-          <view class="likes-wrap">
-            <text class="likes-icon">❤️</text>
-            <text class="likes-num">{{item.likes}}</text>
-          </view>
-          <view class="delete-btn" catchtap="removeFavorite" data-id="{{item.id}}">
-            <text class="delete-icon">🗑️</text>
-          </view>
+    <!-- 卡片 -->
+    <view class="fav-card fade-up"
+      wx:for="{{favorites}}"
+      wx:key="id"
+      bindtap="goToDetail"
+      data-id="{{item.id}}"
+      style="animation-delay: {{index * 0.05}}s"
+    >
+      <view class="card-color" style="background: {{item.color}}"></view>
+      <view class="card-body">
+        <text class="card-category" style="color: {{item.color}}">{{item.category}}</text>
+        <text class="card-title">{{item.title}}</text>
+        <text class="card-preview">{{item.preview}}</text>
+      </view>
+      <view class="card-actions">
+        <text class="card-likes">{{item.likes}}</text>
+        <view class="delete-btn" catchtap="removeFavorite" data-id="{{item.id}}">
+          <view class="delete-line"></view>
         </view>
       </view>
-    </view>
-
-    <!-- 底部提示 -->
-    <view class="footer-tip">
-      <text class="tip-text">点击卡片查看详情，点击垃圾桶取消收藏</text>
     </view>
   </view>
 </view>

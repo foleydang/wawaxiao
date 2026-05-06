@@ -1,21 +1,20 @@
-const { api } = require('../../utils/api.js')
+const CATEGORY_COLORS = {
+  '职场': '#f093fb',
+  '生活': '#4facfe',
+  '家庭': '#43e97b',
+  '校园': '#fa709a'
+}
 
 Page({
   data: {
     keyword: '',
     history: [],
-    hotKeywords: ['程序员', '减肥', '妈妈', '老板', '加班', '外卖', '相亲', '考试'],
     results: [],
     hasSearch: false
   },
 
   onLoad() {
-    this.loadHistory()
-  },
-
-  loadHistory() {
-    const history = wx.getStorageSync('searchHistory') || []
-    this.setData({ history })
+    this.setData({ history: wx.getStorageSync('searchHistory') || [] })
   },
 
   onInput(e) {
@@ -26,58 +25,29 @@ Page({
     this.setData({ keyword: '', hasSearch: false, results: [] })
   },
 
-  async onSearch() {
+  onSearch() {
     const keyword = this.data.keyword.trim()
     if (!keyword) return
     
-    // 保存搜索历史
+    // 保存历史
     let history = wx.getStorageSync('searchHistory') || []
-    history = history.filter(h => h !== keyword)
-    history.unshift(keyword)
-    history = history.slice(0, 10)
+    history = [keyword, ...history.filter(h => h !== keyword)].slice(0, 10)
     wx.setStorageSync('searchHistory', history)
     this.setData({ history })
     
     // 搜索
-    wx.showLoading({ title: '搜索中...' })
+    const cached = wx.getStorageSync('cachedJokes') || []
+    const results = cached.filter(j => j.title.includes(keyword) || j.content.includes(keyword)).map(j => ({
+      ...j,
+      color: CATEGORY_COLORS[j.category] || '#667eea',
+      matchContent: j.content.substring(0, 50)
+    }))
     
-    try {
-      // 从缓存中搜索
-      const cachedJokes = wx.getStorageSync('cachedJokes') || []
-      const results = cachedJokes.filter(j => {
-        return j.title.includes(keyword) || j.content.includes(keyword)
-      }).map(j => ({
-        ...j,
-        matchContent: this.getMatchContent(j.content, keyword)
-      }))
-      
-      this.setData({ results, hasSearch: true })
-      wx.hideLoading()
-      
-    } catch (err) {
-      wx.hideLoading()
-      wx.showToast({ title: '搜索失败', icon: 'none' })
-    }
-  },
-
-  getMatchContent(content, keyword) {
-    const index = content.indexOf(keyword)
-    if (index === -1) return content.substring(0, 60) + '...'
-    
-    const start = Math.max(0, index - 20)
-    const end = Math.min(content.length, index + keyword.length + 40)
-    return content.substring(start, end) + (end < content.length ? '...' : '')
+    this.setData({ results, hasSearch: true })
   },
 
   searchHistory(e) {
-    const keyword = e.currentTarget.dataset.keyword
-    this.setData({ keyword })
-    this.onSearch()
-  },
-
-  searchKeyword(e) {
-    const keyword = e.currentTarget.dataset.keyword
-    this.setData({ keyword })
+    this.setData({ keyword: e.currentTarget.dataset.keyword })
     this.onSearch()
   },
 

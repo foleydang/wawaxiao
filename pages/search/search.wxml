@@ -1,54 +1,27 @@
-<view class="container">
+<view class="page">
   <!-- 搜索栏 -->
-  <view class="search-header glass">
-    <view class="search-input-wrap">
-      <text class="search-icon">🔍</text>
-      <input 
-        class="search-input"
-        placeholder="搜索笑话标题、内容..."
-        focus="{{true}}"
-        value="{{keyword}}"
-        bindinput="onInput"
-        bindconfirm="onSearch"
-      />
-      <text class="clear-btn" wx:if="{{keyword}}" bindtap="clearKeyword">✕</text>
+  <view class="search-header">
+    <view class="search-bar">
+      <view class="search-icon">
+        <view class="search-circle"></view>
+        <view class="search-line"></view>
+      </view>
+      <input class="search-input" placeholder="搜索" focus="{{true}}" value="{{keyword}}" bindinput="onInput" bindconfirm="onSearch"/>
+      <view class="clear-btn" wx:if="{{keyword}}" bindtap="clearKeyword">
+        <view class="clear-line"></view>
+      </view>
     </view>
   </view>
 
   <!-- 搜索历史 -->
   <view class="history-section" wx:if="{{!hasSearch && history.length > 0}}">
     <view class="section-header">
-      <text class="section-title">搜索历史</text>
-      <text class="clear-history" bindtap="clearHistory">清空</text>
+      <text class="section-title">HISTORY</text>
+      <text class="clear-history" bindtap="clearHistory">CLEAR</text>
     </view>
     <view class="history-list">
-      <view 
-        class="history-item"
-        wx:for="{{history}}"
-        wx:key="*this"
-        bindtap="searchHistory"
-        data-keyword="{{item}}"
-      >
+      <view class="history-item" wx:for="{{history}}" wx:key="*this" bindtap="searchHistory" data-keyword="{{item}}">
         <text class="history-text">{{item}}</text>
-      </view>
-    </view>
-  </view>
-
-  <!-- 热门搜索 -->
-  <view class="hot-section" wx:if="{{!hasSearch}}">
-    <view class="section-header">
-      <text class="section-title">热门搜索</text>
-    </view>
-    <view class="hot-list">
-      <view 
-        class="hot-item"
-        wx:for="{{hotKeywords}}"
-        wx:key="*this"
-        bindtap="searchKeyword"
-        data-keyword="{{item}}"
-      >
-        <text class="hot-rank">{{index + 1}}</text>
-        <text class="hot-text">{{item}}</text>
       </view>
     </view>
   </view>
@@ -56,34 +29,23 @@
   <!-- 搜索结果 -->
   <view class="result-section" wx:if="{{hasSearch}}">
     <view class="section-header">
-      <text class="result-count">找到 {{results.length}} 条结果</text>
+      <text class="result-count">{{results.length}} RESULTS</text>
     </view>
 
-    <!-- 无结果 -->
-    <view class="empty-result" wx:if="{{results.length === 0}}">
-      <text class="empty-icon">🔍</text>
-      <text class="empty-text">没有找到相关笑话</text>
-      <text class="empty-tip">换个关键词试试？</text>
+    <view class="empty" wx:if="{{results.length === 0}}">
+      <text class="empty-text">NO RESULTS</text>
+      <text class="empty-tip">换个关键词试试</text>
     </view>
 
-    <!-- 结果列表 -->
     <view class="result-list" wx:else>
-      <view 
-        class="result-card fade-in"
-        wx:for="{{results}}"
-        wx:key="id"
-        bindtap="goToDetail"
-        data-id="{{item.id}}"
-      >
-        <view class="result-category">
-          <text class="category-tag">{{item.category}}</text>
+      <view class="result-card fade-up" wx:for="{{results}}" wx:key="id" bindtap="goToDetail" data-id="{{item.id}}" style="animation-delay: {{index * 0.05}}s">
+        <view class="result-color" style="background: {{item.color}}"></view>
+        <view class="result-body">
+          <text class="result-category" style="color: {{item.color}}">{{item.category}}</text>
+          <text class="result-title">{{item.title}}</text>
+          <text class="result-content">{{item.matchContent}}</text>
         </view>
-        <text class="result-title">{{item.title}}</text>
-        <text class="result-content">{{item.matchContent}}</text>
-        <view class="result-meta">
-          <text class="meta-icon">❤️</text>
-          <text class="meta-value">{{item.likes}}</text>
-        </view>
+        <text class="result-likes">{{item.likes}}</text>
       </view>
     </view>
   </view>

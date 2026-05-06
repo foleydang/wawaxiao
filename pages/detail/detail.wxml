@@ -1,68 +1,59 @@
-<view class="container">
-  <!-- 背景装饰 -->
-  <view class="bg-shapes">
-    <view class="shape shape-1"></view>
-    <view class="shape shape-2"></view>
-  </view>
+<view class="page">
+  <!-- 背景 -->
+  <view class="page-bg" style="background: linear-gradient(180deg, {{joke.color}}22 0%, var(--bg) 40%)"></view>
 
   <!-- 主卡片 -->
-  <view class="main-card fade-in">
-    <!-- 顶部区域 -->
+  <view class="main-card scale-in">
+    <!-- 顶部色条 -->
+    <view class="card-top-bar" style="background: linear-gradient(90deg, {{joke.color}} 0%, {{joke.color}}88 100%)"></view>
+    
+    <!-- 分类标签 -->
     <view class="card-header">
-      <view class="category-badge">
-        <text class="badge-icon">{{joke.category === '职场' ? '💼' : joke.category === '生活' ? '🌈' : joke.category === '家庭' ? '🏠' : '📚'}}</text>
-        <text class="badge-text">{{joke.category}}</text>
+      <text class="card-category" style="color: {{joke.color}}">{{joke.category}}</text>
+      <view class="card-hot" wx:if="{{joke.isHot}}">
+        <view class="pulse-dot" style="background: {{joke.color}}"></view>
+        <text class="hot-text">HOT</text>
       </view>
-      <view class="hot-badge" wx:if="{{joke.isHot}}">🔥 热门</view>
     </view>
 
     <!-- 标题 -->
-    <text class="joke-title">{{joke.title}}</text>
-
-    <!-- 分割线 -->
-    <view class="divider">
-      <view class="divider-line"></view>
-      <text class="divider-dot">😄</text>
-      <view class="divider-line"></view>
-    </view>
+    <text class="card-title">{{joke.title}}</text>
 
     <!-- 内容 -->
-    <text class="joke-content">{{joke.content}}</text>
+    <text class="card-content">{{joke.content}}</text>
 
-    <!-- 底部统计 -->
-    <view class="joke-stats">
-      <view class="stat-item">
-        <text class="stat-icon">❤️</text>
-        <text class="stat-value">{{joke.likes}}</text>
+    <!-- 统计 -->
+    <view class="card-stats">
+      <view class="stat">
+        <text class="stat-num">{{joke.likes}}</text>
+        <text class="stat-label">LIKES</text>
       </view>
-      <view class="stat-item">
-        <text class="stat-icon">📅</text>
-        <text class="stat-value">{{formatDate(joke.createdAt)}}</text>
+      <view class="stat">
+        <text class="stat-num">{{formatDate(joke.createdAt)}}</text>
+        <text class="stat-label">DATE</text>
       </view>
     </view>
   </view>
 
   <!-- 操作按钮 -->
-  <view class="action-bar">
+  <view class="actions">
     <view class="action-btn {{liked ? 'liked' : ''}}" bindtap="toggleLike">
-      <view class="btn-bg" wx:if="{{!liked}}"></view>
-      <view class="btn-gradient" wx:if="{{liked}}"></view>
-      <text class="btn-icon">{{liked ? '❤️' : '🤍'}}</text>
-      <text class="btn-text">{{liked ? '已喜欢' : '喜欢'}}</text>
+      <view class="btn-fill" wx:if="{{liked}}" style="background: {{joke.color}}"></view>
+      <view class="btn-border" style="border-color: {{joke.color}}"></view>
+      <text class="btn-label">{{liked ? '已喜欢' : '喜欢'}}</text>
     </view>
     
-    <view class="action-btn share" bindtap="shareJoke">
-      <view class="btn-bg"></view>
-      <text class="btn-icon">📤</text>
-      <text class="btn-text">分享</text>
+    <view class="action-btn" bindtap="shareJoke">
+      <view class="btn-border" style="border-color: var(--primary)"></view>
+      <text class="btn-label">分享</text>
     </view>
   </view>
 
   <!-- 更多推荐 -->
   <view class="more-section">
     <view class="section-header">
-      <text class="section-icon">✨</text>
-      <text class="section-title">更多笑话</text>
+      <view class="header-line"></view>
+      <text class="header-title">MORE</text>
     </view>
     
     <view class="more-grid">
@@ -73,12 +64,9 @@
         bindtap="goToDetail"
         data-id="{{item.id}}"
       >
-        <view class="more-emoji">{{item.category === '职场' ? '💼' : item.category === '生活' ? '🌈' : item.category === '家庭' ? '🏠' : '📚'}}</view>
+        <view class="more-color" style="background: {{item.color}}"></view>
         <text class="more-title">{{item.title}}</text>
-        <view class="more-likes">
-          <text class="heart">❤️</text>
-          <text class="num">{{item.likes}}</text>
-        </view>
+        <text class="more-likes">{{item.likes}}</text>
       </view>
     </view>
   </view>

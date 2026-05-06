@@ -1,13 +1,22 @@
 const { api } = require('../../utils/api.js')
 
+// 颜色配置（代替emoji）
+const CATEGORY_COLORS = {
+  '全部': { color: '#667eea', gradient: '#667eea, #764ba2' },
+  '职场': { color: '#f093fb', gradient: '#f093fb, #f5576c' },
+  '生活': { color: '#4facfe', gradient: '#4facfe, #00f2fe' },
+  '家庭': { color: '#43e97b', gradient: '#43e97b, #38f9d7' },
+  '校园': { color: '#fa709a', gradient: '#fa709a, #fee140' }
+}
+
 Page({
   data: {
     categories: [
-      { name: '全部', icon: '🌟', count: 20 },
-      { name: '职场', icon: '💼', count: 5 },
-      { name: '生活', icon: '🌈', count: 6 },
-      { name: '家庭', icon: '🏠', count: 5 },
-      { name: '校园', icon: '📚', count: 4 }
+      { name: '全部', count: 30, color: '#667eea' },
+      { name: '职场', count: 8, color: '#f093fb' },
+      { name: '生活', count: 9, color: '#4facfe' },
+      { name: '家庭', count: 7, color: '#43e97b' },
+      { name: '校园', count: 6, color: '#fa709a' }
     ],
     currentCategory: '全部',
     jokes: [],
@@ -15,10 +24,8 @@ Page({
     showModal: false,
     randomJoke: null,
     loading: true,
-    stats: { total: 30, hotCount: 12 },
-    favoritesCount: 0,
-    page: 1,
-    hasMore: true
+    stats: { total: 30, hotCount: 14 },
+    favoritesCount: 0
   },
 
   onLoad() {
@@ -32,10 +39,19 @@ Page({
   },
 
   onPullDownRefresh() {
-    this.setData({ page: 1, hasMore: true })
     this.loadData()
     this.loadStats()
     setTimeout(() => wx.stopPullDownRefresh(), 500)
+  },
+
+  // 给笑话添加颜色和预览
+  processJokes(jokes) {
+    return jokes.map(j => ({
+      ...j,
+      color: CATEGORY_COLORS[j.category]?.color || '#667eea',
+      gradient: CATEGORY_COLORS[j.category]?.gradient || '#667eea, #764ba2',
+      preview: j.content.length > 60 ? j.content.substring(0, 60) + '...' : j.content
+    }))
   },
 
   async loadData() {
@@ -45,15 +61,17 @@ Page({
       const jokesRes = await api.getJokes({ category: this.data.currentCategory, limit: 20 })
       const hotRes = await api.getHotJokes()
       
+      const jokes = this.processJokes(jokesRes.data.list)
+      const hotJokes = this.processJokes(hotRes.data).slice(0, 5)
+      
       this.setData({
-        jokes: jokesRes.data.list,
-        hotJokes: hotRes.data.slice(0, 5),
-        loading: false,
-        hasMore: jokesRes.data.list.length >= 20
+        jokes,
+        hotJokes,
+        loading: false
       })
       
-      wx.setStorageSync('cachedJokes', jokesRes.data.list)
-      wx.setStorageSync('cachedHot', hotRes.data)
+      wx.setStorageSync('cachedJokes', jokes)
+      wx.setStorageSync('cachedHot', hotJokes)
       
     } catch (err) {
       const cachedJokes = wx.getStorageSync('cachedJokes') || []
@@ -81,7 +99,7 @@ Page({
 
   async switchCategory(e) {
     const category = e.currentTarget.dataset.category
-    this.setData({ currentCategory: category, page: 1, loading: true })
+    this.setData({ currentCategory: category, loading: true })
     await this.loadData()
   },
 
@@ -91,24 +109,7 @@ Page({
       const shuffled = [...hotJokes].sort(() => Math.random() - 0.5)
       this.setData({ hotJokes: shuffled })
     }
-    wx.showToast({ title: '换了一批~', icon: 'none' })
-  },
-
-  async loadMore() {
-    if (!this.data.hasMore || this.data.loading) return
-    
-    this.setData({ page: this.data.page + 1, loading: true })
-    
-    try {
-      const res = await api.getJokes({ category: this.data.currentCategory, page: this.data.page, limit: 20 })
-      this.setData({
-        jokes: [...this.data.jokes, ...res.data.list],
-        loading: false,
-        hasMore: res.data.list.length >= 20
-      })
-    } catch (err) {
-      this.setData({ loading: false, hasMore: false })
-    }
+    wx.showToast({ title: '已刷新', icon: 'none' })
   },
 
   goToDetail(e) {
@@ -122,7 +123,8 @@ Page({
   async showRandomJoke() {
     try {
       const res = await api.getRandomJoke()
-      this.setData({ showModal: true, randomJoke: res.data })
+      const randomJoke = this.processJokes([res.data])[0]
+      this.setData({ showModal: true, randomJoke })
     } catch (err) {
       const jokes = this.data.jokes
       if (jokes.length > 0) {
@@ -143,6 +145,6 @@ Page({
   preventClose() {},
   
   onShareAppMessage() {
-    return { title: '哇哇笑 - 每天开心一笑！', path: '/pages/index/index' }
+    return { title: '哇哇笑', path: '/pages/index/index' }
   }
 })

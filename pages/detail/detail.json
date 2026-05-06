@@ -1,4 +1,5 @@
 {
-  "navigationBarTitleText": "笑话详情",
+  "navigationBarTitleText": "详情",
+  "navigationStyle": "custom",
   "usingComponents": {}
 }
