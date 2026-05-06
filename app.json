@@ -1,7 +1,8 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/detail/detail"
+    "pages/detail/detail",
+    "pages/favorites/favorites"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -21,6 +22,12 @@
         "text": "开心一下",
         "iconPath": "images/happy.png",
         "selectedIconPath": "images/happy-active.png"
+      },
+      {
+        "pagePath": "pages/favorites/favorites",
+        "text": "我的收藏",
+        "iconPath": "images/favorite.png",
+        "selectedIconPath": "images/favorite-active.png"
       }
     ]
   },

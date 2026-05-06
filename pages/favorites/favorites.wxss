@@ -1,0 +1,230 @@
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #FFF5F5 0%, #FFE8E8 100%);
+  padding-bottom: 120rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200rpx;
+  pointer-events: none;
+}
+
+.deco-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.3;
+}
+
+.circle-1 {
+  width: 120rpx;
+  height: 120rpx;
+  background: #FF6B6B;
+  top: -40rpx;
+  left: 60rpx;
+}
+
+.circle-2 {
+  width: 80rpx;
+  height: 80rpx;
+  background: #FFE66D;
+  top: 40rpx;
+  right: 40rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 48rpx;
+  margin-top: 100rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 32rpx;
+}
+
+.empty-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 16rpx;
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: #999999;
+  margin-bottom: 48rpx;
+}
+
+.empty-btn {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+  color: #FFFFFF;
+  font-size: 30rpx;
+  padding: 24rpx 64rpx;
+  border-radius: 44rpx;
+  box-shadow: 0 8rpx 24rpx rgba(255, 107, 107, 0.3);
+}
+
+.empty-btn:active {
+  transform: scale(0.95);
+}
+
+/* 板块头部 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx;
+  margin-top: 16rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.favorite-count {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+/* 收藏列表 */
+.favorite-list {
+  padding: 0 24rpx;
+}
+
+.favorite-card {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 28rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(255, 107, 107, 0.08);
+  transition: all 0.3s ease;
+}
+
+.favorite-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(255, 107, 107, 0.1);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.category-tag {
+  font-size: 22rpx;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+}
+
+.card-hot {
+  background: rgba(255, 230, 109, 0.3);
+  padding: 4rpx 12rpx;
+  border-radius: 10rpx;
+}
+
+.hot-text {
+  font-size: 20rpx;
+  color: #E6A800;
+}
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 12rpx;
+}
+
+.card-preview {
+  font-size: 26rpx;
+  color: #999999;
+  line-height: 1.6;
+  margin-bottom: 20rpx;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-likes {
+  display: flex;
+  align-items: center;
+}
+
+.heart-icon {
+  font-size: 26rpx;
+  margin-right: 6rpx;
+}
+
+.likes-num {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.delete-btn {
+  width: 48rpx;
+  height: 48rpx;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn:active {
+  background: rgba(255, 107, 107, 0.2);
+}
+
+.delete-icon {
+  font-size: 24rpx;
+}
+
+.card-arrow {
+  width: 48rpx;
+  height: 48rpx;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrow-icon {
+  font-size: 32rpx;
+  color: #FF6B6B;
+  font-weight: 300;
+}
+
+/* 底部提示 */
+.footer-tip {
+  text-align: center;
+  padding: 40rpx;
+}
+
+.tip-text {
+  font-size: 24rpx;
+  color: #CCCCCC;
+}
