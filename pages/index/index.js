@@ -1,4 +1,3 @@
-// pages/index/index.js - 现代风格
 const { api } = require('../../utils/api.js')
 
 Page({
@@ -16,7 +15,7 @@ Page({
     showModal: false,
     randomJoke: null,
     loading: true,
-    stats: { total: 20, hotCount: 9 },
+    stats: { total: 30, hotCount: 12 },
     favoritesCount: 0,
     page: 1,
     hasMore: true
@@ -36,37 +35,19 @@ Page({
     this.setData({ page: 1, hasMore: true })
     this.loadData()
     this.loadStats()
-    setTimeout(() => {
-      wx.stopPullDownRefresh()
-    }, 500)
+    setTimeout(() => wx.stopPullDownRefresh(), 500)
   },
 
   async loadData() {
     this.setData({ loading: true })
     
     try {
-      const jokesRes = await api.getJokes({ 
-        category: this.data.currentCategory, 
-        page: this.data.page,
-        limit: 20 
-      })
-      
+      const jokesRes = await api.getJokes({ category: this.data.currentCategory, limit: 20 })
       const hotRes = await api.getHotJokes()
-      
-      // 更新分类计数
-      const categories = this.data.categories.map(cat => {
-        if (cat.name === '全部') {
-          cat.count = jokesRes.data.total
-        } else {
-          cat.count = jokesRes.data.list.filter(j => j.category === cat.name).length
-        }
-        return cat
-      })
       
       this.setData({
         jokes: jokesRes.data.list,
         hotJokes: hotRes.data.slice(0, 5),
-        categories,
         loading: false,
         hasMore: jokesRes.data.list.length >= 20
       })
@@ -107,7 +88,6 @@ Page({
   refreshHot() {
     const hotJokes = this.data.hotJokes
     if (hotJokes.length > 0) {
-      // 随机排序
       const shuffled = [...hotJokes].sort(() => Math.random() - 0.5)
       this.setData({ hotJokes: shuffled })
     }
@@ -120,12 +100,7 @@ Page({
     this.setData({ page: this.data.page + 1, loading: true })
     
     try {
-      const res = await api.getJokes({
-        category: this.data.currentCategory,
-        page: this.data.page,
-        limit: 20
-      })
-      
+      const res = await api.getJokes({ category: this.data.currentCategory, page: this.data.page, limit: 20 })
       this.setData({
         jokes: [...this.data.jokes, ...res.data.list],
         loading: false,
@@ -137,12 +112,11 @@ Page({
   },
 
   goToDetail(e) {
-    const id = e.currentTarget.dataset.id
-    wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
+    wx.navigateTo({ url: `/pages/detail/detail?id=${e.currentTarget.dataset.id}` })
   },
 
   showSearch() {
-    wx.showToast({ title: '搜索功能开发中~', icon: 'none' })
+    wx.navigateTo({ url: '/pages/search/search' })
   },
 
   async showRandomJoke() {
@@ -169,9 +143,6 @@ Page({
   preventClose() {},
   
   onShareAppMessage() {
-    return {
-      title: '哇哇笑 - 每天开心一笑！',
-      path: '/pages/index/index'
-    }
+    return { title: '哇哇笑 - 每天开心一笑！', path: '/pages/index/index' }
   }
 })
