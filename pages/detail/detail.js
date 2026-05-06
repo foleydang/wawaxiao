@@ -1,6 +1,5 @@
 const { api } = require('../../utils/api.js')
 const { getCurrentTheme, toggleTheme, getThemeIcon, initTheme } = require('../../utils/theme.js')
-const voice = require('../../utils/voice.js')
 
 const CAT_COLORS = {
   '职场': '#f093fb',
@@ -16,10 +15,7 @@ Page({
     moreJokes: [],
     liked: false,
     disliked: false,
-    themeIcon: '🌙',
-    voiceMode: false,
-    voiceStatus: '点击开启语音控制',
-    voiceHint: '说"下一个"、"喜欢"、"朗读"'
+    themeIcon: '🌙'
   },
 
   onLoad(options) {
@@ -32,7 +28,6 @@ Page({
   },
 
   onShow() {
-    // 重新加载当前笑话获取最新数据
     if (this.data.joke) {
       this.refreshJoke()
     }
@@ -40,13 +35,6 @@ Page({
       pageClass: getCurrentTheme() === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
-  },
-
-  onUnload() {
-    if (this.data.voiceMode) {
-      voice.stopListening()
-      voice.stopAudio()
-    }
   },
 
   processJoke(joke) {
@@ -103,98 +91,6 @@ Page({
     })
   },
 
-  toggleVoiceMode() {
-    if (this.data.voiceMode) {
-      voice.stopListening()
-      voice.stopAudio()
-      this.setData({
-        voiceMode: false,
-        voiceStatus: '点击开启语音控制',
-        voiceHint: '说"下一个"、"喜欢"、"朗读"'
-      })
-      wx.showToast({ title: '语音模式已关闭', icon: 'none' })
-    } else {
-      voice.initManager()
-      voice.startListening((intent, text) => {
-        this.handleVoiceIntent(intent, text)
-      })
-      
-      this.setData({
-        voiceMode: true,
-        voiceStatus: '🟢 正在聆听...',
-        voiceHint: '说"下一个"、"喜欢"、"朗读"、"退出"'
-      })
-      
-      wx.showToast({ title: '语音模式已开启', icon: 'none', duration: 2000 })
-    }
-  },
-
-  handleVoiceIntent(intent, text) {
-    switch (intent) {
-      case 'next':
-        wx.showToast({ title: '切换下一个', icon: 'none' })
-        this.goToRandomJoke()
-        break
-      case 'like':
-        wx.showToast({ title: '喜欢', icon: 'none' })
-        this.toggleLike()
-        break
-      case 'dislike':
-        wx.showToast({ title: '不喜欢', icon: 'none' })
-        this.toggleDislike()
-        break
-      case 'read':
-        wx.showToast({ title: '朗读笑话', icon: 'none' })
-        this.readJoke()
-        break
-      case 'stopRead':
-        voice.stopAudio()
-        wx.showToast({ title: '停止朗读', icon: 'none' })
-        break
-      case 'repeat':
-        wx.showToast({ title: '再听一遍', icon: 'none' })
-        this.readJoke()
-        break
-      case 'exit':
-        this.toggleVoiceMode()
-        break
-      case 'back':
-        wx.navigateBack()
-        break
-    }
-  },
-
-  readJoke() {
-    const joke = this.data.joke
-    if (!joke) return
-    
-    const content = `${joke.title}。\n${joke.content}`
-    voice.textToSpeech(content)
-  },
-
-  goToRandomJoke() {
-    const allJokes = wx.getStorageSync('cachedJokes') || []
-    const currentId = this.data.joke.id
-    const otherJokes = allJokes.filter(j => j.id !== currentId)
-    
-    if (otherJokes.length === 0) {
-      voice.textToSpeech('没有更多笑话了')
-      return
-    }
-    
-    const randomJoke = otherJokes[Math.floor(Math.random() * otherJokes.length)]
-    voice.stopAudio()
-    
-    wx.redirectTo({
-      url: `/pages/detail/detail?id=${randomJoke.id}`,
-      success: () => {
-        if (this.data.voiceMode) {
-          setTimeout(() => this.readJoke(), 1000)
-        }
-      }
-    })
-  },
-
   async toggleLike() {
     const id = this.data.joke.id
     let likes = wx.getStorageSync('userLikes') || []
@@ -218,17 +114,13 @@ Page({
     
     wx.setStorageSync('userLikes', likes)
     
-    // 调用API并使用返回的真实数据
     try {
       const res = await api.toggleLike(id, newLiked)
       const joke = this.data.joke
       joke.likes = res.data.likes
       joke.dislikes = res.data.dislikes
       this.setData({ liked: newLiked, joke })
-      
-      if (this.data.voiceMode) {
-        voice.textToSpeech(newLiked ? '已喜欢' : '取消喜欢')
-      }
+      wx.showToast({ title: newLiked ? '已喜欢' : '取消喜欢', icon: 'none' })
     } catch (err) {
       const joke = this.data.joke
       joke.likes = wasLiked ? joke.likes - 1 : joke.likes + 1
@@ -265,20 +157,12 @@ Page({
       joke.likes = res.data.likes
       joke.dislikes = res.data.dislikes
       this.setData({ disliked: newDisliked, joke })
-      
-      if (this.data.voiceMode) {
-        voice.textToSpeech(newDisliked ? '已不喜欢' : '取消不喜欢')
-      }
+      wx.showToast({ title: newDisliked ? '已不喜欢' : '取消不喜欢', icon: 'none' })
     } catch (err) {
       const joke = this.data.joke
       joke.dislikes = wasDisliked ? joke.dislikes - 1 : joke.dislikes + 1
       this.setData({ disliked: newDisliked, joke })
     }
-  },
-
-  playVoice() {
-    this.readJoke()
-    wx.showToast({ title: '正在朗读', icon: 'none' })
   },
 
   toggleTheme() {
@@ -301,10 +185,6 @@ Page({
   },
 
   goBack() {
-    if (this.data.voiceMode) {
-      voice.stopListening()
-      voice.stopAudio()
-    }
     wx.navigateBack()
   },
 

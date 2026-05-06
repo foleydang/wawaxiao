@@ -18,17 +18,14 @@
 }
 
 .page-wrapper.light-mode .main-title,
-.page-wrapper.light-mode .more-title,
-.page-wrapper.light-mode .voice-status {
+.page-wrapper.light-mode .more-title {
   color: #1a1a2e !important;
 }
 
 .page-wrapper.light-mode .meta-cat,
 .page-wrapper.light-mode .main-content,
 .page-wrapper.light-mode .stat-label,
-.page-wrapper.light-mode .action-num,
-.page-wrapper.light-mode .action-label,
-.page-wrapper.light-mode .voice-hint {
+.page-wrapper.light-mode .action-num {
   color: #555555 !important;
 }
 
@@ -76,7 +73,7 @@
 
 .main-card {
   margin: 28rpx;
-  padding: 20rpx;
+  padding: 24rpx;
   border-radius: 16rpx;
 }
 
@@ -116,7 +113,7 @@
 .main-title {
   font-size: 36rpx;
   font-weight: 600;
-  margin-bottom: 32rpx;
+  margin-bottom: 24rpx;
   line-height: 1.4;
   display: block;
 }
@@ -124,7 +121,7 @@
 .main-content {
   font-size: 30rpx;
   color: var(--text-secondary);
-  line-height: 1.75;
+  line-height: 1.8;
   white-space: pre-wrap;
   margin-bottom: 24rpx;
 }
@@ -145,7 +142,7 @@
 .stats-bar {
   display: flex;
   justify-content: space-around;
-  margin-top: 20rpx;
+  margin-top: 24rpx;
   padding-top: 16rpx;
   border-top: 1rpx solid var(--border);
 }
@@ -167,62 +164,17 @@
   margin-top: 4rpx;
 }
 
-/* 语音控制区域 */
-.voice-control {
-  margin: 28rpx;
-  padding: 16rpx 20rpx;
-  border-radius: 14rpx;
-  display: flex;
-  align-items: center;
-  gap: 16rpx;
-}
-
-.voice-btn {
-  width: 48rpx;
-  height: 48rpx;
-  border-radius: 24rpx;
-  background: var(--bg-light);
-  border: 1rpx solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.voice-btn.active {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  border: none;
-}
-
-.voice-icon {
-  font-size: 24rpx;
-}
-
-.voice-info {
-  flex: 1;
-}
-
-.voice-status {
-  font-size: 28rpx;
-  font-weight: 500;
-  display: block;
-}
-
-.voice-hint {
-  font-size: 22rpx;
-  color: var(--text-secondary);
-}
-
 /* 操作按钮 */
 .action-bar {
   display: flex;
   padding: 16rpx 28rpx;
-  gap: 10rpx;
+  gap: 12rpx;
 }
 
 .action-btn {
   flex: 1;
-  height: 64rpx;
-  border-radius: 10rpx;
+  height: 72rpx;
+  border-radius: 12rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -236,12 +188,12 @@
 }
 
 .action-btn.liked {
-  background: rgba(240,147,251,0.12);
+  background: rgba(240,147,251,0.15);
   border: none;
 }
 
 .action-btn.disliked {
-  background: rgba(255,100,100,0.12);
+  background: rgba(255,100,100,0.15);
   border: none;
 }
 
@@ -251,11 +203,6 @@
 
 .action-num {
   font-size: 26rpx;
-  color: var(--text-secondary);
-}
-
-.action-label {
-  font-size: 24rpx;
   color: var(--text-secondary);
 }
 

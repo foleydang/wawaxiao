@@ -57,17 +57,6 @@
     </view>
   </view>
 
-  <!-- 语音控制区域 -->
-  <view class="voice-control glass">
-    <view class="voice-btn {{voiceMode ? 'active' : ''}}" bindtap="toggleVoiceMode">
-      <text class="voice-icon">{{voiceMode ? '🎤' : '🎙️'}}</text>
-    </view>
-    <view class="voice-info">
-      <text class="voice-status">{{voiceStatus}}</text>
-      <text class="voice-hint">{{voiceHint}}</text>
-    </view>
-  </view>
-
   <!-- 操作按钮 -->
   <view class="action-bar" wx:if="{{joke}}">
     <view class="action-btn {{liked ? 'liked' : ''}}" bindtap="toggleLike">
@@ -78,11 +67,6 @@
     <view class="action-btn {{disliked ? 'disliked' : ''}}" bindtap="toggleDislike">
       <text class="action-icon">{{disliked ? '👎' : '👎🏻'}}</text>
       <text class="action-num">{{joke.dislikes}}</text>
-    </view>
-    
-    <view class="action-btn" bindtap="playVoice">
-      <text class="action-icon">🔊</text>
-      <text class="action-label">朗读</text>
     </view>
     
     <button class="action-btn share-btn" open-type="share">
