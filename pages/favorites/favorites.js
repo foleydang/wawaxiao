@@ -1,4 +1,4 @@
-const CATEGORY_COLORS = {
+const CAT_COLORS = {
   '职场': '#f093fb',
   '生活': '#4facfe',
   '家庭': '#43e97b',
@@ -16,7 +16,7 @@ Page({
     const cached = wx.getStorageSync('cachedJokes') || []
     const favorites = favs.map(id => cached.find(j => j.id === id)).filter(Boolean).map(j => ({
       ...j,
-      color: CATEGORY_COLORS[j.category] || '#667eea',
+      color: CAT_COLORS[j.category] || '#667eea',
       preview: j.content.substring(0, 40)
     }))
     this.setData({ favorites })

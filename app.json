@@ -7,16 +7,14 @@
     "pages/search/search"
   ],
   "window": {
-    "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#667eea",
-    "navigationBarTitleText": "哇哇笑",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#f8f9fe"
+    "navigationBarTitleText": "",
+    "navigationStyle": "custom",
+    "backgroundColor": "#0f0f23"
   },
   "tabBar": {
     "color": "#8888a8",
-    "selectedColor": "#667eea",
-    "backgroundColor": "#ffffff",
+    "selectedColor": "#ffffff",
+    "backgroundColor": "#0f0f23",
     "borderStyle": "white",
     "list": [
       {
@@ -27,7 +25,7 @@
       },
       {
         "pagePath": "pages/favorites/favorites",
-        "text": "收藏",
+        "text": "喜欢",
         "iconPath": "images/heart.png",
         "selectedIconPath": "images/heart-active.png"
       },

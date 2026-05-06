@@ -1,41 +1,43 @@
 <view class="page">
+  <!-- 安全区域 + 标题 -->
+  <view class="header">
+    <text class="header-title gradient-text">喜欢</text>
+    <text class="header-count">{{favorites.length}}</text>
+  </view>
+
   <!-- 空状态 -->
   <view class="empty" wx:if="{{favorites.length === 0}}">
     <view class="empty-icon">
-      <view class="icon-line"></view>
+      <view class="empty-line"></view>
     </view>
-    <text class="empty-title">NO LIKES</text>
-    <text class="empty-desc">还没有收藏任何笑话</text>
+    <text class="empty-title">还没有喜欢</text>
+    <text class="empty-desc">遇到好笑的就点喜欢吧</text>
     <view class="empty-btn gradient-btn" bindtap="goToIndex">
-      <text class="btn-text">去发现</text>
+      <text class="empty-btn-text">去发现</text>
     </view>
   </view>
 
-  <!-- 收藏列表 -->
+  <!-- 列表 -->
   <view class="list" wx:else>
-    <!-- 标题 -->
-    <view class="list-header">
-      <view class="header-line"></view>
-      <text class="header-title">LIKED</text>
-      <text class="header-count">{{favorites.length}}</text>
-    </view>
-
-    <!-- 卡片 -->
-    <view class="fav-card fade-up"
+    <view 
+      class="fav-card fade-up"
       wx:for="{{favorites}}"
       wx:key="id"
       bindtap="goToDetail"
       data-id="{{item.id}}"
-      style="animation-delay: {{index * 0.05}}s"
+      style="animation-delay: {{index * 0.04}}s"
     >
-      <view class="card-color" style="background: {{item.color}}"></view>
-      <view class="card-body">
-        <text class="card-category" style="color: {{item.color}}">{{item.category}}</text>
-        <text class="card-title">{{item.title}}</text>
-        <text class="card-preview">{{item.preview}}</text>
+      <view class="fav-color" style="background: {{item.color}}"></view>
+      <view class="fav-body">
+        <view class="fav-top">
+          <view class="fav-dot" style="background: {{item.color}}"></view>
+          <text class="fav-category">{{item.category}}</text>
+        </view>
+        <text class="fav-title">{{item.title}}</text>
+        <text class="fav-preview">{{item.preview}}</text>
       </view>
-      <view class="card-actions">
-        <text class="card-likes">{{item.likes}}</text>
+      <view class="fav-right">
+        <text class="fav-likes">{{item.likes}}</text>
         <view class="delete-btn" catchtap="removeFavorite" data-id="{{item.id}}">
           <view class="delete-line"></view>
         </view>

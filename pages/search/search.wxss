@@ -4,7 +4,7 @@
 }
 
 .search-header {
-  padding: 24rpx;
+  padding: calc(24rpx + var(--safe-top)) 24rpx 24rpx;
 }
 
 .search-bar {
@@ -12,30 +12,30 @@
   align-items: center;
   background: var(--card);
   border: 1rpx solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 16rpx 24rpx;
+  border-radius: var(--radius-lg);
+  padding: 12rpx 16rpx;
 }
 
-.search-icon {
-  width: 32rpx;
-  height: 32rpx;
+.search-icon-wrap {
+  width: 28rpx;
+  height: 28rpx;
   position: relative;
-  margin-right: 16rpx;
+  margin-right: 12rpx;
 }
 
 .search-circle {
-  width: 20rpx;
-  height: 20rpx;
-  border: 2rpx solid var(--primary);
-  border-radius: 50%;
+  width: 18rpx;
+  height: 18rpx;
+  border: 2rpx solid var(--text-muted);
+  border-radius: 9rpx;
 }
 
 .search-line {
-  width: 10rpx;
+  width: 8rpx;
   height: 2rpx;
-  background: var(--primary);
+  background: var(--text-muted);
   position: absolute;
-  bottom: 4rpx;
+  bottom: 2rpx;
   right: 0;
   transform: rotate(45deg);
 }
@@ -47,15 +47,15 @@
 }
 
 .clear-btn {
-  width: 24rpx;
-  height: 24rpx;
+  width: 20rpx;
+  height: 20rpx;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .clear-line {
-  width: 16rpx;
+  width: 14rpx;
   height: 2rpx;
   background: var(--text-muted);
   transform: rotate(45deg);
@@ -64,7 +64,7 @@
 
 .clear-line::after {
   content: '';
-  width: 16rpx;
+  width: 14rpx;
   height: 2rpx;
   background: var(--text-muted);
   position: absolute;
@@ -74,14 +74,12 @@
 .section-header {
   display: flex;
   justify-content: space-between;
-  padding: 24rpx;
+  padding: 16rpx 24rpx;
 }
 
 .section-title {
   font-size: 26rpx;
-  font-weight: 600;
   color: var(--text-muted);
-  letter-spacing: 2rpx;
 }
 
 .clear-history {
@@ -92,7 +90,7 @@
 .history-list {
   display: flex;
   flex-wrap: wrap;
-  padding: 16rpx 24rpx;
+  padding: 8rpx 24rpx;
   gap: 8rpx;
 }
 
@@ -100,7 +98,7 @@
   background: var(--card);
   border: 1rpx solid var(--border);
   border-radius: var(--radius);
-  padding: 12rpx 16rpx;
+  padding: 10rpx 14rpx;
 }
 
 .history-text {
@@ -111,22 +109,19 @@
 .result-count {
   font-size: 24rpx;
   color: var(--text-muted);
-  letter-spacing: 1rpx;
 }
 
 .empty {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 80rpx;
+  padding: 60rpx;
 }
 
-.empty-text {
-  font-size: 32rpx;
-  font-weight: 700;
+.empty-title {
+  font-size: 30rpx;
   color: var(--text-muted);
-  letter-spacing: 2rpx;
-  margin-bottom: 12rpx;
+  margin-bottom: 8rpx;
 }
 
 .empty-tip {
@@ -135,7 +130,7 @@
 }
 
 .result-list {
-  padding: 0 24rpx;
+  padding: 8rpx 24rpx;
 }
 
 .result-card {
@@ -143,46 +138,55 @@
   align-items: center;
   background: var(--card);
   border: 1rpx solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   margin-bottom: 12rpx;
   overflow: hidden;
 }
 
 .result-color {
-  width: 6rpx;
+  width: 4rpx;
   height: 100%;
-  min-height: 80rpx;
+  min-height: 70rpx;
 }
 
 .result-body {
   flex: 1;
-  padding: 20rpx;
+  padding: 14rpx 16rpx;
   min-width: 0;
+}
+
+.result-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6rpx;
+}
+
+.result-dot {
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+  margin-right: 8rpx;
 }
 
 .result-category {
   font-size: 22rpx;
-  font-weight: 600;
-  letter-spacing: 1rpx;
+  color: var(--text-secondary);
 }
 
 .result-title {
   font-size: 28rpx;
   font-weight: 500;
   color: var(--text);
-  margin-top: 8rpx;
-  display: block;
+  margin-bottom: 6rpx;
 }
 
 .result-content {
   font-size: 24rpx;
   color: var(--text-muted);
-  margin-top: 6rpx;
-  display: block;
 }
 
 .result-likes {
   font-size: 22rpx;
   color: var(--text-muted);
-  padding: 20rpx;
+  padding: 14rpx;
 }

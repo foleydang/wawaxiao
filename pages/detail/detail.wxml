@@ -1,72 +1,82 @@
 <view class="page">
-  <!-- 背景 -->
-  <view class="page-bg" style="background: linear-gradient(180deg, {{joke.color}}22 0%, var(--bg) 40%)"></view>
+  <!-- 安全区域顶部 -->
+  <view class="safe-area-top"></view>
+  
+  <!-- 返回按钮 -->
+  <view class="nav-bar">
+    <view class="back-btn" bindtap="goBack">
+      <view class="back-arrow"></view>
+    </view>
+    <text class="nav-title">{{joke.title}}</text>
+  </view>
 
   <!-- 主卡片 -->
-  <view class="main-card scale-in">
-    <!-- 顶部色条 -->
-    <view class="card-top-bar" style="background: linear-gradient(90deg, {{joke.color}} 0%, {{joke.color}}88 100%)"></view>
+  <view class="main-card glass">
+    <!-- 分类色条 -->
+    <view class="color-bar" style="background: {{joke.color}}"></view>
     
-    <!-- 分类标签 -->
-    <view class="card-header">
-      <text class="card-category" style="color: {{joke.color}}">{{joke.category}}</text>
-      <view class="card-hot" wx:if="{{joke.isHot}}">
-        <view class="pulse-dot" style="background: {{joke.color}}"></view>
-        <text class="hot-text">HOT</text>
-      </view>
+    <!-- 元信息 -->
+    <view class="meta-row">
+      <view class="meta-dot" style="background: {{joke.color}}"></view>
+      <text class="meta-category">{{joke.category}}</text>
+      <view class="meta-badge" wx:if="{{joke.isHot}}">HOT</view>
+      <view class="meta-badge seen" wx:if="{{hasSeen}}">已看过</view>
     </view>
 
     <!-- 标题 -->
-    <text class="card-title">{{joke.title}}</text>
+    <text class="main-title">{{joke.title}}</text>
 
     <!-- 内容 -->
-    <text class="card-content">{{joke.content}}</text>
+    <scroll-view class="content-scroll" scroll-y>
+      <text class="main-content">{{joke.content}}</text>
+    </scroll-view>
 
     <!-- 统计 -->
-    <view class="card-stats">
+    <view class="stats-row">
       <view class="stat">
-        <text class="stat-num">{{joke.likes}}</text>
-        <text class="stat-label">LIKES</text>
+        <text class="stat-value">{{joke.likes}}</text>
+        <text class="stat-label">喜欢</text>
       </view>
       <view class="stat">
-        <text class="stat-num">{{formatDate(joke.createdAt)}}</text>
-        <text class="stat-label">DATE</text>
+        <text class="stat-value">{{readTime}}</text>
+        <text class="stat-label">阅读时长</text>
       </view>
     </view>
   </view>
 
   <!-- 操作按钮 -->
-  <view class="actions">
+  <view class="action-row">
     <view class="action-btn {{liked ? 'liked' : ''}}" bindtap="toggleLike">
-      <view class="btn-fill" wx:if="{{liked}}" style="background: {{joke.color}}"></view>
-      <view class="btn-border" style="border-color: {{joke.color}}"></view>
-      <text class="btn-label">{{liked ? '已喜欢' : '喜欢'}}</text>
+      <view class="action-bg" wx:if="{{liked}}" style="background: {{joke.color}}"></view>
+      <text class="action-text">{{liked ? '已喜欢' : '喜欢'}}</text>
     </view>
     
     <view class="action-btn" bindtap="shareJoke">
-      <view class="btn-border" style="border-color: var(--primary)"></view>
-      <text class="btn-label">分享</text>
+      <text class="action-text">分享</text>
     </view>
   </view>
 
   <!-- 更多推荐 -->
-  <view class="more-section">
-    <view class="section-header">
-      <view class="header-line"></view>
-      <text class="header-title">MORE</text>
+  <view class="more-section" wx:if="{{moreJokes.length > 0}}">
+    <view class="more-header">
+      <view class="more-bar"></view>
+      <text class="more-title">再看点别的</text>
     </view>
     
     <view class="more-grid">
       <view 
-        class="more-card"
+        class="more-card glass"
         wx:for="{{moreJokes}}"
         wx:key="id"
         bindtap="goToDetail"
         data-id="{{item.id}}"
       >
         <view class="more-color" style="background: {{item.color}}"></view>
-        <text class="more-title">{{item.title}}</text>
-        <text class="more-likes">{{item.likes}}</text>
+        <text class="more-name">{{item.title}}</text>
+        <view class="more-meta">
+          <view class="more-dot" style="background: {{item.color}}"></view>
+          <text class="more-cat">{{item.category}}</text>
+        </view>
       </view>
     </view>
   </view>

@@ -1,4 +1,4 @@
-const CATEGORY_COLORS = {
+const CAT_COLORS = {
   '职场': '#f093fb',
   '生活': '#4facfe',
   '家庭': '#43e97b',
@@ -29,17 +29,15 @@ Page({
     const keyword = this.data.keyword.trim()
     if (!keyword) return
     
-    // 保存历史
     let history = wx.getStorageSync('searchHistory') || []
     history = [keyword, ...history.filter(h => h !== keyword)].slice(0, 10)
     wx.setStorageSync('searchHistory', history)
     this.setData({ history })
     
-    // 搜索
     const cached = wx.getStorageSync('cachedJokes') || []
     const results = cached.filter(j => j.title.includes(keyword) || j.content.includes(keyword)).map(j => ({
       ...j,
-      color: CATEGORY_COLORS[j.category] || '#667eea',
+      color: CAT_COLORS[j.category] || '#667eea',
       matchContent: j.content.substring(0, 50)
     }))
     

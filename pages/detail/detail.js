@@ -1,6 +1,6 @@
 const { api } = require('../../utils/api.js')
 
-const CATEGORY_COLORS = {
+const CAT_COLORS = {
   '职场': '#f093fb',
   '生活': '#4facfe',
   '家庭': '#43e97b',
@@ -11,19 +11,31 @@ Page({
   data: {
     joke: { color: '#667eea' },
     moreJokes: [],
-    liked: false
+    liked: false,
+    hasSeen: false,
+    readTime: '30s'
   },
 
   onLoad(options) {
     const id = parseInt(options.id)
     this.loadJoke(id)
     this.checkLike(id)
+    this.checkSeen(id)
+    this.startTime = Date.now()
+  },
+
+  onUnload() {
+    // 计算阅读时长
+    const time = Math.round((Date.now() - this.startTime) / 1000)
+    if (time >= 5) {
+      this.markAsSeen(this.data.joke.id)
+    }
   },
 
   processJoke(j) {
     return {
       ...j,
-      color: CATEGORY_COLORS[j.category] || '#667eea'
+      color: CAT_COLORS[j.category] || '#667eea'
     }
   },
 
@@ -33,15 +45,15 @@ Page({
       const joke = this.processJoke(res.data)
       
       const cached = wx.getStorageSync('cachedJokes') || []
-      const moreJokes = cached.filter(j => j.id !== id).slice(0, 4).map(this.processJoke)
+      const more = cached.filter(j => j.id !== id).slice(0, 4).map(this.processJoke)
       
-      this.setData({ joke, moreJokes })
-      wx.setNavigationBarTitle({ title: joke.title })
+      this.setData({ joke, moreJokes: more })
     } catch (err) {
       const cached = wx.getStorageSync('cachedJokes') || []
       const joke = cached.find(j => j.id === id)
       if (joke) {
-        this.setData({ joke: this.processJoke(joke), moreJokes: cached.filter(j => j.id !== id).slice(0, 4).map(this.processJoke) })
+        const more = cached.filter(j => j.id !== id).slice(0, 4).map(this.processJoke)
+        this.setData({ joke: this.processJoke(joke), moreJokes: more })
       }
     }
   },
@@ -51,42 +63,49 @@ Page({
     this.setData({ liked: favs.includes(id) })
   },
 
-  formatDate(ts) {
-    if (!ts) return 'NEW'
-    const d = new Date(ts)
-    const now = new Date()
-    const diff = now - d
-    if (diff < 3600000) return '刚刚'
-    if (diff < 86400000) return Math.floor(diff/3600000) + 'h'
-    return Math.floor(diff/86400000) + 'd'
+  checkSeen(id) {
+    const seen = wx.getStorageSync('seenJokes') || []
+    this.setData({ hasSeen: seen.includes(id) })
+  },
+
+  markAsSeen(id) {
+    let seen = wx.getStorageSync('seenJokes') || []
+    if (!seen.includes(id)) {
+      seen = [id, ...seen].slice(0, 100)
+      wx.setStorageSync('seenJokes', seen)
+    }
+    this.setData({ hasSeen: true })
   },
 
   async toggleLike() {
-    const favs = wx.getStorageSync('favorites') || []
     const id = this.data.joke.id
+    let favs = wx.getStorageSync('favorites') || []
     
     try {
       await api.toggleLike(id)
     } catch (err) {}
     
-    let newFavs
     if (this.data.liked) {
-      newFavs = favs.filter(f => f !== id)
+      favs = favs.filter(f => f !== id)
     } else {
-      newFavs = [...favs, id]
+      favs = [...favs, id]
     }
     
-    wx.setStorageSync('favorites', newFavs)
+    wx.setStorageSync('favorites', favs)
     this.setData({ liked: !this.data.liked })
     wx.showToast({ title: this.data.liked ? '已喜欢' : '已取消', icon: 'none' })
   },
 
-  shareJoke() {
-    wx.showShareMenu({ menus: ['shareAppMessage'] })
+  goBack() {
+    wx.navigateBack()
   },
 
   goToDetail(e) {
     wx.redirectTo({ url: `/pages/detail/detail?id=${e.currentTarget.dataset.id}` })
+  },
+
+  shareJoke() {
+    wx.showShareMenu({ menus: ['shareAppMessage'] })
   },
 
   onShareAppMessage() {

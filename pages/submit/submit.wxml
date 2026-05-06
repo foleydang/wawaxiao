@@ -1,5 +1,5 @@
 <view class="page">
-  <!-- 顶部 -->
+  <!-- 头部 -->
   <view class="header">
     <view class="header-line"></view>
     <text class="header-title gradient-text">投稿</text>
@@ -7,63 +7,59 @@
   </view>
 
   <!-- 表单 -->
-  <view class="form">
+  <view class="form glass">
     <!-- 分类 -->
     <view class="form-section">
-      <text class="form-label">CATEGORY</text>
-      <view class="category-grid">
+      <text class="form-label">分类</text>
+      <view class="cat-grid">
         <view 
-          class="category-item {{form.category === item.name ? 'active' : ''}}"
+          class="cat-btn {{form.category === item.name ? 'active' : ''}}"
           wx:for="{{categories}}"
           wx:key="name"
           bindtap="selectCategory"
           data-category="{{item.name}}"
         >
-          <view class="category-dot" style="background: {{item.color}}"></view>
-          <text class="category-name">{{item.name}}</text>
+          <view class="cat-dot" style="background: {{item.color}}"></view>
+          <text class="cat-name">{{item.name}}</text>
         </view>
       </view>
     </view>
 
     <!-- 标题 -->
     <view class="form-section">
-      <text class="form-label">TITLE</text>
-      <view class="input-wrap">
-        <input class="input" placeholder="标题" maxlength="50" value="{{form.title}}" bindinput="inputTitle"/>
-        <text class="input-count">{{form.title.length}}/50</text>
-      </view>
+      <text class="form-label">标题</text>
+      <input class="form-input" placeholder="给笑话起个名" maxlength="50" value="{{form.title}}" bindinput="inputTitle"/>
+      <text class="form-count">{{form.title.length}}/50</text>
     </view>
 
     <!-- 内容 -->
     <view class="form-section">
-      <text class="form-label">CONTENT</text>
-      <view class="textarea-wrap">
-        <textarea class="textarea" placeholder="笑话内容..." maxlength="500" value="{{form.content}}" bindinput="inputContent"/>
-        <text class="textarea-count">{{form.content.length}}/500</text>
-      </view>
+      <text class="form-label">内容</text>
+      <textarea class="form-textarea" placeholder="笑话内容..." maxlength="500" value="{{form.content}}" bindinput="inputContent"/>
+      <text class="form-count textarea-count">{{form.content.length}}/500</text>
     </view>
   </view>
 
   <!-- 提交 -->
   <view class="submit-section">
     <view class="submit-btn {{canSubmit ? '' : 'disabled'}}" bindtap="submitJoke">
-      <view class="btn-bg" wx:if="{{canSubmit}}"></view>
-      <text class="submit-text">{{canSubmit ? 'SUBMIT' : '请填写完整'}}</text>
+      <view class="submit-bg gradient-btn" wx:if="{{canSubmit}}"></view>
+      <text class="submit-text">{{canSubmit ? '提交' : '请填写完整'}}</text>
     </view>
     <text class="submit-tip">提交后等待审核</text>
   </view>
 </view>
 
 <!-- 成功弹窗 -->
-<view class="success-overlay {{showSuccess ? 'show' : ''}}" bindtap="hideSuccess">
-  <view class="success-modal scale-in" catchtap="preventClose">
+<view class="modal-overlay {{showSuccess ? 'show' : ''}}" bindtap="hideSuccess">
+  <view class="modal glass scale-in" catchtap="preventClose">
     <view class="success-icon">
-      <view class="check-line"></view>
+      <view class="success-line"></view>
     </view>
-    <text class="success-title">SUCCESS</text>
-    <text class="success-desc">已提交，等待审核</text>
+    <text class="success-title">已提交</text>
+    <text class="success-desc">等待审核中</text>
     <view class="success-btn gradient-btn" bindtap="hideSuccess">
-      <text class="btn-text">继续投稿</text>
+      <text class="success-btn-text">继续投稿</text>
     </view>
   </view>
 </view>

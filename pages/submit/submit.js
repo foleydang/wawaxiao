@@ -16,7 +16,7 @@ Page({
   },
 
   checkCanSubmit() {
-    const { category, title, content } = this.data.form
+    const { title, content } = this.data.form
     this.setData({ canSubmit: title.length >= 2 && content.length >= 10 })
   },
 
@@ -36,11 +36,16 @@ Page({
 
   async submitJoke() {
     if (!this.data.canSubmit) return
+    
     wx.showLoading({ title: '提交中' })
     try {
       await api.submitJoke(this.data.form)
       wx.hideLoading()
-      this.setData({ showSuccess: true, form: { category: '生活', title: '', content: '' }, canSubmit: false })
+      this.setData({
+        showSuccess: true,
+        form: { category: '生活', title: '', content: '' },
+        canSubmit: false
+      })
     } catch (err) {
       wx.hideLoading()
       wx.showToast({ title: '失败', icon: 'none' })
