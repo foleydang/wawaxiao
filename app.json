@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/library/library",
     "pages/detail/detail",
     "pages/favorites/favorites",
     "pages/search/search"
@@ -18,9 +19,15 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "发现",
-        "iconPath": "images/discover.png",
-        "selectedIconPath": "images/discover-active.png"
+        "text": "首页",
+        "iconPath": "images/home.png",
+        "selectedIconPath": "images/home-active.png"
+      },
+      {
+        "pagePath": "pages/library/library",
+        "text": "笑话库",
+        "iconPath": "images/library.png",
+        "selectedIconPath": "images/library-active.png"
       },
       {
         "pagePath": "pages/favorites/favorites",

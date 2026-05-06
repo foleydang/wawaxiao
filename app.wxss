@@ -1,6 +1,5 @@
-/* app.wxss - 小程序主题切换 */
+/* app.wxss - 全局样式，较大字体 */
 
-/* 根页面 - 定义变量 */
 page {
   --safe-top: env(safe-area-inset-top);
   --safe-bottom: env(safe-area-inset-bottom);
@@ -25,10 +24,10 @@ page {
   
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
   font-size: 32rpx;
-  line-height: 1.65;
+  line-height: 1.7;
 }
 
-/* 日间模式类 - 覆盖变量 */
+/* 日间模式类 */
 page.light-mode {
   --bg: #f5f7fa;
   --bg-light: #ffffff;
@@ -40,10 +39,6 @@ page.light-mode {
 }
 
 /* 通用样式 */
-.gradient-btn {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-}
-
 .glass {
   background: var(--card);
   border: 1rpx solid var(--border);
@@ -51,7 +46,7 @@ page.light-mode {
 }
 
 .fade-up {
-  animation: fadeUp 0.3s ease-out;
+  animation: fadeUp 0.35s ease-out;
 }
 
 @keyframes fadeUp {

@@ -1,6 +1,6 @@
 const { api } = require('../../utils/api.js')
 const { markSeen, getSeenIds } = require('../../utils/seen.js')
-const { getCurrentTheme, toggleTheme, initTheme, getThemeIcon } = require('../../utils/theme.js')
+const { getCurrentTheme, toggleTheme, getThemeIcon, initTheme } = require('../../utils/theme.js')
 
 const CAT_COLORS = {
   '职场': '#f093fb',
@@ -11,21 +11,14 @@ const CAT_COLORS = {
 
 Page({
   data: {
-    pageClass: '',  // 页面主题class
-    categories: [
-      { name: '全部', color: '#667eea', count: 0 },
-      { name: '职场', color: '#f093fb', count: 0 },
-      { name: '生活', color: '#4facfe', count: 0 },
-      { name: '家庭', color: '#43e97b', count: 0 },
-      { name: '校园', color: '#fa709a', count: 0 }
-    ],
-    currentCategory: '全部',
+    pageClass: '',
+    currentJoke: null,
     allJokes: [],
-    todayJokes: [],
+    freshJokes: [],
     seenJokes: [],
-    filteredJokes: [],
-    showModal: false,
-    randomJoke: null,
+    freshCount: 0,
+    liked: false,
+    disliked: false,
     loading: true,
     showSeen: false,
     themeIcon: '🌙'
@@ -33,12 +26,10 @@ Page({
 
   onLoad() {
     initTheme()
-    
     this.setData({
       pageClass: getCurrentTheme() === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
     })
-    
     this.loadJokes()
   },
 
@@ -50,25 +41,19 @@ Page({
     this.updateSeenStatus()
   },
 
-  onPullDownRefresh() {
-    this.loadJokes()
-    setTimeout(() => wx.stopPullDownRefresh(), 500)
-  },
-
   processJokes(jokes) {
     return jokes.map(j => ({
       ...j,
       color: CAT_COLORS[j.category] || '#667eea',
-      preview: j.content.split('\n')[0].substring(0, 35),
       hasImage: j.images && j.images.length > 0
     }))
   },
 
   splitBySeen(jokes) {
     const seenIds = getSeenIds()
-    const todayJokes = jokes.filter(j => !seenIds.includes(j.id))
+    const freshJokes = jokes.filter(j => !seenIds.includes(j.id))
     const seenJokes = jokes.filter(j => seenIds.includes(j.id))
-    return { todayJokes, seenJokes }
+    return { freshJokes, seenJokes }
   },
 
   async loadJokes() {
@@ -77,46 +62,45 @@ Page({
     try {
       const res = await api.getJokes({ limit: 50 })
       const jokes = this.processJokes(res.data.list)
-      const { todayJokes, seenJokes } = this.splitBySeen(jokes)
+      const { freshJokes, seenJokes } = this.splitBySeen(jokes)
       
-      const cats = this.data.categories.map(c => ({
-        ...c,
-        count: c.name === '全部' 
-          ? todayJokes.length 
-          : todayJokes.filter(j => j.category === c.name).length
-      }))
+      wx.setStorageSync('cachedJokes', jokes)
+      
+      // 自动显示第一条未看过的
+      const currentJoke = freshJokes.length > 0 ? freshJokes[0] : null
       
       this.setData({
         allJokes: jokes,
-        todayJokes,
+        freshJokes,
         seenJokes,
-        filteredJokes: this.filterByCategory(jokes),
-        categories: cats,
+        freshCount: freshJokes.length,
+        currentJoke,
         loading: false
       })
       
-      wx.setStorageSync('cachedJokes', jokes)
+      if (currentJoke) {
+        this.checkStatus(currentJoke.id)
+      }
       
     } catch (err) {
       const cached = wx.getStorageSync('cachedJokes') || []
       const jokes = this.processJokes(cached)
-      const { todayJokes, seenJokes } = this.splitBySeen(jokes)
+      const { freshJokes, seenJokes } = this.splitBySeen(jokes)
       
-      const cats = this.data.categories.map(c => ({
-        ...c,
-        count: c.name === '全部' 
-          ? todayJokes.length 
-          : todayJokes.filter(j => j.category === c.name).length
-      }))
+      const currentJoke = freshJokes.length > 0 ? freshJokes[0] : null
       
       this.setData({
         allJokes: jokes,
-        todayJokes,
+        freshJokes,
         seenJokes,
-        filteredJokes: this.filterByCategory(jokes),
-        categories: cats,
+        freshCount: freshJokes.length,
+        currentJoke,
         loading: false
       })
+      
+      if (currentJoke) {
+        this.checkStatus(currentJoke.id)
+      }
     }
   },
 
@@ -124,49 +108,114 @@ Page({
     if (this.data.allJokes.length === 0) return
     
     const jokes = this.processJokes(this.data.allJokes)
-    const { todayJokes, seenJokes } = this.splitBySeen(jokes)
+    const { freshJokes, seenJokes } = this.splitBySeen(jokes)
     
-    const cats = this.data.categories.map(c => ({
-      ...c,
-      count: c.name === '全部' 
-        ? todayJokes.length 
-        : todayJokes.filter(j => j.category === c.name).length
-    }))
+    // 如果当前笑话已被看过，自动换下一个
+    let currentJoke = this.data.currentJoke
+    if (currentJoke && getSeenIds().includes(currentJoke.id)) {
+      currentJoke = freshJokes.length > 0 ? freshJokes[Math.floor(Math.random() * freshJokes.length)] : null
+    }
     
     this.setData({
       allJokes: jokes,
-      todayJokes,
+      freshJokes,
       seenJokes,
-      filteredJokes: this.filterByCategory(jokes),
-      categories: cats
+      freshCount: freshJokes.length,
+      currentJoke
+    })
+    
+    if (currentJoke) {
+      this.checkStatus(currentJoke.id)
+    }
+  },
+
+  checkStatus(id) {
+    const likes = wx.getStorageSync('userLikes') || []
+    const dislikes = wx.getStorageSync('userDislikes') || []
+    this.setData({
+      liked: likes.includes(id),
+      disliked: dislikes.includes(id)
     })
   },
 
-  filterByCategory(jokes) {
-    const cat = this.data.currentCategory
-    if (cat === '全部') return jokes
-    return jokes.filter(j => j.category === cat)
-  },
-
-  switchCategory(e) {
-    const category = e.currentTarget.dataset.category
-    const filteredJokes = this.filterByCategory(this.data.allJokes)
-    const { todayJokes, seenJokes } = this.splitBySeen(filteredJokes)
+  nextJoke() {
+    const fresh = this.data.freshJokes
+    if (fresh.length === 0) {
+      wx.showToast({ title: '都看完了', icon: 'none' })
+      return
+    }
     
-    const cats = this.data.categories.map(c => ({
-      ...c,
-      count: c.name === '全部' 
-        ? todayJokes.length 
-        : todayJokes.filter(j => j.category === c.name).length
-    }))
+    // 随机选一条未看过的
+    const randomJoke = fresh[Math.floor(Math.random() * fresh.length)]
+    
+    // 标记为看过
+    markSeen(randomJoke.id)
+    
+    // 更新状态
+    const { freshJokes, seenJokes } = this.splitBySeen(this.data.allJokes)
     
     this.setData({
-      currentCategory: category,
-      filteredJokes,
-      todayJokes,
+      currentJoke: randomJoke,
+      freshJokes,
       seenJokes,
-      categories: cats
+      freshCount: freshJokes.length,
+      liked: false,
+      disliked: false
     })
+  },
+
+  toggleLike() {
+    const id = this.data.currentJoke.id
+    let likes = wx.getStorageSync('userLikes') || []
+    let dislikes = wx.getStorageSync('userDislikes') || []
+    
+    if (dislikes.includes(id)) {
+      dislikes = dislikes.filter(d => d !== id)
+      wx.setStorageSync('userDislikes', dislikes)
+      this.setData({ disliked: false })
+    }
+    
+    const wasLiked = this.data.liked
+    if (wasLiked) {
+      likes = likes.filter(l => l !== id)
+    } else {
+      likes.push(id)
+    }
+    
+    wx.setStorageSync('userLikes', likes)
+    
+    const joke = this.data.currentJoke
+    joke.likes = wasLiked ? joke.likes - 1 : joke.likes + 1
+    
+    this.setData({ liked: !wasLiked, currentJoke: joke })
+    wx.showToast({ title: wasLiked ? '取消' : '喜欢', icon: 'none' })
+  },
+
+  toggleDislike() {
+    const id = this.data.currentJoke.id
+    let likes = wx.getStorageSync('userLikes') || []
+    let dislikes = wx.getStorageSync('userDislikes') || []
+    
+    if (likes.includes(id)) {
+      likes = likes.filter(l => l !== id)
+      wx.setStorageSync('userLikes', likes)
+      this.setData({ liked: false })
+    }
+    
+    const wasDisliked = this.data.disliked
+    if (wasDisliked) {
+      dislikes = dislikes.filter(d => d !== id)
+    } else {
+      dislikes.push(id)
+    }
+    
+    wx.setStorageSync('userDislikes', dislikes)
+    
+    const joke = this.data.currentJoke
+    joke.dislikes = wasDisliked ? joke.dislikes - 1 : joke.dislikes + 1
+    
+    this.setData({ disliked: !wasDisliked, currentJoke: joke })
+    wx.showToast({ title: wasDisliked ? '取消' : '不喜欢', icon: 'none' })
   },
 
   toggleShowSeen() {
@@ -182,37 +231,30 @@ Page({
     wx.showToast({ title: newTheme === 'dark' ? '夜间模式' : '日间模式', icon: 'none' })
   },
 
-  goToDetail(e) {
-    const id = e.currentTarget.dataset.id
-    markSeen(id)
-    wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
-  },
-
-  goToSearch() {
-    wx.navigateTo({ url: '/pages/search/search' })
-  },
-
-  showRandom() {
-    const unseen = this.data.todayJokes
-    const pool = unseen.length > 0 ? unseen : this.data.allJokes
-    
-    if (pool.length === 0) return
-    
-    const randomJoke = pool[Math.floor(Math.random() * pool.length)]
-    markSeen(randomJoke.id)
-    
-    this.setData({ showModal: true, randomJoke })
-  },
-
-  hideModal() {
-    this.setData({ showModal: false })
-    this.updateSeenStatus()
-  },
-
   previewImage(e) {
     const url = e.currentTarget.dataset.url
-    wx.previewImage({ current: url, urls: [url] })
+    wx.previewImage({ current: url, urls: this.data.currentJoke.images })
   },
 
-  preventClose() {}
+  goToDetail(e) {
+    wx.navigateTo({ url: `/pages/detail/detail?id=${e.currentTarget.dataset.id}` })
+  },
+
+  goToLibrary() {
+    wx.switchTab({ url: '/pages/library/library' })
+  },
+
+  onShareAppMessage() {
+    const joke = this.data.currentJoke
+    if (!joke) return
+    
+    joke.shares++
+    this.setData({ currentJoke: joke })
+    
+    return {
+      title: `【哇哇笑】${joke.title}`,
+      path: `/pages/detail/detail?id=${joke.id}`,
+      imageUrl: joke.hasImage ? joke.images[0] : ''
+    }
+  }
 })

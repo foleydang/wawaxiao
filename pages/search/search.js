@@ -19,7 +19,6 @@ Page({
 
   onLoad() {
     initTheme()
-    
     this.setData({
       pageClass: getCurrentTheme() === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon(),
@@ -51,12 +50,10 @@ Page({
     const keyword = this.data.keyword.trim()
     if (!keyword) return
     
-    // 保存历史
     let history = wx.getStorageSync('searchHistory') || []
     history = [keyword, ...history.filter(h => h !== keyword)].slice(0, 10)
     wx.setStorageSync('searchHistory', history)
     
-    // 搜索
     const cached = wx.getStorageSync('cachedJokes') || []
     const results = cached
       .filter(j => 
@@ -67,15 +64,11 @@ Page({
       .map(j => ({
         ...j,
         color: CAT_COLORS[j.category] || '#667eea',
-        preview: j.content.split('\n')[0].substring(0, 35),
+        preview: j.content.split('\n')[0].substring(0, 40),
         hasImage: j.images && j.images.length > 0
       }))
     
-    this.setData({ 
-      results, 
-      searched: true, 
-      history 
-    })
+    this.setData({ results, searched: true, history })
   },
 
   clearInput() {

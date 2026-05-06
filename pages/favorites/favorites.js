@@ -16,7 +16,6 @@ Page({
 
   onLoad() {
     initTheme()
-    
     this.setData({
       pageClass: getCurrentTheme() === 'light' ? 'light-mode' : '',
       themeIcon: getThemeIcon()
@@ -40,7 +39,7 @@ Page({
       .map(j => ({
         ...j,
         color: CAT_COLORS[j.category] || '#667eea',
-        preview: j.content.split('\n')[0].substring(0, 35),
+        preview: j.content.split('\n')[0].substring(0, 40),
         hasImage: j.images && j.images.length > 0
       }))
     
@@ -72,6 +71,6 @@ Page({
     wx.setStorageSync('userLikes', likes)
     
     this.loadFavorites()
-    wx.showToast({ title: '已取消喜欢', icon: 'none' })
+    wx.showToast({ title: '已取消', icon: 'none' })
   }
 })

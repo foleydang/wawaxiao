@@ -32,7 +32,6 @@ Page({
     this.checkStatus(id)
     this.startTime = Date.now()
     
-    // 显示分享提示（3秒后自动隐藏）
     this.setData({ showShareTip: true })
     setTimeout(() => this.setData({ showShareTip: false }), 3000)
   },
@@ -160,11 +159,8 @@ Page({
     wx.redirectTo({ url: `/pages/detail/detail?id=${e.currentTarget.dataset.id}` })
   },
 
-  // 分享给朋友
   onShareAppMessage() {
     const joke = this.data.joke
-    
-    // 增加分享数
     joke.shares++
     this.setData({ joke })
     
@@ -175,15 +171,13 @@ Page({
     }
   },
 
-  // 分享到朋友圈
   onShareTimeline() {
     const joke = this.data.joke
-    
     joke.shares++
     this.setData({ joke })
     
     return {
-      title: `【哇哇笑】${joke.title}\n${joke.content.substring(0, 50)}`,
+      title: `【哇哇笑】${joke.title}`,
       query: `id=${joke.id}`,
       imageUrl: joke.hasImage ? joke.images[0] : ''
     }

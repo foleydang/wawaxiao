@@ -1,12 +1,12 @@
-<!-- 使用page-class绑定到根page元素 -->
 <page class="{{pageClass}}">
 
 <view class="container">
-  <!-- 顶部：搜索 + 主题 -->
+  <!-- 顶部：标题 + 主题 -->
   <view class="header">
-    <view class="search-bar glass" bindtap="goToSearch">
-      <view class="search-icon"></view>
-      <text class="search-text">搜索笑话</text>
+    <view class="brand">
+      <view class="brand-dot"></view>
+      <text class="brand-name">今日新鲜</text>
+      <text class="brand-count">{{freshCount}}条未看</text>
     </view>
     
     <view class="theme-btn glass" bindtap="toggleTheme">
@@ -14,157 +14,111 @@
     </view>
   </view>
 
-  <!-- 分类 -->
-  <scroll-view class="categories" scroll-x show-scrollbar="{{false}}">
-    <view 
-      class="cat-item {{currentCategory === item.name ? 'active' : ''}}"
-      wx:for="{{categories}}"
-      wx:key="name"
-      bindtap="switchCategory"
-      data-category="{{item.name}}"
-    >
-      <view class="cat-dot" style="background: {{item.color}}"></view>
-      <text class="cat-name">{{item.name}}</text>
-      <text class="cat-count" wx:if="{{item.count > 0}}">{{item.count}}</text>
-    </view>
-  </scroll-view>
-
-  <!-- 新鲜 -->
-  <view class="section" wx:if="{{todayJokes.length > 0}}">
-    <view class="section-header">
-      <view class="section-title-wrap">
-        <view class="title-bar"></view>
-        <text class="section-title">新鲜{{todayJokes.length}}条</text>
-      </view>
+  <!-- 推荐笑话卡片 -->
+  <view class="recommend-card glass" wx:if="{{currentJoke}}">
+    <view class="card-color" style="background: {{currentJoke.color}}"></view>
+    
+    <view class="card-meta">
+      <view class="meta-dot" style="background: {{currentJoke.color}}"></view>
+      <text class="meta-cat">{{currentJoke.category}}</text>
+      <view class="meta-badge" wx:if="{{currentJoke.isHot}}">HOT</view>
+      <view class="meta-badge" wx:if="{{currentJoke.hasImage}}">图</view>
     </view>
     
-    <scroll-view class="today-scroll" scroll-x show-scrollbar="{{false}}">
-      <view 
-        class="today-card glass"
-        wx:for="{{todayJokes}}"
-        wx:key="id"
-        bindtap="goToDetail"
-        data-id="{{item.id}}"
-      >
-        <view class="today-color" style="background: {{item.color}}"></view>
-        <text class="today-title">{{item.title}}</text>
-        <view class="today-meta">
-          <text class="today-cat">{{item.category}}</text>
-          <text class="today-stats">{{item.likes}}{{item.hasImage ? '图' : ''}}</text>
-        </view>
+    <text class="card-title">{{currentJoke.title}}</text>
+    
+    <!-- 图片 -->
+    <view class="card-images" wx:if="{{currentJoke.hasImage}}">
+      <image 
+        class="card-img"
+        wx:for="{{currentJoke.images}}"
+        wx:key="*this"
+        src="{{item}}"
+        mode="widthFix"
+        bindtap="previewImage"
+        data-url="{{item}}"
+      />
+    </view>
+    
+    <text class="card-content">{{currentJoke.content}}</text>
+    
+    <!-- 操作按钮 -->
+    <view class="card-actions">
+      <view class="action-btn {{liked ? 'liked' : ''}}" bindtap="toggleLike">
+        <text class="action-icon">{{liked ? '❤️' : '🤍'}}</text>
+        <text class="action-num">{{currentJoke.likes}}</text>
       </view>
-    </scroll-view>
+      
+      <view class="action-btn {{disliked ? 'disliked' : ''}}" bindtap="toggleDislike">
+        <text class="action-icon">{{disliked ? '👎' : '👎🏻'}}</text>
+        <text class="action-num">{{currentJoke.dislikes}}</text>
+      </view>
+      
+      <button class="action-btn share-btn" open-type="share">
+        <text class="action-icon">📤</text>
+        <text class="action-num">{{currentJoke.shares}}</text>
+      </button>
+      
+      <view class="action-btn next-btn" bindtap="nextJoke">
+        <text class="action-icon">⚡</text>
+        <text class="action-text">下一个</text>
+      </view>
+    </view>
   </view>
 
-  <!-- 已看过 -->
-  <view class="section" wx:if="{{seenJokes.length > 0}}">
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{!currentJoke && !loading}}">
+    <view class="empty-icon glass">
+      <text class="empty-face">😊</text>
+    </view>
+    <text class="empty-title">今天的新鲜笑话都看完了</text>
+    <text class="empty-desc">去看看笑话库发现更多吧</text>
+    <view class="empty-btn glass" bindtap="goToLibrary">
+      <text class="empty-btn-text">去笑话库</text>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <view class="loading-card glass">
+      <view class="skeleton-bar skeleton"></view>
+      <view class="skeleton-bar skeleton"></view>
+      <view class="skeleton-bar short skeleton"></view>
+    </view>
+  </view>
+
+  <!-- 更多推荐（已看过的） -->
+  <view class="seen-section" wx:if="{{seenJokes.length > 0 && showSeen}}">
     <view class="section-header" bindtap="toggleShowSeen">
       <view class="section-title-wrap">
         <view class="title-bar seen"></view>
-        <text class="section-title">{{showSeen ? '隐藏' : '看过' + seenJokes.length + '条'}} {{showSeen ? '' : '▶'}}</text>
+        <text class="section-title">再看一次 {{showSeen ? '▼' : '▶'}}</text>
       </view>
+      <text class="section-count">{{seenJokes.length}}条</text>
     </view>
     
-    <view class="joke-list" wx:if="{{showSeen}}">
+    <scroll-view class="seen-scroll" scroll-x show-scrollbar="{{false}}" wx:if="{{showSeen}}">
       <view 
-        class="joke-card glass"
+        class="seen-card glass"
         wx:for="{{seenJokes}}"
         wx:key="id"
         bindtap="goToDetail"
         data-id="{{item.id}}"
       >
-        <view class="joke-color seen-color"></view>
-        <view class="joke-body">
-          <text class="joke-title">{{item.title}}</text>
-          <text class="joke-preview">{{item.preview}}{{item.hasImage ? '[图]' : ''}}</text>
-        </view>
-        <view class="joke-right">
-          <text class="joke-likes">{{item.likes}}</text>
-          <view class="seen-tag">看过</view>
+        <view class="seen-color" style="background: {{item.color}}"></view>
+        <text class="seen-title">{{item.title}}</text>
+        <view class="seen-meta">
+          <text class="seen-cat">{{item.category}}</text>
+          <text class="seen-stats">{{item.likes}}</text>
         </view>
       </view>
-    </view>
+    </scroll-view>
   </view>
 
-  <!-- 笑话库 -->
-  <view class="section">
-    <view class="section-header">
-      <view class="section-title-wrap">
-        <view class="title-bar"></view>
-        <text class="section-title">{{currentCategory === '全部' ? '笑话库' : currentCategory}}</text>
-      </view>
-      <text class="section-count">{{filteredJokes.length}}</text>
-    </view>
-
-    <view class="skeleton-wrap" wx:if="{{loading}}">
-      <view class="skeleton-card glass" wx:for="{{3}}" wx:key="*this">
-        <view class="skeleton-bar skeleton"></view>
-        <view class="skeleton-bar short skeleton"></view>
-      </view>
-    </view>
-
-    <view class="joke-list" wx:else>
-      <view 
-        class="joke-card glass fade-up"
-        wx:for="{{filteredJokes}}"
-        wx:key="id"
-        bindtap="goToDetail"
-        data-id="{{item.id}}"
-      >
-        <view class="joke-color" style="background: {{item.color}}"></view>
-        <view class="joke-body">
-          <text class="joke-title">{{item.title}}</text>
-          <text class="joke-preview">{{item.preview}}{{item.hasImage ? '[图]' : ''}}</text>
-        </view>
-        <view class="joke-right">
-          <text class="joke-likes">{{item.likes}}</text>
-        </view>
-      </view>
-    </view>
-  </view>
-
-  <!-- 随机按钮 -->
-  <view class="float-btn" bindtap="showRandom">
-    <view class="float-bg gradient-btn"></view>
-    <text class="float-icon">⚡</text>
+  <!-- 提示 -->
+  <view class="tip" wx:if="{{freshCount > 0}}">
+    <text class="tip-text">点击「下一个」随机换一条新笑话</text>
   </view>
 </view>
 
 </page>
-
-<!-- 弹窗 -->
-<view class="modal-overlay {{showModal ? 'show' : ''}}" bindtap="hideModal">
-  <view class="modal glass" catchtap="preventClose">
-    <view class="modal-header">
-      <view class="modal-bar" style="background: {{randomJoke.color}}"></view>
-      <text class="modal-cat">{{randomJoke.category}}</text>
-    </view>
-    
-    <view class="modal-body">
-      <text class="modal-title">{{randomJoke.title}}</text>
-      
-      <view class="modal-images" wx:if="{{randomJoke.hasImage}}">
-        <image 
-          class="modal-image"
-          wx:for="{{randomJoke.images}}"
-          wx:key="*this"
-          src="{{item}}"
-          mode="widthFix"
-          bindtap="previewImage"
-          data-url="{{item}}"
-        />
-      </view>
-      
-      <text class="modal-content">{{randomJoke.content}}</text>
-    </view>
-    
-    <view class="modal-footer">
-      <view class="modal-btn outline glass" bindtap="showRandom">
-        <text class="modal-btn-text">换一个</text>
-      </view>
-      <view class="modal-btn primary gradient-btn" bindtap="hideModal">
-        <text class="modal-btn-text-white">开心了</text>
-      </view>
-    </view>
-  </view>
-</view>

@@ -1,0 +1,231 @@
+/* library.wxss - 笑话库页面 */
+
+.container {
+  min-height: 100vh;
+  padding-bottom: calc(40rpx + var(--safe-bottom));
+}
+
+/* 顶部 */
+.header {
+  padding: calc(52rpx + var(--safe-top)) 32rpx 32rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-bar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 16rpx 20rpx;
+  margin-right: 16rpx;
+}
+
+.search-icon {
+  width: 16rpx;
+  height: 16rpx;
+  border: 2rpx solid var(--text-secondary);
+  border-radius: 50%;
+  position: relative;
+  margin-right: 16rpx;
+}
+
+.search-icon::after {
+  content: '';
+  width: 10rpx;
+  height: 2rpx;
+  background: var(--text-secondary);
+  position: absolute;
+  right: -8rpx;
+  bottom: -2rpx;
+  transform: rotate(45deg);
+}
+
+.search-text {
+  font-size: 30rpx;
+  color: var(--text-secondary);
+}
+
+.theme-btn {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-icon {
+  font-size: 28rpx;
+}
+
+/* 分类 */
+.categories {
+  padding: 12rpx 32rpx 32rpx;
+}
+
+.cat-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 12rpx 20rpx;
+  margin-right: 12rpx;
+  border-radius: 12rpx;
+  background: var(--card);
+}
+
+.cat-item.active {
+  background: rgba(102,126,234,0.15);
+}
+
+.cat-dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  margin-right: 10rpx;
+}
+
+.cat-name {
+  font-size: 30rpx;
+  color: var(--text-secondary);
+}
+
+.cat-item.active .cat-name {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.cat-count {
+  font-size: 26rpx;
+  color: var(--accent);
+  margin-left: 10rpx;
+}
+
+/* 板块 */
+.section {
+  padding: 24rpx 0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 32rpx;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.title-bar {
+  width: 6rpx;
+  height: 24rpx;
+  background: var(--primary);
+  border-radius: 3rpx;
+  margin-right: 16rpx;
+}
+
+.section-title {
+  font-size: 34rpx;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.section-count {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+/* 笑话列表 */
+.joke-list {
+  padding: 12rpx 32rpx;
+}
+
+.joke-card {
+  display: flex;
+  align-items: flex-start;
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+  border-radius: 16rpx;
+}
+
+.joke-card:active {
+  opacity: 0.85;
+}
+
+.joke-color {
+  width: 6rpx;
+  min-height: 60rpx;
+  border-radius: 3rpx;
+  margin-right: 20rpx;
+  align-self: stretch;
+}
+
+.joke-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.joke-title {
+  font-size: 32rpx;
+  color: var(--text);
+  font-weight: 500;
+  margin-bottom: 8rpx;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.joke-preview {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.joke-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-left: 20rpx;
+  align-self: center;
+  gap: 8rpx;
+}
+
+.joke-likes {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+.joke-seen {
+  font-size: 24rpx;
+  color: var(--text-muted);
+  background: var(--bg-light);
+  padding: 4rpx 8rpx;
+  border-radius: 6rpx;
+}
+
+/* 骨架屏 */
+.skeleton-wrap {
+  padding: 32rpx;
+}
+
+.skeleton-card {
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.skeleton-bar {
+  height: 28rpx;
+  border-radius: 6rpx;
+  margin-bottom: 12rpx;
+}
+
+.skeleton-bar.short {
+  width: 60%;
+}

@@ -1,0 +1,70 @@
+<page class="{{pageClass}}">
+
+<view class="container">
+  <!-- 顶部：搜索 + 主题 -->
+  <view class="header">
+    <view class="search-bar glass" bindtap="goToSearch">
+      <view class="search-icon"></view>
+      <text class="search-text">搜索笑话</text>
+    </view>
+    
+    <view class="theme-btn glass" bindtap="toggleTheme">
+      <text class="theme-icon">{{themeIcon}}</text>
+    </view>
+  </view>
+
+  <!-- 分类 -->
+  <scroll-view class="categories" scroll-x show-scrollbar="{{false}}">
+    <view 
+      class="cat-item {{currentCategory === item.name ? 'active' : ''}}"
+      wx:for="{{categories}}"
+      wx:key="name"
+      bindtap="switchCategory"
+      data-category="{{item.name}}"
+    >
+      <view class="cat-dot" style="background: {{item.color}}"></view>
+      <text class="cat-name">{{item.name}}</text>
+      <text class="cat-count">{{item.count}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 笑话列表 -->
+  <view class="section">
+    <view class="section-header">
+      <view class="section-title-wrap">
+        <view class="title-bar"></view>
+        <text class="section-title">{{currentCategory === '全部' ? '全部笑话' : currentCategory}}</text>
+      </view>
+      <text class="section-count">{{jokes.length}}条</text>
+    </view>
+
+    <view class="skeleton-wrap" wx:if="{{loading}}">
+      <view class="skeleton-card glass" wx:for="{{3}}" wx:key="*this">
+        <view class="skeleton-bar skeleton"></view>
+        <view class="skeleton-bar short skeleton"></view>
+      </view>
+    </view>
+
+    <view class="joke-list" wx:else>
+      <view 
+        class="joke-card glass fade-up"
+        wx:for="{{jokes}}"
+        wx:key="id"
+        bindtap="goToDetail"
+        data-id="{{item.id}}"
+      >
+        <view class="joke-color" style="background: {{item.color}}"></view>
+        <view class="joke-body">
+          <text class="joke-title">{{item.title}}</text>
+          <text class="joke-preview">{{item.preview}}{{item.hasImage ? '[图]' : ''}}</text>
+        </view>
+        <view class="joke-right">
+          <text class="joke-likes">{{item.likes}}</text>
+          <text class="joke-seen" wx:if="{{item.hasSeen}}">看过</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+</page>
