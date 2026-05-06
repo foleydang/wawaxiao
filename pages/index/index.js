@@ -53,7 +53,7 @@ Page({
     this.setData({ loading: true })
     
     try {
-      const res = await api.getJokes({ limit: 50 })
+      const res = await api.getJokes({ limit: 100 })
       const jokes = this.processJokes(res.data.list || res.data)
       
       wx.setStorageSync('cachedJokes', jokes)
@@ -74,11 +74,22 @@ Page({
     
     const seenIds = getSeenIds()
     const freshJokes = jokes.filter(j => !seenIds.includes(j.id))
-    // 热门推荐：只取4条，按likes排序
-    const hotJokes = jokes
-      .filter(j => j.isHot || j.likes > 70)
-      .sort((a, b) => b.likes - a.likes)
-      .slice(0, 4)
+    
+    // 热门推荐：如果有likes>0的笑话就按likes排序，否则随机选4条
+    let hotJokes
+    const likedJokes = jokes.filter(j => j.likes > 0)
+    if (likedJokes.length >= 4) {
+      hotJokes = likedJokes.sort((a, b) => b.likes - a.likes).slice(0, 4)
+    } else if (likedJokes.length > 0) {
+      // 有一些点赞但不够4条，补充随机笑话
+      const randomOthers = jokes.filter(j => j.likes === 0)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 4 - likedJokes.length)
+      hotJokes = [...likedJokes.sort((a, b) => b.likes - a.likes), ...randomOthers]
+    } else {
+      // 没有任何点赞，随机选4条
+      hotJokes = jokes.sort(() => Math.random() - 0.5).slice(0, 4)
+    }
     
     let currentJoke = freshJokes.length > 0 ? freshJokes[0] : null
     
@@ -164,6 +175,9 @@ Page({
     joke.likes = wasLiked ? joke.likes - 1 : joke.likes + 1
     
     this.setData({ liked: !wasLiked, currentJoke: joke })
+    
+    // 调用API更新数据库（异步，不等待）
+    api.likeJoke(id).catch(err => console.log('API更新失败，本地已保存'))
   },
 
   toggleDislike() {
