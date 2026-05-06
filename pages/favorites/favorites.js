@@ -1,4 +1,5 @@
-const { getJokeById } = require('../../utils/jokes.js')
+// pages/favorites/favorites.js
+const { api } = require('../../utils/api.js')
 
 Page({
   data: {
@@ -16,7 +17,11 @@ Page({
 
   loadFavorites() {
     const favoriteIds = wx.getStorageSync('favorites') || []
-    const favorites = favoriteIds.map(id => getJokeById(id)).filter(Boolean)
+    
+    // 从缓存中获取笑话数据
+    const cachedJokes = wx.getStorageSync('cachedJokes') || []
+    const favorites = favoriteIds.map(id => cachedJokes.find(j => j.id === id)).filter(Boolean)
+    
     this.setData({ favorites })
   },
 
