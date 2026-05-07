@@ -27,8 +27,6 @@ Page({
       const joke = res.data
       
       this.setData({ joke })
-      
-      // 加载推荐笑话
       this.loadRecommendJokes()
       
     } catch (err) {
@@ -41,11 +39,9 @@ Page({
       const res = await api.getJokes({ limit: 50 })
       const allJokes = res.data.list
       
-      // 排除当前笑话
       const currentId = this.data.joke?.id
       const otherJokes = allJokes.filter(j => j.id !== currentId)
       
-      // 随机打乱并取前4个
       const shuffled = otherJokes.sort(() => Math.random() - 0.5)
       const recommendJokes = shuffled.slice(0, 4)
       
@@ -65,11 +61,14 @@ Page({
     try {
       const res = await api.like(this.data.joke.id)
       
-      const joke = this.data.joke
-      joke.likes = res.data.likes
+      // 立即更新数据
+      const joke = { ...this.data.joke }
+      joke.likes = res.data.likes || (joke.likes + 1)
       
       this.setData({ joke })
-      wx.showToast({ title: '喜欢+1', icon: 'none', duration: 800 })
+      
+      wx.showToast({ title: '❤️ 喜欢+1', icon: 'none', duration: 800 })
+      
     } catch (err) {
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
@@ -81,12 +80,16 @@ Page({
     try {
       const res = await api.neutral(this.data.joke.id)
       
-      const joke = this.data.joke
-      joke.neutrals = res.data.neutrals
+      // 立即更新数据
+      const joke = { ...this.data.joke }
+      joke.neutrals = res.data.neutrals || (joke.neutrals + 1)
       
       this.setData({ joke })
-      wx.showToast({ title: '平+1', icon: 'none', duration: 800 })
+      
+      wx.showToast({ title: '😐 平+1', icon: 'none', duration: 800 })
+      
     } catch (err) {
+      console.error('neutral失败:', err)
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
   },
@@ -97,11 +100,14 @@ Page({
     try {
       const res = await api.dislike(this.data.joke.id)
       
-      const joke = this.data.joke
-      joke.dislikes = res.data.dislikes
+      // 立即更新数据
+      const joke = { ...this.data.joke }
+      joke.dislikes = res.data.dislikes || (joke.dislikes + 1)
       
       this.setData({ joke })
-      wx.showToast({ title: '不喜欢+1', icon: 'none', duration: 800 })
+      
+      wx.showToast({ title: '👎 不喜欢+1', icon: 'none', duration: 800 })
+      
     } catch (err) {
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
