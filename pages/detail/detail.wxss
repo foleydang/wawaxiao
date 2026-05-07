@@ -1,6 +1,6 @@
-/* pages/detail/detail.wxss - 和首页一样的风格 */
+/* pages/detail/detail.wxss - 和首页统一 + 推荐笑话 */
 
-/* 复用首页的样式 */
+/* 复用首页样式 */
 .page-wrapper {
   min-height: 100vh;
   padding-bottom: calc(40rpx + var(--safe-bottom));
@@ -18,14 +18,18 @@
   border-color: rgba(0,0,0,0.1) !important;
 }
 
+.page-wrapper.light-mode .brand-name,
+.page-wrapper.light-mode .section-title,
 .page-wrapper.light-mode .card-title,
-.page-wrapper.light-mode .brand-name {
+.page-wrapper.light-mode .hot-title {
   color: #1a1a2e !important;
 }
 
 .page-wrapper.light-mode .meta-cat,
 .page-wrapper.light-mode .card-content,
+.page-wrapper.light-mode .section-count,
 .page-wrapper.light-mode .action-num,
+.page-wrapper.light-mode .hot-likes,
 .page-wrapper.light-mode .meta-date {
   color: #555555 !important;
 }
@@ -94,7 +98,40 @@
   padding: 0 28rpx 40rpx;
 }
 
-/* 卡片（和首页一样） */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.section-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.section-dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+}
+
+.section-dot.recommend {
+  background: #9C27B0;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.section-count {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+/* 卡片 */
 .recommend-card {
   position: relative;
   padding: 40rpx 32rpx;
@@ -149,7 +186,7 @@
   margin-bottom: 32rpx;
 }
 
-/* 三档评价（和首页一样） */
+/* 三档评价 */
 .card-actions {
   display: flex;
   align-items: center;
@@ -180,4 +217,30 @@
 .action-num {
   font-size: 24rpx;
   font-weight: 500;
+}
+
+/* 推荐笑话列表 */
+.hot-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.hot-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx;
+  border-radius: 16rpx;
+}
+
+.hot-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  flex: 1;
+}
+
+.hot-likes {
+  font-size: 24rpx;
+  color: var(--text-secondary);
 }

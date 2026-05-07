@@ -3,6 +3,7 @@ const { api } = require('../../utils/api')
 Page({
   data: {
     joke: null,
+    recommendJokes: [],
     userLikeCount: 0,
     userNeutralCount: 0,
     userDislikeCount: 0,
@@ -12,6 +13,7 @@ Page({
 
   onLoad(options) {
     this.loadJoke(options.id)
+    this.loadRecommendJokes()
     this.initTheme()
   },
 
@@ -43,6 +45,26 @@ Page({
     }
   },
 
+  async loadRecommendJokes() {
+    try {
+      // 获取所有笑话
+      const res = await api.getJokes({ limit: 50 })
+      const allJokes = res.data.list
+      
+      // 随机选择4个（排除当前笑话）
+      const currentId = this.data.joke?.id
+      const otherJokes = allJokes.filter(j => j.id !== currentId)
+      
+      // 随机打乱并取前4个
+      const shuffled = otherJokes.sort(() => Math.random() - 0.5)
+      const recommendJokes = shuffled.slice(0, 4)
+      
+      this.setData({ recommendJokes })
+    } catch (err) {
+      console.error('加载推荐失败:', err)
+    }
+  },
+
   async handleLike() {
     if (!this.data.joke) return
     
@@ -53,18 +75,13 @@ Page({
       joke.likes = res.data.likes
       joke.neutrals = res.data.neutrals
       joke.dislikes = res.data.dislikes
-      joke.score = res.data.score
       
       this.setData({ 
         joke,
         userLikeCount: res.userLikeCount
       })
       
-      wx.showToast({ 
-        title: `喜欢+1（已点${res.userLikeCount}次）`, 
-        icon: 'none' 
-      })
-      
+      wx.showToast({ title: '喜欢+1', icon: 'none', duration: 800 })
     } catch (err) {
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
@@ -80,18 +97,13 @@ Page({
       joke.likes = res.data.likes
       joke.neutrals = res.data.neutrals
       joke.dislikes = res.data.dislikes
-      joke.score = res.data.score
       
       this.setData({ 
         joke,
         userNeutralCount: res.userNeutralCount
       })
       
-      wx.showToast({ 
-        title: `平+1（已点${res.userNeutralCount}次）`, 
-        icon: 'none' 
-      })
-      
+      wx.showToast({ title: '平+1', icon: 'none', duration: 800 })
     } catch (err) {
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
@@ -107,21 +119,21 @@ Page({
       joke.likes = res.data.likes
       joke.neutrals = res.data.neutrals
       joke.dislikes = res.data.dislikes
-      joke.score = res.data.score
       
       this.setData({ 
         joke,
         userDislikeCount: res.userDislikeCount
       })
       
-      wx.showToast({ 
-        title: `不喜欢+1（已点${res.userDislikeCount}次）`, 
-        icon: 'none' 
-      })
-      
+      wx.showToast({ title: '不喜欢+1', icon: 'none', duration: 800 })
     } catch (err) {
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
+  },
+
+  goToDetail(e) {
+    const id = e.currentTarget.dataset.id
+    wx.redirectTo({ url: `/pages/detail/detail?id=${id}` })
   },
 
   toggleTheme() {
