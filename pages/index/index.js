@@ -3,6 +3,7 @@ const { api } = require('../../utils/api')
 Page({
   data: {
     loading: true,
+    jokes: [],
     currentJoke: null,
     hotJokes: [],
     todayNewCount: 0,
@@ -14,7 +15,6 @@ Page({
   onLoad() {
     this.loadData()
     this.initTheme()
-    this.checkNewJokes()
   },
 
   initTheme() {
@@ -27,21 +27,32 @@ Page({
 
   async loadData() {
     try {
-      // 加载笑话列表
       const res = await api.getJokes({ limit: 50 })
       const jokes = res.data.list
       
-      // 加载热门笑话
       const hotRes = await api.getHotJokes()
+      
+      // 计算未读数量（修复bug）
+      const readIds = api.getReadJokes()
+      const freshCount = jokes.filter(j => !readIds.includes(j.id)).length
+      
+      // 检查今日新笑话
+      const stats = await api.getStats()
+      const lastVisit = api.getLastVisitDate()
+      const todayNewCount = (lastVisit && stats.data.latestDate > lastVisit) ? stats.data.todayCount : 0
+      
+      // 更新最后访问日期
+      api.setLastVisitDate(stats.data.latestDate)
       
       this.setData({
         jokes,
         currentJoke: jokes[0] || null,
         hotJokes: hotRes.data || [],
+        freshCount,
+        todayNewCount,
         loading: false
       })
       
-      // 标记已读
       if (jokes[0]) {
         api.markAsRead(jokes[0].id)
       }
@@ -53,32 +64,6 @@ Page({
     }
   },
 
-  async checkNewJokes() {
-    try {
-      const stats = await api.getStats()
-      const lastVisit = api.getLastVisitDate()
-      
-      if (lastVisit && stats.data.latestDate > lastVisit) {
-        this.setData({
-          todayNewCount: stats.data.todayCount
-        })
-      }
-      
-      api.setLastVisitDate(stats.data.latestDate)
-      
-      // 计算未读数量
-      const readIds = api.getReadJokes()
-      const freshCount = this.data.jokes ? 
-        this.data.jokes.filter(j => !readIds.includes(j.id)).length : 0
-      
-      this.setData({ freshCount })
-      
-    } catch (err) {
-      console.error('检查新笑话失败:', err)
-    }
-  },
-
-  // 三档评价（累计，每次点击都+1）
   async handleLike() {
     if (!this.data.currentJoke) return
     
@@ -86,11 +71,11 @@ Page({
       const res = await api.like(this.data.currentJoke.id)
       const joke = this.data.currentJoke
       joke.likes = res.data.likes
+      joke.neutrals = res.data.neutrals
+      joke.dislikes = res.data.dislikes
       
       this.setData({ currentJoke: joke })
-      
       wx.showToast({ title: '喜欢+1', icon: 'none', duration: 800 })
-      
     } catch (err) {
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
@@ -102,12 +87,12 @@ Page({
     try {
       const res = await api.neutral(this.data.currentJoke.id)
       const joke = this.data.currentJoke
+      joke.likes = res.data.likes
       joke.neutrals = res.data.neutrals
+      joke.dislikes = res.data.dislikes
       
       this.setData({ currentJoke: joke })
-      
       wx.showToast({ title: '平+1', icon: 'none', duration: 800 })
-      
     } catch (err) {
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
@@ -119,12 +104,12 @@ Page({
     try {
       const res = await api.dislike(this.data.currentJoke.id)
       const joke = this.data.currentJoke
+      joke.likes = res.data.likes
+      joke.neutrals = res.data.neutrals
       joke.dislikes = res.data.dislikes
       
       this.setData({ currentJoke: joke })
-      
       wx.showToast({ title: '不喜欢+1', icon: 'none', duration: 800 })
-      
     } catch (err) {
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
@@ -142,7 +127,7 @@ Page({
     
     api.markAsRead(nextJoke.id)
     
-    // 更新未读数量
+    // 更新未读数量（修复bug）
     const readIds = api.getReadJokes()
     const freshCount = jokes.filter(j => !readIds.includes(j.id)).length
     this.setData({ freshCount })

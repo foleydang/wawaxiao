@@ -3,9 +3,9 @@ const { api } = require('../../utils/api')
 Page({
   data: {
     joke: null,
-    userLikeCount: 0,      // 用户对这个笑话点了多少次喜欢
-    userNeutralCount: 0,   // 用户对这个笑话点了多少次平
-    userDislikeCount: 0,   // 用户对这个笑话点了多少次不喜欢
+    userLikeCount: 0,
+    userNeutralCount: 0,
+    userDislikeCount: 0,
     themeIcon: '🌙',
     pageClass: ''
   },
@@ -25,11 +25,9 @@ Page({
 
   async loadJoke(id) {
     try {
-      // 加载笑话详情
       const res = await api.getJokeById(id)
       const joke = res.data
       
-      // 从本地读取用户点击次数
       const userLikeCount = api.getUserCount(parseInt(id), 'like')
       const userNeutralCount = api.getUserCount(parseInt(id), 'neutral')
       const userDislikeCount = api.getUserCount(parseInt(id), 'dislike')
@@ -51,7 +49,6 @@ Page({
     try {
       const res = await api.like(this.data.joke.id)
       
-      // 更新笑话统计
       const joke = this.data.joke
       joke.likes = res.data.likes
       joke.neutrals = res.data.neutrals

@@ -1,38 +1,48 @@
-<!--pages/detail/detail.wxml - 和首页统一 -->
+<!--pages/detail/detail.wxml-->
 <view class="container {{pageClass}}">
   <view class="joke-card" wx:if="{{joke}}">
-    <!-- 标题行 -->
     <view class="joke-header">
       <text class="joke-title">{{joke.title}}</text>
+      <text class="joke-category">{{joke.category}}</text>
     </view>
     
-    <!-- 分类和日期（小标签样式，和首页一样） -->
-    <view class="card-meta">
-      <view class="meta-dot"></view>
-      <text class="meta-cat">{{joke.category}}</text>
-      <text class="meta-date">{{joke.date}}</text>
-    </view>
-    
-    <!-- 内容 -->
     <view class="joke-content">
       <text>{{joke.content}}</text>
     </view>
     
-    <!-- 三档评价（和首页一样的样式） -->
-    <view class="card-actions">
-      <view class="action-btn" bindtap="handleLike">
-        <text class="action-icon">👍</text>
-        <text class="action-num">{{joke.likes}}</text>
+    <!-- 三档评价 -->
+    <view class="rating-section">
+      <view class="rating-stats">
+        <text class="likes">👍 {{joke.likes}}</text>
+        <text class="neutrals">😐 {{joke.neutrals}}</text>
+        <text class="dislikes">👎 {{joke.dislikes}}</text>
       </view>
       
-      <view class="action-btn" bindtap="handleNeutral">
-        <text class="action-icon">😐</text>
-        <text class="action-num">{{joke.neutrals}}</text>
+      <view class="rating-buttons">
+        <button 
+          class="rating-btn like-btn {{userRating === 'like' ? 'active' : ''}}"
+          bindtap="handleLike"
+        >
+          👍 喜欢
+        </button>
+        
+        <button 
+          class="rating-btn neutral-btn {{userRating === 'neutral' ? 'active' : ''}}"
+          bindtap="handleNeutral"
+        >
+          😐 平
+        </button>
+        
+        <button 
+          class="rating-btn dislike-btn {{userRating === 'dislike' ? 'active' : ''}}"
+          bindtap="handleDislike"
+        >
+          👎 不喜欢
+        </button>
       </view>
       
-      <view class="action-btn" bindtap="handleDislike">
-        <text class="action-icon">👎</text>
-        <text class="action-num">{{joke.dislikes}}</text>
+      <view class="rating-hint">
+        <text>评分: {{joke.score > 0 ? '+' : ''}}{{joke.score}}</text>
       </view>
     </view>
   </view>
