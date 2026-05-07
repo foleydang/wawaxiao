@@ -1,3 +1,4 @@
+<!--pages/index/index.wxml-->
 <view class="page-wrapper {{pageClass}}">
   <!-- 顶部 -->
   <view class="header">
@@ -34,9 +35,11 @@
     <view class="recommend-card glass">
       <view class="card-color" style="background: {{currentJoke.color}}"></view>
       
+      <!-- 分类和日期（小标签样式） -->
       <view class="card-meta">
         <view class="meta-dot" style="background: {{currentJoke.color}}"></view>
         <text class="meta-cat">{{currentJoke.category}}</text>
+        <text class="meta-date">{{currentJoke.date}}</text>
         <view class="meta-badge" wx:if="{{currentJoke.isTodayNew}}">NEW</view>
       </view>
       
@@ -57,7 +60,7 @@
         />
       </view>
       
-      <!-- 三档评价（按钮+数量在一起） -->
+      <!-- 三档评价（按钮和数量在一起） -->
       <view class="card-actions">
         <view class="action-btn" bindtap="handleLike">
           <text class="action-icon">👍</text>
@@ -78,10 +81,6 @@
           <text class="next-text">下一个</text>
         </view>
       </view>
-    </view>
-    
-    <view class="card-footer">
-      <text class="footer-date">{{currentJoke.date}}</text>
     </view>
   </view>
 

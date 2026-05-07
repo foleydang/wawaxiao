@@ -1,4 +1,5 @@
-/* pages/detail/detail.wxss */
+/* pages/detail/detail.wxss - 和首页统一 */
+
 .container {
   padding: 20px;
   min-height: 100vh;
@@ -18,70 +19,106 @@
 }
 
 .joke-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 16rpx;
 }
 
 .joke-title {
-  font-size: 24px;
+  font-size: 32rpx;
   font-weight: bold;
   color: #333;
 }
 
-.joke-category {
-  font-size: 14px;
-  color: #666;
-  background: #f0f0f0;
-  padding: 4px 12px;
-  border-radius: 12px;
+/* 卡片元信息（和首页一样） */
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 24rpx;
 }
 
-.joke-date {
-  font-size: 12px;
-  color: #999;
+.meta-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: #667eea;
+}
+
+.meta-cat {
+  font-size: 24rpx;
+  color: rgba(102, 126, 234, 0.9);
+  background: rgba(102, 126, 234, 0.1);
+  padding: 4rpx 16rpx;
+  border-radius: 12rpx;
+  font-weight: 500;
+}
+
+/* 日期标签（和首页一样的小标签样式） */
+.meta-date {
+  font-size: 24rpx;
+  color: rgba(100, 100, 100, 0.7);
+  background: rgba(100, 100, 100, 0.08);
+  padding: 4rpx 16rpx;
+  border-radius: 12rpx;
+  font-weight: 500;
 }
 
 .joke-content {
-  font-size: 16px;
+  font-size: 28rpx;
   line-height: 1.8;
   color: #555;
-  margin-bottom: 30px;
+  margin-bottom: 40rpx;
 }
 
-/* 三档评价（按钮和数量在一起） */
-.rating-actions {
+/* 三档评价（和首页一样的样式） */
+.card-actions {
   display: flex;
   justify-content: space-around;
-  padding: 20px 0;
+  padding: 30rpx 0;
   border-top: 1px solid #e0e0e0;
 }
 
-.rating-btn {
+.action-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 15px 30px;
-  border-radius: 12px;
+  padding: 20rpx 40rpx;
+  border-radius: 12rpx;
   background: rgba(0, 0, 0, 0.03);
   transition: all 0.3s;
 }
 
-.rating-btn:active {
+.action-btn:active {
   transform: scale(0.95);
   background: rgba(0, 0, 0, 0.08);
 }
 
-.rating-icon {
-  font-size: 32px;
-  margin-bottom: 8px;
+.action-icon {
+  font-size: 40rpx;
+  margin-bottom: 8rpx;
 }
 
-.rating-num {
-  font-size: 16px;
+.action-num {
+  font-size: 24rpx;
   color: #666;
   font-weight: 500;
+}
+
+/* Light mode */
+.container.light-mode .meta-date {
+  color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.container.light-mode .joke-card {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.container.light-mode .joke-title {
+  color: #1a1a2e;
+}
+
+.container.light-mode .joke-content {
+  color: #555;
 }
 
 .theme-toggle {
