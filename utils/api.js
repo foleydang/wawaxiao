@@ -16,33 +16,58 @@ function request(url, method = 'GET', data = {}) {
   })
 }
 
-// 获取用户评价记录（本地存储）
-function getUserRatings() {
-  return wx.getStorageSync('userRatings') || {}
+// 本地存储：用户点赞次数
+function getUserCounts() {
+  return wx.getStorageSync('userCounts') || {}
 }
 
-// 保存用户评价记录
-function saveUserRatings(ratings) {
-  wx.setStorageSync('userRatings', ratings)
+function saveUserCounts(counts) {
+  wx.setStorageSync('userCounts', counts)
 }
 
-// 获取用户对某个笑话的评价
-function getUserRating(jokeId) {
-  const ratings = getUserRatings()
-  return ratings[jokeId] || null  // 'like' | 'neutral' | 'dislike' | null
+function getUserCount(jokeId, type) {
+  const counts = getUserCounts()
+  const key = `${jokeId}_${type}`
+  return counts[key] || 0
 }
 
-// 保存用户对某个笑话的评价
-function setUserRating(jokeId, rating) {
-  const ratings = getUserRatings()
-  
-  if (rating === null) {
-    delete ratings[jokeId]
-  } else {
-    ratings[jokeId] = rating
+function setUserCount(jokeId, type, count) {
+  const counts = getUserCounts()
+  const key = `${jokeId}_${type}`
+  counts[key] = count
+  saveUserCounts(counts)
+}
+
+function incrementUserCount(jokeId, type) {
+  const current = getUserCount(jokeId, type)
+  setUserCount(jokeId, type, current + 1)
+  return current + 1
+}
+
+// 已读笑话
+function getReadJokes() {
+  return wx.getStorageSync('readJokes') || []
+}
+
+function saveReadJokes(ids) {
+  wx.setStorageSync('readJokes', ids)
+}
+
+function markAsRead(jokeId) {
+  const readIds = getReadJokes()
+  if (!readIds.includes(jokeId)) {
+    readIds.push(jokeId)
+    saveReadJokes(readIds)
   }
-  
-  saveUserRatings(ratings)
+}
+
+// 最后访问日期
+function getLastVisitDate() {
+  return wx.getStorageSync('lastVisitDate') || null
+}
+
+function setLastVisitDate(date) {
+  wx.setStorageSync('lastVisitDate', date)
 }
 
 const api = {
@@ -50,6 +75,16 @@ const api = {
   getJokes(params = {}) {
     const query = Object.keys(params).map(k => `${k}=${params[k]}`).join('&')
     return request(`/jokes?${query}`)
+  },
+  
+  // 获取最新笑话
+  getLatestJokes(limit = 50) {
+    return request(`/latest?limit=${limit}`)
+  },
+  
+  // 获取今日笑话
+  getTodayJokes() {
+    return request('/today')
   },
   
   // 获取热门笑话
@@ -67,24 +102,53 @@ const api = {
     return request(`/jokes/${id}`)
   },
   
-  // 三档评价（发送新旧评价给服务器）
-  rate(id, prevRating, newRating) {
-    return request(`/rate/${id}`, 'POST', {
-      prevRating,  // 旧评价
-      newRating    // 新评价
-    })
+  // 累计点赞（每次点击都+1）
+  like(id) {
+    // 本地记录用户点赞次数
+    const userCount = incrementUserCount(id, 'like')
+    
+    return request(`/like/${id}`, 'POST').then(res => ({
+      ...res,
+      userLikeCount: userCount  // 返回用户累计次数
+    }))
   },
   
-  // 获取统计信息
+  // 累计评价为平（每次点击都+1）
+  neutral(id) {
+    const userCount = incrementUserCount(id, 'neutral')
+    
+    return request(`/neutral/${id}`, 'POST').then(res => ({
+      ...res,
+      userNeutralCount: userCount
+    }))
+  },
+  
+  // 累计不喜欢（每次点击都+1）
+  dislike(id) {
+    const userCount = incrementUserCount(id, 'dislike')
+    
+    return request(`/dislike/${id}`, 'POST').then(res => ({
+      ...res,
+      userDislikeCount: userCount
+    }))
+  },
+  
+  // 获取统计
   getStats() {
     return request('/stats')
   },
   
-  // 本地存储相关
-  getUserRatings,
-  saveUserRatings,
-  getUserRating,
-  setUserRating
+  // 本地存储方法
+  getUserCounts,
+  saveUserCounts,
+  getUserCount,
+  setUserCount,
+  incrementUserCount,
+  getReadJokes,
+  saveReadJokes,
+  markAsRead,
+  getLastVisitDate,
+  setLastVisitDate
 }
 
 module.exports = { api }

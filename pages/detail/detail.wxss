@@ -21,7 +21,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .joke-title {
@@ -38,6 +38,11 @@
   border-radius: 12px;
 }
 
+.joke-date {
+  font-size: 12px;
+  color: #999;
+}
+
 .joke-content {
   font-size: 16px;
   line-height: 1.8;
@@ -52,9 +57,9 @@
 
 .rating-stats {
   display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-  font-size: 16px;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 14px;
 }
 
 .likes {
@@ -67,6 +72,11 @@
 
 .dislikes {
   color: #F44336;
+}
+
+.score {
+  color: #2196F3;
+  font-weight: bold;
 }
 
 .rating-buttons {
@@ -88,9 +98,9 @@
   border: 2px solid #4CAF50;
 }
 
-.like-btn.active {
-  background: #4CAF50;
-  color: white;
+.like-btn .count {
+  color: #2E7D32;
+  font-size: 12px;
 }
 
 .neutral-btn {
@@ -99,9 +109,9 @@
   border: 2px solid #9E9E9E;
 }
 
-.neutral-btn.active {
-  background: #9E9E9E;
-  color: white;
+.neutral-btn .count {
+  color: #616161;
+  font-size: 12px;
 }
 
 .dislike-btn {
@@ -110,16 +120,13 @@
   border: 2px solid #F44336;
 }
 
-.dislike-btn.active {
-  background: #F44336;
-  color: white;
+.dislike-btn .count {
+  color: #C62828;
+  font-size: 12px;
 }
 
-.rating-hint {
-  text-align: center;
-  margin-top: 15px;
-  font-size: 14px;
-  color: #888;
+.rating-btn:active {
+  transform: scale(0.95);
 }
 
 .theme-toggle {
