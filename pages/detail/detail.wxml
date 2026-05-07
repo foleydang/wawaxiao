@@ -1,102 +1,53 @@
-<view class="page-wrapper {{pageClass}}">
-  <!-- 导航 -->
-  <view class="nav-bar">
-    <view class="back-btn glass" bindtap="goBack">
-      <view class="back-arrow"></view>
+<!--pages/detail/detail.wxml-->
+<view class="container {{pageClass}}">
+  <view class="joke-card" wx:if="{{joke}}">
+    <view class="joke-header">
+      <text class="joke-title">{{joke.title}}</text>
+      <text class="joke-category">{{joke.category}}</text>
     </view>
-    <view class="theme-btn glass" bindtap="toggleTheme">
-      <text class="theme-icon">{{themeIcon}}</text>
-    </view>
-  </view>
-
-  <!-- 主卡片 -->
-  <view class="main-card glass" wx:if="{{joke}}">
-    <view class="color-bar" style="background: {{joke.color}}"></view>
     
-    <view class="meta-row">
-      <view class="meta-dot" style="background: {{joke.color}}"></view>
-      <text class="meta-cat">{{joke.category}}</text>
-      <view class="meta-badge" wx:if="{{joke.isHot}}">HOT</view>
-      <view class="meta-badge" wx:if="{{joke.hasImage}}">图</view>
+    <view class="joke-content">
+      <text>{{joke.content}}</text>
     </view>
-
-    <text class="main-title">{{joke.title}}</text>
     
-    <!-- 内容 -->
-    <text class="main-content">{{joke.content}}</text>
-
-    <!-- 图片 -->
-    <view class="image-area" wx:if="{{joke.hasImage}}">
-      <image 
-        class="joke-img"
-        wx:for="{{joke.images}}"
-        wx:for-item="imgUrl"
-        wx:key="*this"
-        src="{{imgUrl}}"
-        mode="widthFix"
-        bindtap="previewImage"
-        data-url="{{imgUrl}}"
-        data-urls="{{joke.images}}"
-      />
-    </view>
-
-    <!-- 统计 -->
-    <view class="stats-bar">
-      <view class="stat">
-        <text class="stat-num">{{joke.likes}}</text>
-        <text class="stat-label">喜欢</text>
+    <!-- 三档评价 -->
+    <view class="rating-section">
+      <view class="rating-stats">
+        <text class="likes">👍 {{joke.likes}}</text>
+        <text class="neutrals">😐 {{joke.neutrals}}</text>
+        <text class="dislikes">👎 {{joke.dislikes}}</text>
       </view>
-      <view class="stat">
-        <text class="stat-num">{{joke.dislikes}}</text>
-        <text class="stat-label">不喜欢</text>
+      
+      <view class="rating-buttons">
+        <button 
+          class="rating-btn like-btn {{userRating === 'like' ? 'active' : ''}}"
+          bindtap="handleLike"
+        >
+          👍 喜欢
+        </button>
+        
+        <button 
+          class="rating-btn neutral-btn {{userRating === 'neutral' ? 'active' : ''}}"
+          bindtap="handleNeutral"
+        >
+          😐 平
+        </button>
+        
+        <button 
+          class="rating-btn dislike-btn {{userRating === 'dislike' ? 'active' : ''}}"
+          bindtap="handleDislike"
+        >
+          👎 不喜欢
+        </button>
       </view>
-      <view class="stat">
-        <text class="stat-num">{{joke.shares}}</text>
-        <text class="stat-label">分享</text>
+      
+      <view class="rating-hint">
+        <text>评分: {{joke.score > 0 ? '+' : ''}}{{joke.score}}</text>
       </view>
     </view>
   </view>
-
-  <!-- 操作按钮 -->
-  <view class="action-bar" wx:if="{{joke}}">
-    <view class="action-btn {{liked ? 'liked' : ''}}" bindtap="toggleLike">
-      <text class="action-icon">{{liked ? '❤️' : '🤍'}}</text>
-      <text class="action-num">{{joke.likes}}</text>
-    </view>
-    
-    <view class="action-btn {{disliked ? 'disliked' : ''}}" bindtap="toggleDislike">
-      <text class="action-icon">{{disliked ? '👎' : '👎🏻'}}</text>
-      <text class="action-num">{{joke.dislikes}}</text>
-    </view>
-    
-    <button class="action-btn share-btn" open-type="share">
-      <text class="action-icon">📤</text>
-      <text class="action-num">{{joke.shares}}</text>
-    </button>
-  </view>
-
-  <!-- 更多 -->
-  <view class="more-area" wx:if="{{moreJokes.length > 0}}">
-    <view class="more-head">
-      <view class="more-bar"></view>
-      <text class="more-title">再看点别的</text>
-    </view>
-    
-    <view class="more-grid">
-      <view 
-        class="more-card glass"
-        wx:for="{{moreJokes}}"
-        wx:key="id"
-        bindtap="goToDetail"
-        data-id="{{item.id}}"
-      >
-        <view class="more-color" style="background: {{item.color}}"></view>
-        <text class="more-name">{{item.title}}</text>
-        <view class="more-meta">
-          <text class="more-cat">{{item.category}}</text>
-          <text class="more-stats">{{item.likes}}{{item.hasImage ? '图' : ''}}</text>
-        </view>
-      </view>
-    </view>
+  
+  <view class="theme-toggle" bindtap="toggleTheme">
+    <text class="theme-icon">{{themeIcon}}</text>
   </view>
 </view>

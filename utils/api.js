@@ -16,13 +16,33 @@ function request(url, method = 'GET', data = {}) {
   })
 }
 
-function getUserId() {
-  let userId = wx.getStorageSync('userId')
-  if (!userId) {
-    userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
-    wx.setStorageSync('userId', userId)
+// 获取用户评价记录（本地存储）
+function getUserRatings() {
+  return wx.getStorageSync('userRatings') || {}
+}
+
+// 保存用户评价记录
+function saveUserRatings(ratings) {
+  wx.setStorageSync('userRatings', ratings)
+}
+
+// 获取用户对某个笑话的评价
+function getUserRating(jokeId) {
+  const ratings = getUserRatings()
+  return ratings[jokeId] || null  // 'like' | 'neutral' | 'dislike' | null
+}
+
+// 保存用户对某个笑话的评价
+function setUserRating(jokeId, rating) {
+  const ratings = getUserRatings()
+  
+  if (rating === null) {
+    delete ratings[jokeId]
+  } else {
+    ratings[jokeId] = rating
   }
-  return userId
+  
+  saveUserRatings(ratings)
 }
 
 const api = {
@@ -47,31 +67,24 @@ const api = {
     return request(`/jokes/${id}`)
   },
   
-  // 喜欢/取消喜欢（同步到数据库）
-  toggleLike(id, isLike) {
-    return request(`/like/${id}`, 'POST', {
-      userId: getUserId(),
-      action: isLike ? 'like' : 'unlike'
+  // 三档评价（发送新旧评价给服务器）
+  rate(id, prevRating, newRating) {
+    return request(`/rate/${id}`, 'POST', {
+      prevRating,  // 旧评价
+      newRating    // 新评价
     })
-  },
-  
-  // 不喜欢/取消不喜欢（同步到数据库）
-  toggleDislike(id, isDislike) {
-    return request(`/dislike/${id}`, 'POST', {
-      userId: getUserId(),
-      action: isDislike ? 'dislike' : 'undislike'
-    })
-  },
-  
-  // 增加分享数
-  incrementShare(id) {
-    return request(`/share/${id}`, 'POST', { userId: getUserId() })
   },
   
   // 获取统计信息
   getStats() {
     return request('/stats')
-  }
+  },
+  
+  // 本地存储相关
+  getUserRatings,
+  saveUserRatings,
+  getUserRating,
+  setUserRating
 }
 
-module.exports = { api, getUserId }
+module.exports = { api }
