@@ -1,141 +1,183 @@
-/* pages/detail/detail.wxss */
-.container {
-  padding: 20px;
+/* pages/detail/detail.wxss - 和首页一样的风格 */
+
+/* 复用首页的样式 */
+.page-wrapper {
   min-height: 100vh;
+  padding-bottom: calc(40rpx + var(--safe-bottom));
+  background: var(--bg);
+  color: var(--text);
+}
+
+.page-wrapper.light-mode {
+  background: #f8f9fa !important;
+  color: #1a1a2e !important;
+}
+
+.page-wrapper.light-mode .glass {
+  background: rgba(0,0,0,0.04) !important;
+  border-color: rgba(0,0,0,0.1) !important;
+}
+
+.page-wrapper.light-mode .card-title,
+.page-wrapper.light-mode .brand-name {
+  color: #1a1a2e !important;
+}
+
+.page-wrapper.light-mode .meta-cat,
+.page-wrapper.light-mode .card-content,
+.page-wrapper.light-mode .action-num,
+.page-wrapper.light-mode .meta-date {
+  color: #555555 !important;
+}
+
+/* 顶部 */
+.header {
+  padding: calc(56rpx + var(--safe-top)) 28rpx 32rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.brand-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 6rpx;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.container.light-mode {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+.brand-name {
+  font-size: 36rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
 }
 
-.joke-card {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 20px;
-  padding: 30px;
-  margin-bottom: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.joke-header {
+.header-right {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  gap: 16rpx;
 }
 
-.joke-title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
 }
 
-.joke-category {
-  font-size: 14px;
-  color: #666;
-  background: #f0f0f0;
-  padding: 4px 12px;
-  border-radius: 12px;
+.btn-press {
+  transition: transform 0.15s ease;
 }
 
-.joke-content {
-  font-size: 16px;
-  line-height: 1.8;
-  color: #555;
-  margin-bottom: 30px;
+.btn-press:active {
+  transform: scale(0.92);
 }
 
-.rating-section {
-  border-top: 1px solid #e0e0e0;
-  padding-top: 20px;
-}
-
-.rating-stats {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-  font-size: 16px;
-}
-
-.likes {
-  color: #4CAF50;
-}
-
-.neutrals {
-  color: #9E9E9E;
-}
-
-.dislikes {
-  color: #F44336;
-}
-
-.rating-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.rating-btn {
-  flex: 1;
-  border-radius: 12px;
-  font-size: 16px;
-  transition: all 0.3s;
-}
-
-.like-btn {
-  background: #e8f5e9;
-  color: #4CAF50;
-  border: 2px solid #4CAF50;
-}
-
-.like-btn.active {
-  background: #4CAF50;
-  color: white;
-}
-
-.neutral-btn {
-  background: #f5f5f5;
-  color: #9E9E9E;
-  border: 2px solid #9E9E9E;
-}
-
-.neutral-btn.active {
-  background: #9E9E9E;
-  color: white;
-}
-
-.dislike-btn {
-  background: #ffebee;
-  color: #F44336;
-  border: 2px solid #F44336;
-}
-
-.dislike-btn.active {
-  background: #F44336;
-  color: white;
-}
-
-.rating-hint {
-  text-align: center;
-  margin-top: 15px;
-  font-size: 14px;
-  color: #888;
-}
-
-.theme-toggle {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.8);
+.theme-btn {
+  width: 48rpx;
+  height: 48rpx;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .theme-icon {
-  font-size: 24px;
+  font-size: 20px;
+}
+
+/* Section */
+.section {
+  padding: 0 28rpx 40rpx;
+}
+
+/* 卡片（和首页一样） */
+.recommend-card {
+  position: relative;
+  padding: 40rpx 32rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+
+.card-color {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.meta-dot {
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.meta-cat {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.meta-date {
+  font-size: 24rpx;
+  color: rgba(100, 100, 100, 0.6);
+}
+
+.card-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+  line-height: 1.4;
+}
+
+.card-content {
+  font-size: 28rpx;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 32rpx;
+}
+
+/* 三档评价（和首页一样） */
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding-top: 24rpx;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 16rpx 24rpx;
+  border-radius: 20rpx;
+  background: rgba(255, 255, 255, 0.06);
+  transition: all 0.2s ease;
+}
+
+.action-btn:active {
+  transform: scale(0.92);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.action-icon {
+  font-size: 32rpx;
+}
+
+.action-num {
+  font-size: 24rpx;
+  font-weight: 500;
 }
