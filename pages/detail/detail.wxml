@@ -11,30 +11,21 @@
       <text>{{joke.content}}</text>
     </view>
     
-    <!-- 累计评价 -->
-    <view class="rating-section">
-      <view class="rating-stats">
-        <text class="likes">👍 {{joke.likes}}</text>
-        <text class="neutrals">😐 {{joke.neutrals}}</text>
-        <text class="dislikes">👎 {{joke.dislikes}}</text>
-        <text class="score">评分: {{joke.score}}</text>
+    <!-- 三档评价（按钮和数量在一起，原本样式） -->
+    <view class="rating-actions">
+      <view class="rating-btn" bindtap="handleLike">
+        <text class="rating-icon">👍</text>
+        <text class="rating-num">{{joke.likes}}</text>
       </view>
       
-      <view class="rating-buttons">
-        <button class="rating-btn like-btn" bindtap="handleLike">
-          👍 喜欢
-          <text class="count" wx:if="{{userLikeCount > 0}}">（{{userLikeCount}}）</text>
-        </button>
-        
-        <button class="rating-btn neutral-btn" bindtap="handleNeutral">
-          😐 平
-          <text class="count" wx:if="{{userNeutralCount > 0}}">（{{userNeutralCount}}）</text>
-        </button>
-        
-        <button class="rating-btn dislike-btn" bindtap="handleDislike">
-          👎 不喜欢
-          <text class="count" wx:if="{{userDislikeCount > 0}}">（{{userDislikeCount}}）</text>
-        </button>
+      <view class="rating-btn" bindtap="handleNeutral">
+        <text class="rating-icon">😐</text>
+        <text class="rating-num">{{joke.neutrals}}</text>
+      </view>
+      
+      <view class="rating-btn" bindtap="handleDislike">
+        <text class="rating-icon">👎</text>
+        <text class="rating-num">{{joke.dislikes}}</text>
       </view>
     </view>
   </view>
