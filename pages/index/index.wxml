@@ -103,3 +103,5 @@
         <text class="hot-likes">👍{{item.likes}}</text>
       </view>
     </view>
+  </view>
+</view>
