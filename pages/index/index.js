@@ -2,19 +2,19 @@ const { api } = require('../../utils/api')
 
 Page({
   data: {
-    jokes: [],
+    loading: true,
     currentJoke: null,
-    userLikeCount: 0,
-    userNeutralCount: 0,
-    userDislikeCount: 0,
+    hotJokes: [],
+    todayNewCount: 0,
+    freshCount: 0,
     themeIcon: '🌙',
-    pageClass: '',
-    showDetail: false
+    pageClass: ''
   },
 
   onLoad() {
-    this.loadJokes()
+    this.loadData()
     this.initTheme()
+    this.checkNewJokes()
   },
 
   initTheme() {
@@ -25,63 +25,72 @@ Page({
     })
   },
 
-  async loadJokes() {
+  async loadData() {
     try {
-      const res = await api.getJokes({ limit: 20 })
-      this.setData({ jokes: res.data.list })
+      // 加载笑话列表
+      const res = await api.getJokes({ limit: 50 })
+      const jokes = res.data.list
       
-      if (res.data.list.length > 0) {
-        this.showJokeDetail(res.data.list[0].id)
-      }
-    } catch (err) {
-      wx.showToast({ title: '加载失败', icon: 'none' })
-    }
-  },
-
-  async showJokeDetail(id) {
-    try {
-      const res = await api.getJokeById(id)
-      const joke = res.data
-      
-      const userLikeCount = api.getUserCount(parseInt(id), 'like')
-      const userNeutralCount = api.getUserCount(parseInt(id), 'neutral')
-      const userDislikeCount = api.getUserCount(parseInt(id), 'dislike')
+      // 加载热门笑话
+      const hotRes = await api.getHotJokes()
       
       this.setData({
-        currentJoke: joke,
-        userLikeCount,
-        userNeutralCount,
-        userDislikeCount,
-        showDetail: true
+        jokes,
+        currentJoke: jokes[0] || null,
+        hotJokes: hotRes.data || [],
+        loading: false
       })
       
-      api.markAsRead(id)
+      // 标记已读
+      if (jokes[0]) {
+        api.markAsRead(jokes[0].id)
+      }
+      
     } catch (err) {
+      console.error('加载失败:', err)
+      this.setData({ loading: false })
       wx.showToast({ title: '加载失败', icon: 'none' })
     }
   },
 
+  async checkNewJokes() {
+    try {
+      const stats = await api.getStats()
+      const lastVisit = api.getLastVisitDate()
+      
+      if (lastVisit && stats.data.latestDate > lastVisit) {
+        this.setData({
+          todayNewCount: stats.data.todayCount
+        })
+      }
+      
+      api.setLastVisitDate(stats.data.latestDate)
+      
+      // 计算未读数量
+      const readIds = api.getReadJokes()
+      const freshCount = this.data.jokes ? 
+        this.data.jokes.filter(j => !readIds.includes(j.id)).length : 0
+      
+      this.setData({ freshCount })
+      
+    } catch (err) {
+      console.error('检查新笑话失败:', err)
+    }
+  },
+
+  // 三档评价（累计，每次点击都+1）
   async handleLike() {
     if (!this.data.currentJoke) return
     
     try {
       const res = await api.like(this.data.currentJoke.id)
-      
       const joke = this.data.currentJoke
       joke.likes = res.data.likes
-      joke.neutrals = res.data.neutrals
-      joke.dislikes = res.data.dislikes
-      joke.score = res.data.score
       
-      this.setData({
-        currentJoke: joke,
-        userLikeCount: res.userLikeCount
-      })
+      this.setData({ currentJoke: joke })
       
-      wx.showToast({
-        title: `喜欢+1（已点${res.userLikeCount}次）`,
-        icon: 'none'
-      })
+      wx.showToast({ title: '喜欢+1', icon: 'none', duration: 800 })
+      
     } catch (err) {
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
@@ -92,22 +101,13 @@ Page({
     
     try {
       const res = await api.neutral(this.data.currentJoke.id)
-      
       const joke = this.data.currentJoke
-      joke.likes = res.data.likes
       joke.neutrals = res.data.neutrals
-      joke.dislikes = res.data.dislikes
-      joke.score = res.data.score
       
-      this.setData({
-        currentJoke: joke,
-        userNeutralCount: res.userNeutralCount
-      })
+      this.setData({ currentJoke: joke })
       
-      wx.showToast({
-        title: `平+1（已点${res.userNeutralCount}次）`,
-        icon: 'none'
-      })
+      wx.showToast({ title: '平+1', icon: 'none', duration: 800 })
+      
     } catch (err) {
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
@@ -118,25 +118,49 @@ Page({
     
     try {
       const res = await api.dislike(this.data.currentJoke.id)
-      
       const joke = this.data.currentJoke
-      joke.likes = res.data.likes
-      joke.neutrals = res.data.neutrals
       joke.dislikes = res.data.dislikes
-      joke.score = res.data.score
       
-      this.setData({
-        currentJoke: joke,
-        userDislikeCount: res.userDislikeCount
-      })
+      this.setData({ currentJoke: joke })
       
-      wx.showToast({
-        title: `不喜欢+1（已点${res.userDislikeCount}次）`,
-        icon: 'none'
-      })
+      wx.showToast({ title: '不喜欢+1', icon: 'none', duration: 800 })
+      
     } catch (err) {
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
+  },
+
+  nextJoke() {
+    const jokes = this.data.jokes
+    if (!jokes || jokes.length === 0) return
+    
+    const currentIndex = jokes.findIndex(j => j.id === this.data.currentJoke?.id)
+    const nextIndex = (currentIndex + 1) % jokes.length
+    
+    const nextJoke = jokes[nextIndex]
+    this.setData({ currentJoke: nextJoke })
+    
+    api.markAsRead(nextJoke.id)
+    
+    // 更新未读数量
+    const readIds = api.getReadJokes()
+    const freshCount = jokes.filter(j => !readIds.includes(j.id)).length
+    this.setData({ freshCount })
+  },
+
+  goToDetail(e) {
+    const id = e.currentTarget.dataset.id
+    wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
+  },
+
+  goToSearch() {
+    wx.navigateTo({ url: '/pages/search/search' })
+  },
+
+  previewImage(e) {
+    const url = e.currentTarget.dataset.url
+    const urls = e.currentTarget.dataset.urls
+    wx.previewImage({ current: url, urls: urls || [url] })
   },
 
   toggleTheme() {
@@ -155,7 +179,7 @@ Page({
     
     return {
       title: this.data.currentJoke.title,
-      path: `/pages/index/index`
+      path: '/pages/index/index'
     }
   }
 })

@@ -57,59 +57,53 @@
         />
       </view>
       
+      <!-- 三档评价（按钮+数量在一起） -->
       <view class="card-actions">
-        <view class="action-btn {{liked ? 'liked' : ''}}" bindtap="toggleLike">
-          <text class="action-icon">{{liked ? '❤️' : '🤍'}}</text>
+        <view class="action-btn" bindtap="handleLike">
+          <text class="action-icon">👍</text>
           <text class="action-num">{{currentJoke.likes}}</text>
         </view>
         
-        <view class="action-btn {{disliked ? 'disliked' : ''}}" bindtap="toggleDislike">
-          <text class="action-icon">{{disliked ? '👎' : '👎🏻'}}</text>
-          <text class="action-num">{{currentJoke.dislikes}}</text>
+        <view class="action-btn" bindtap="handleNeutral">
+          <text class="action-icon">😐</text>
+          <text class="action-num">{{currentJoke.neutrals}}</text>
         </view>
         
-        <button class="action-btn share-btn" open-type="share">
-          <text class="action-icon">📤</text>
-          <text class="action-num">{{currentJoke.shares}}</text>
-        </button>
+        <view class="action-btn" bindtap="handleDislike">
+          <text class="action-icon">👎</text>
+          <text class="action-num">{{currentJoke.dislikes}}</text>
+        </view>
         
         <view class="action-btn next-btn" bindtap="nextJoke">
           <text class="next-text">下一个</text>
         </view>
       </view>
     </view>
-  </view>
-
-  <!-- 空状态 -->
-  <view class="empty-state" wx:if="{{!loading && !currentJoke}}">
-    <view class="empty-icon glass">😊</view>
-    <text class="empty-title">都看完了</text>
-    <text class="empty-desc">明天会有新笑话哦</text>
-    <view class="empty-btn glass" bindtap="goToLibrary">
-      <text class="empty-btn-text">笑话库</text>
+    
+    <view class="card-footer">
+      <text class="footer-date">{{currentJoke.date}}</text>
     </view>
   </view>
 
   <!-- 热门推荐 -->
-  <view class="hot-section" wx:if="{{!loading && hotJokes.length > 0}}">
+  <view class="section" wx:if="{{!loading && hotJokes.length > 0}}">
     <view class="section-header">
       <view class="section-left">
         <view class="section-dot hot"></view>
         <text class="section-title">热门推荐</text>
       </view>
+      <text class="section-count">{{hotJokes.length}}条热门</text>
     </view>
     
-    <view class="hot-grid">
-      <view 
-        class="hot-card glass"
-        wx:for="{{hotJokes}}"
+    <view class="hot-list">
+      <view class="hot-item glass btn-press" 
+        wx:for="{{hotJokes}}" 
         wx:key="id"
         bindtap="goToDetail"
         data-id="{{item.id}}"
       >
-        <view class="hot-color" style="background: {{item.color}}"></view>
         <text class="hot-title">{{item.title}}</text>
-        <text class="hot-likes">{{item.likes}}❤️</text>
+        <text class="hot-likes">👍{{item.likes}}</text>
       </view>
     </view>
   </view>
