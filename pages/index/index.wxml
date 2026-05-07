@@ -105,6 +105,3 @@
         <text class="hot-title">{{item.title}}</text>
         <text class="hot-likes">👍{{item.likes}}</text>
       </view>
-    </view>
-  </view>
-</view>
