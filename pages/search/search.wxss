@@ -1,7 +1,8 @@
-/* search.wxss */
+/* pages/search/search.wxss - 搜索优化 */
 
 .page-wrapper {
   min-height: 100vh;
+  padding-bottom: calc(40rpx + var(--safe-bottom));
   background: var(--bg);
   color: var(--text);
 }
@@ -16,71 +17,80 @@
   border-color: rgba(0,0,0,0.1) !important;
 }
 
+.page-wrapper.light-mode .brand-name,
+.page-wrapper.light-mode .section-title,
 .page-wrapper.light-mode .result-title {
   color: #1a1a2e !important;
 }
 
-.page-wrapper.light-mode .result-count,
-.page-wrapper.light-mode .result-preview,
-.page-wrapper.light-mode .result-stats {
+.page-wrapper.light-mode .result-category,
+.page-wrapper.light-mode .keyword-text {
   color: #555555 !important;
 }
 
-.page-wrapper.light-mode .result-cat,
-.page-wrapper.light-mode .history-title,
-.page-wrapper.light-mode .history-text {
-  color: #888888 !important;
-}
-
-.page-wrapper.light-mode .empty-title {
-  color: #555555 !important;
-}
-
+/* 顶部 */
 .header {
-  padding: calc(16rpx + var(--safe-top)) 28rpx 28rpx;
+  padding: calc(56rpx + var(--safe-top)) 28rpx 32rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
   display: flex;
   align-items: center;
   gap: 12rpx;
 }
 
-.back-btn {
-  width: 40rpx;
-  height: 40rpx;
-  border-radius: 20rpx;
+.brand-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 6rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.brand-name {
+  font-size: 36rpx;
+  font-weight: 600;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.btn-press {
+  transition: transform 0.15s ease;
+}
+
+.btn-press:active {
+  transform: scale(0.92);
+}
+
+.theme-btn {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.back-arrow {
-  width: 14rpx;
-  height: 2rpx;
-  background: var(--text-secondary);
-  position: relative;
+.theme-icon {
+  font-size: 20px;
 }
 
-.back-arrow::after {
-  content: '';
-  width: 10rpx;
-  height: 10rpx;
-  border-left: 2rpx solid var(--text-secondary);
-  border-bottom: 2rpx solid var(--text-secondary);
-  transform: rotate(45deg);
-  position: absolute;
-  left: 2rpx;
-  top: -5rpx;
+/* 搜索框 */
+.search-section {
+  padding: 0 28rpx 32rpx;
 }
 
 .search-box {
-  flex: 1;
   display: flex;
   align-items: center;
-  padding: 10rpx 16rpx;
-}
-
-.search-icon {
-  font-size: 20rpx;
-  margin-right: 12rpx;
+  padding: 20rpx 24rpx;
+  border-radius: 24rpx;
 }
 
 .search-input {
@@ -89,166 +99,118 @@
   color: var(--text);
 }
 
-.search-input::placeholder {
+.search-btn {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-icon {
+  font-size: 24px;
+}
+
+/* Section */
+.section {
+  padding: 0 28rpx 32rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.section-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.section-dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+}
+
+.section-dot.hot {
+  background: #FF6B6B;
+}
+
+.section-dot.history {
+  background: #4ECDC4;
+}
+
+.section-dot.results {
+  background: #667eea;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.section-count {
+  font-size: 24rpx;
   color: var(--text-secondary);
 }
 
 .clear-btn {
-  width: 24rpx;
-  height: 24rpx;
-  border-radius: 12rpx;
-  background: var(--text-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.clear-text {
-  font-size: 16rpx;
-  color: var(--text);
-}
-
-.theme-btn {
-  width: 40rpx;
-  height: 40rpx;
-  border-radius: 20rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.theme-icon {
-  font-size: 20rpx;
-}
-
-/* 结果 */
-.results {
-  padding: 28rpx;
-}
-
-.result-header {
-  padding-bottom: 16rpx;
-}
-
-.result-count {
-  font-size: 26rpx;
+  font-size: 24rpx;
   color: var(--text-secondary);
 }
 
-.result-card {
-  display: flex;
-  align-items: flex-start;
+/* 关键词网格 */
+.keywords-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+}
+
+.keyword-item {
   padding: 16rpx;
-  margin-bottom: 12rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.result-color {
-  width: 4rpx;
-  min-height: 48rpx;
-  border-radius: 2rpx;
-  margin-right: 16rpx;
-  align-self: stretch;
+.keyword-text {
+  font-size: 26rpx;
 }
 
-.result-body {
-  flex: 1;
-  min-width: 0;
+/* 结果列表 */
+.results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.result-item {
+  padding: 24rpx;
+  border-radius: 16rpx;
 }
 
 .result-title {
-  font-size: 30rpx;
-  font-weight: 500;
-  margin-bottom: 4rpx;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  overflow: hidden;
-}
-
-.result-preview {
-  font-size: 26rpx;
-  color: var(--text-secondary);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  overflow: hidden;
-}
-
-.result-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  padding-left: 16rpx;
-  align-self: center;
-  gap: 6rpx;
-}
-
-.result-cat {
-  font-size: 22rpx;
-  color: var(--text-muted);
-}
-
-.result-stats {
-  font-size: 22rpx;
-  color: var(--text-secondary);
-}
-
-/* 空结果 */
-.empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 100rpx 28rpx;
-}
-
-.empty-title {
-  font-size: 28rpx;
-  color: var(--text-secondary);
+  font-size: 32rpx;
+  font-weight: 600;
   margin-bottom: 8rpx;
 }
 
-.empty-desc {
+.result-category {
   font-size: 24rpx;
-  color: var(--text-muted);
-}
-
-/* 历史 */
-.history {
-  padding: 28rpx;
-}
-
-.history-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16rpx;
-}
-
-.history-title {
-  font-size: 26rpx;
   color: var(--text-secondary);
 }
 
-.clear-history {
-  padding: 4rpx 12rpx;
+/* 加载状态 */
+.loading {
+  padding: 100rpx 0;
+  text-align: center;
 }
 
-.clear-history-text {
-  font-size: 22rpx;
-  color: var(--text-muted);
-}
-
-.history-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8rpx;
-}
-
-.history-item {
-  padding: 8rpx 16rpx;
-}
-
-.history-text {
-  font-size: 24rpx;
+.loading-text {
+  font-size: 28rpx;
   color: var(--text-secondary);
 }
