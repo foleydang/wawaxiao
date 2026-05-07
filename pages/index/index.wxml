@@ -28,6 +28,7 @@
       <view class="section-left">
         <view class="section-dot {{currentJoke.isTodayNew ? 'today' : ''}}"></view>
         <text class="section-title">{{currentJoke.isTodayNew ? '今日最新' : '今日新鲜'}}</text>
+</view>
       </view>
       <text class="section-count">{{todayNewCount > 0 ? todayNewCount + '条最新' : freshCount + '条未看'}}</text>
     </view>
