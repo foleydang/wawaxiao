@@ -1,6 +1,6 @@
-/* pages/detail/detail.wxss - 和首页统一 + 推荐笑话 */
+/* pages/detail/detail.wxss - 完整版 */
 
-/* 复用首页样式 */
+/* 基础样式 */
 .page-wrapper {
   min-height: 100vh;
   padding-bottom: calc(40rpx + var(--safe-bottom));
@@ -21,7 +21,7 @@
 .page-wrapper.light-mode .brand-name,
 .page-wrapper.light-mode .section-title,
 .page-wrapper.light-mode .card-title,
-.page-wrapper.light-mode .hot-title {
+.page-wrapper.light-mode .recommend-title {
   color: #1a1a2e !important;
 }
 
@@ -29,8 +29,7 @@
 .page-wrapper.light-mode .card-content,
 .page-wrapper.light-mode .section-count,
 .page-wrapper.light-mode .action-num,
-.page-wrapper.light-mode .hot-likes,
-.page-wrapper.light-mode .meta-date {
+.page-wrapper.light-mode .recommend-meta {
   color: #555555 !important;
 }
 
@@ -40,6 +39,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.back-btn {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-icon {
+  font-size: 24px;
 }
 
 .brand {
@@ -175,8 +187,12 @@
 .card-title {
   font-size: 36rpx;
   font-weight: 600;
-  margin-bottom: 16rpx;
   line-height: 1.4;
+}
+
+/* 标题和内容之间的间距 */
+.title-divider {
+  height: 24rpx;
 }
 
 .card-content {
@@ -219,28 +235,27 @@
   font-weight: 500;
 }
 
-/* 推荐笑话列表 */
-.hot-list {
-  display: flex;
-  flex-direction: column;
+/* 推荐笑话（两行两列） */
+.recommend-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12rpx;
 }
 
-.hot-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.recommend-item {
   padding: 24rpx;
   border-radius: 16rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
 }
 
-.hot-title {
+.recommend-title {
   font-size: 28rpx;
   font-weight: 500;
-  flex: 1;
 }
 
-.hot-likes {
-  font-size: 24rpx;
+.recommend-meta {
+  font-size: 22rpx;
   color: var(--text-secondary);
 }

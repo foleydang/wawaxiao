@@ -1,7 +1,11 @@
-<!--pages/detail/detail.wxml - 和首页一样的风格 + 推荐笑话 -->
+<!--pages/detail/detail.wxml - 完整版 -->
 <view class="page-wrapper {{pageClass}}">
   <!-- 顶部 -->
   <view class="header">
+    <view class="back-btn glass btn-press" bindtap="goBack">
+      <text class="back-icon">←</text>
+    </view>
+    
     <view class="brand">
       <view class="brand-dot"></view>
       <text class="brand-name">哇哇笑</text>
@@ -26,6 +30,10 @@
       </view>
       
       <text class="card-title">{{joke.title}}</text>
+      
+      <!-- 标题和内容之间增加间距 -->
+      <view class="title-divider"></view>
+      
       <text class="card-content">{{joke.content}}</text>
       
       <!-- 三档评价 -->
@@ -48,25 +56,26 @@
     </view>
   </view>
 
-  <!-- 推荐笑话 -->
+  <!-- 推荐笑话（两行两列） -->
   <view class="section" wx:if="{{recommendJokes.length > 0}}">
     <view class="section-header">
       <view class="section-left">
         <view class="section-dot recommend"></view>
         <text class="section-title">猜你想看</text>
       </view>
-      <text class="section-count">{{recommendJokes.length}}条推荐</text>
+      <text class="section-count">4条推荐</text>
     </view>
     
-    <view class="hot-list">
-      <view class="hot-item glass btn-press" 
+    <!-- 两行两列布局 -->
+    <view class="recommend-grid">
+      <view class="recommend-item glass btn-press" 
         wx:for="{{recommendJokes}}" 
         wx:key="id"
         bindtap="goToDetail"
         data-id="{{item.id}}"
       >
-        <text class="hot-title">{{item.title}}</text>
-        <text class="hot-likes">👍{{item.likes}}</text>
+        <text class="recommend-title">{{item.title}}</text>
+        <text class="recommend-meta">{{item.category}}</text>
       </view>
     </view>
   </view>
