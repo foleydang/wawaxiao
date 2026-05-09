@@ -196,6 +196,8 @@
 }
 
 .card-content {
+  white-space: pre-wrap;
+  word-wrap: break-word;
   font-size: 28rpx;
   line-height: 1.6;
   color: var(--text-secondary);
