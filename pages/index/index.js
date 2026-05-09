@@ -10,8 +10,8 @@ Page({
     freshCount: 0,
     themeIcon: '🌙',
     pageClass: '',
-    page: 1,  // 新增：分页
-    hasMore: true  // 新增：是否有更多
+    page: 1,
+    hasMore: true
   },
 
   onLoad() {
@@ -27,7 +27,6 @@ Page({
     })
   },
 
-  // 下拉刷新
   onPullDownRefresh() {
     this.setData({ page: 1, hasMore: true })
     this.loadData().then(() => {
@@ -36,7 +35,6 @@ Page({
     })
   },
 
-  // 滚动加载更多
   onReachBottom() {
     if (this.data.hasMore && !this.data.loading) {
       this.loadMore()
@@ -47,17 +45,14 @@ Page({
     try {
       this.setData({ loading: true })
       
-      // 分页加载：每次20条
       const res = await api.getJokes({ limit: 20, page: 1 })
       const jokes = res.data.list
       
       const hotRes = await api.getHotJokes()
       
-      // 计算未读数量
       const readIds = api.getReadJokes()
       const freshCount = jokes.filter(j => !readIds.includes(j.id)).length
       
-      // 检查今日新笑话
       const stats = await api.getStats()
       const lastVisit = api.getLastVisitDate()
       const todayNewCount = (lastVisit && stats.data.latestDate > lastVisit) ? stats.data.todayCount : 0
@@ -71,7 +66,7 @@ Page({
         freshCount,
         todayNewCount,
         loading: false,
-        hasMore: jokes.length === 20  // 如果返回20条，说明还有更多
+        hasMore: jokes.length === 20
       })
       
       if (jokes[0]) {
@@ -85,7 +80,6 @@ Page({
     }
   },
 
-  // 加载更多
   async loadMore() {
     if (!this.data.hasMore) return
     
@@ -114,6 +108,44 @@ Page({
     }
   },
 
+  // 核心修复：nextJoke 随机取未读的笑话
+  nextJoke() {
+    const jokes = this.data.jokes
+    if (!jokes || jokes.length === 0) return
+    
+    const readIds = api.getReadJokes()
+    
+    // 找出所有未读的笑话
+    const unreadJokes = jokes.filter(j => !readIds.includes(j.id))
+    
+    let nextJoke
+    
+    if (unreadJokes.length > 0) {
+      // 有未读的，随机取一个未读的
+      const randomIndex = Math.floor(Math.random() * unreadJokes.length)
+      nextJoke = unreadJokes[randomIndex]
+    } else {
+      // 都读过了，随机取一个（循环使用）
+      const currentIndex = jokes.findIndex(j => j.id === this.data.currentJoke?.id)
+      let nextIndex
+      do {
+        nextIndex = Math.floor(Math.random() * jokes.length)
+      } while (nextIndex === currentIndex && jokes.length > 1)
+      nextJoke = jokes[nextIndex]
+      
+      // 提示用户都读过了
+      wx.showToast({ title: '今日推荐已看完', icon: 'none', duration: 1500 })
+    }
+    
+    this.setData({ currentJoke: nextJoke })
+    api.markAsRead(nextJoke.id)
+    
+    // 更新未读数量
+    const newReadIds = [...readIds, nextJoke.id]
+    const freshCount = jokes.filter(j => !newReadIds.includes(j.id)).length
+    this.setData({ freshCount })
+  },
+
   async handleLike() {
     if (!this.data.currentJoke) return
     
@@ -126,7 +158,6 @@ Page({
       
       this.setData({ currentJoke: joke })
       
-      // 点赞动画（高优先级优化）
       wx.showToast({
         title: '❤️ 喜欢+1',
         icon: 'none',
@@ -150,7 +181,6 @@ Page({
       
       this.setData({ currentJoke: joke })
       
-      // 点赞动画
       wx.showToast({
         title: '😐 平+1',
         icon: 'none',
@@ -174,7 +204,6 @@ Page({
       
       this.setData({ currentJoke: joke })
       
-      // 点赞动画
       wx.showToast({
         title: '👎 不喜欢+1',
         icon: 'none',
@@ -184,24 +213,6 @@ Page({
     } catch (err) {
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
-  },
-
-  nextJoke() {
-    const jokes = this.data.jokes
-    if (!jokes || jokes.length === 0) return
-    
-    const currentIndex = jokes.findIndex(j => j.id === this.data.currentJoke?.id)
-    const nextIndex = (currentIndex + 1) % jokes.length
-    
-    const nextJoke = jokes[nextIndex]
-    this.setData({ currentJoke: nextJoke })
-    
-    api.markAsRead(nextJoke.id)
-    
-    // 更新未读数量
-    const readIds = api.getReadJokes()
-    const freshCount = jokes.filter(j => !readIds.includes(j.id)).length
-    this.setData({ freshCount })
   },
 
   goToDetail(e) {

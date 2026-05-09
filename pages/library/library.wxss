@@ -292,3 +292,45 @@
   font-size: 26rpx;
   color: var(--text-muted);
 }
+
+/* 排序按钮在共xx条后面 */
+.section-right {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.section-count {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+.sort-btn {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.sort-arrows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.arrow-up, .arrow-down {
+  font-size: 12rpx;
+  color: var(--text-secondary);
+}
+
+.sort-arrows.desc .arrow-down {
+  color: var(--accent);
+}
+
+.sort-arrows.asc .arrow-up {
+  color: var(--accent);
+}

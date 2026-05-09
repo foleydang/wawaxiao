@@ -6,16 +6,8 @@
       <text class="search-text">搜索笑话</text>
     </view>
     
-    <view class="header-right">
-      <view class="sort-btn glass btn-press" bindtap="toggleSort">
-        <view class="sort-arrows {{sortDesc ? 'desc' : 'asc'}}">
-          <text class="arrow-up">▲</text>
-          <text class="arrow-down">▼</text>
-        </view>
-      </view>
-      <view class="theme-btn glass btn-press" bindtap="toggleTheme">
-        <text class="theme-icon">{{themeIcon}}</text>
-      </view>
+    <view class="theme-btn glass btn-press" bindtap="toggleTheme">
+      <text class="theme-icon">{{themeIcon}}</text>
     </view>
   </view>
 
@@ -43,12 +35,21 @@
 
   <!-- 笑话列表 -->
   <view class="section" wx:if="{{!loading && jokes.length > 0}}">
+    <!-- 核心修复：排序按钮移到共xx条后面 -->
     <view class="section-header">
       <view class="section-left">
         <view class="section-dot"></view>
         <text class="section-title">{{currentCategory === '全部' ? '全部笑话' : currentCategory}}</text>
       </view>
-      <text class="section-count">共{{total}}条 | 已加载{{jokes.length}}条</text>
+      <view class="section-right">
+        <text class="section-count">共{{total}}条</text>
+        <view class="sort-btn glass btn-press" bindtap="toggleSort">
+          <view class="sort-arrows {{sortDesc ? 'desc' : 'asc'}}">
+            <text class="arrow-up">▲</text>
+            <text class="arrow-down">▼</text>
+          </view>
+        </view>
+      </view>
     </view>
 
     <view class="joke-list">
