@@ -8,6 +8,7 @@ Page({
     hotJokes: [],
     todayNewCount: 0,
     freshCount: 0,
+    totalCount: 0,  // 新增：总数量
     themeIcon: '🌙',
     pageClass: '',
     page: 1,
@@ -50,10 +51,13 @@ Page({
       
       const hotRes = await api.getHotJokes()
       
-      const readIds = api.getReadJokes()
-      const freshCount = jokes.filter(j => !readIds.includes(j.id)).length
-      
       const stats = await api.getStats()
+      const totalCount = stats.data.total || jokes.length
+      
+      // 计算未读数量（基于总数，不是当前加载的20条）
+      const readIds = api.getReadJokes()
+      const freshCount = totalCount - readIds.length
+      
       const lastVisit = api.getLastVisitDate()
       const todayNewCount = (lastVisit && stats.data.latestDate > lastVisit) ? stats.data.todayCount : 0
       
@@ -63,7 +67,8 @@ Page({
         jokes,
         currentJoke: jokes[0] || null,
         hotJokes: hotRes.data || [],
-        freshCount,
+        freshCount: Math.max(0, freshCount),
+        totalCount,
         todayNewCount,
         loading: false,
         hasMore: jokes.length === 20
@@ -132,18 +137,15 @@ Page({
         nextIndex = Math.floor(Math.random() * jokes.length)
       } while (nextIndex === currentIndex && jokes.length > 1)
       nextJoke = jokes[nextIndex]
-      
-      // 提示用户都读过了
-      wx.showToast({ title: '今日推荐已看完', icon: 'none', duration: 1500 })
     }
     
     this.setData({ currentJoke: nextJoke })
     api.markAsRead(nextJoke.id)
     
-    // 更新未读数量
-    const newReadIds = [...readIds, nextJoke.id]
-    const freshCount = jokes.filter(j => !newReadIds.includes(j.id)).length
-    this.setData({ freshCount })
+    // 更新未读数量（基于总数）
+    const newReadIds = api.getReadJokes()
+    const freshCount = this.data.totalCount - newReadIds.length
+    this.setData({ freshCount: Math.max(0, freshCount) })
   },
 
   async handleLike() {
