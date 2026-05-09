@@ -60,10 +60,66 @@
   color: var(--text-secondary);
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.sort-btn {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 22rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.sort-arrows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.arrow-up {
+  font-size: 12rpx;
+  color: var(--text-secondary);
+  opacity: 0.4;
+}
+
+.arrow-down {
+  font-size: 12rpx;
+  color: var(--text);
+}
+
+/* 从高到低：下箭头高亮 */
+.sort-arrows.desc .arrow-up {
+  opacity: 0.4;
+  color: var(--text-secondary);
+}
+
+.sort-arrows.desc .arrow-down {
+  opacity: 1;
+  color: var(--accent);
+}
+
+/* 从低到高：上箭头高亮 */
+.sort-arrows.asc .arrow-up {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.sort-arrows.asc .arrow-down {
+  opacity: 0.4;
+  color: var(--text-secondary);
+}
+
 .theme-btn {
-  width: 40rpx;
-  height: 40rpx;
-  border-radius: 20rpx;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 22rpx;
   display: flex;
   align-items: center;
   justify-content: center;
