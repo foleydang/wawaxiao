@@ -61,6 +61,32 @@ function markAsRead(jokeId) {
   }
 }
 
+// 喜欢的笑话（新增）
+function getLikedJokes() {
+  return wx.getStorageSync('userLikes') || []
+}
+
+function saveLikedJokes(ids) {
+  wx.setStorageSync('userLikes', ids)
+}
+
+function addLikedJoke(jokeId) {
+  const likedIds = getLikedJokes()
+  if (!likedIds.includes(jokeId)) {
+    likedIds.push(jokeId)
+    saveLikedJokes(likedIds)
+  }
+}
+
+function removeLikedJoke(jokeId) {
+  const likedIds = getLikedJokes()
+  const index = likedIds.indexOf(jokeId)
+  if (index > -1) {
+    likedIds.splice(index, 1)
+    saveLikedJokes(likedIds)
+  }
+}
+
 // 最后访问日期
 function getLastVisitDate() {
   return wx.getStorageSync('lastVisitDate') || null
@@ -102,14 +128,17 @@ const api = {
     return request(`/jokes/${id}`)
   },
   
-  // 累计点赞（每次点击都+1）
+  // 累计点赞（每次点击都+1，同时加入喜欢列表）
   like(id) {
     // 本地记录用户点赞次数
     const userCount = incrementUserCount(id, 'like')
     
+    // 添加到喜欢的笑话列表
+    addLikedJoke(id)
+    
     return request(`/like/${id}`, 'POST').then(res => ({
       ...res,
-      userLikeCount: userCount  // 返回用户累计次数
+      userLikeCount: userCount
     }))
   },
   
@@ -147,6 +176,10 @@ const api = {
   getReadJokes,
   saveReadJokes,
   markAsRead,
+  getLikedJokes,
+  saveLikedJokes,
+  addLikedJoke,
+  removeLikedJoke,
   getLastVisitDate,
   setLastVisitDate
 }
