@@ -73,7 +73,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
 }
 
 .sort-arrows {
@@ -84,36 +83,19 @@
 }
 
 .arrow-up {
-  font-size: 12rpx;
-  color: var(--text-secondary);
-  opacity: 0.4;
+  font-size: 14rpx;
 }
 
 .arrow-down {
-  font-size: 12rpx;
-  color: var(--text);
-}
-
-/* 从高到低：下箭头高亮 */
-.sort-arrows.desc .arrow-up {
-  opacity: 0.4;
-  color: var(--text-secondary);
+  font-size: 14rpx;
 }
 
 .sort-arrows.desc .arrow-down {
-  opacity: 1;
   color: var(--accent);
 }
 
-/* 从低到高：上箭头高亮 */
 .sort-arrows.asc .arrow-up {
-  opacity: 1;
   color: var(--accent);
-}
-
-.sort-arrows.asc .arrow-down {
-  opacity: 0.4;
-  color: var(--text-secondary);
 }
 
 .theme-btn {
@@ -144,7 +126,7 @@
 }
 
 .cat-item.active {
-  background: rgba(102,126,234,0.1);
+  background: rgba(102,126,234,0.15);
 }
 
 .cat-dot {
@@ -201,7 +183,7 @@
 }
 
 .section-count {
-  font-size: 26rpx;
+  font-size: 24rpx;
   color: var(--text-secondary);
 }
 
@@ -273,4 +255,40 @@
   background: var(--bg-light);
   padding: 4rpx 8rpx;
   border-radius: 6rpx;
+}
+
+/* 加载更多 */
+.load-more {
+  padding: 24rpx 28rpx;
+  text-align: center;
+}
+
+.load-more-btn {
+  padding: 16rpx 40rpx;
+  border-radius: 24rpx;
+}
+
+.load-more-text {
+  font-size: 28rpx;
+  color: var(--accent);
+}
+
+.loading-more {
+  padding: 16rpx;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+/* 没有更多 */
+.no-more {
+  padding: 24rpx 28rpx 40rpx;
+  text-align: center;
+}
+
+.no-more-text {
+  font-size: 26rpx;
+  color: var(--text-muted);
 }

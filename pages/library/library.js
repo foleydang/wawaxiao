@@ -4,23 +4,20 @@ const { getCurrentTheme, toggleTheme, getThemeIcon, initTheme } = require('../..
 
 // 分类颜色映射
 const CAT_COLORS = {
-  '职场': '#f093fb',
+  '搞笑': '#f5576c',
+  '弱智吧': '#667eea',
   '生活': '#4facfe',
   '家庭': '#43e97b',
   '校园': '#fa709a',
-  '弱智吧': '#667eea',
+  '职场': '#f093fb',
+  '儿童': '#FF85A2',
   '经典': '#4ECDC4',
-  '程序员': '#f5576c',
-  '英文翻译': '#FF85A2',
   'B站热门': '#fa709a',
-  '微博热搜': '#f093fb',
-  '知乎热榜': '#667eea',
-  '贴吧热门': '#43e97b',
-  '网络笑话': '#4facfe',
-  '翻译笑话': '#FF85A2',
+  '糗事': '#f093fb',
+  '动物': '#43e97b',
 }
 
-// 不需要的分类（名言、励志等不是笑话）
+// 不需要的分类（名言等非笑话）
 const FILTER_CATEGORIES = ['名言', '名言警句', '励志', '语录', '诗词']
 
 Page({
@@ -28,11 +25,16 @@ Page({
     pageClass: '',
     categories: [{ name: '全部', color: '#667eea', count: 0 }],
     currentCategory: '全部',
-    allJokes: [],
-    jokes: [],
-    loading: true,
+    allJokes: [],      // 已加载的全部笑话
+    jokes: [],         // 当前显示的笑话
+    total: 0,          // 总数（从API获取）
+    page: 1,           // 当前页码
+    pageSize: 100,     // 每页条数
+    hasMore: true,     // 是否还有更多
+    loading: false,
+    loadingMore: false,
     themeIcon: '🌙',
-    sortDesc: true,  // true: 从高到低, false: 从低到高
+    sortDesc: true,
   },
 
   onLoad() {
@@ -53,8 +55,16 @@ Page({
   },
 
   onPullDownRefresh() {
+    this.setData({ page: 1, allJokes: [], hasMore: true })
     this.loadJokes()
     setTimeout(() => wx.stopPullDownRefresh(), 500)
+  },
+
+  // 滚动到底部加载更多
+  onReachBottom() {
+    if (this.data.hasMore && !this.data.loadingMore) {
+      this.loadMore()
+    }
   },
 
   processJokes(jokes) {
@@ -62,30 +72,28 @@ Page({
     return jokes.map(j => ({
       ...j,
       color: CAT_COLORS[j.category] || '#667eea',
-      preview: j.content.split('\n')[0].substring(0, 40),
+      preview: j.content.split('\n')[0].substring(0, 40) + (j.content.length > 40 ? '...' : ''),
       hasImage: j.images && j.images.length > 0,
       hasSeen: seenIds.includes(j.id)
     }))
   },
 
-  // 从数据中动态获取分类
-  buildCategories(jokes) {
-    // 统计各分类数量
+  // 从数据中动态构建分类
+  buildCategories(jokes, total) {
     const catCounts = {}
     jokes.forEach(j => {
       const cat = j.category
-      // 过滤掉不需要的分类
       if (!FILTER_CATEGORIES.includes(cat)) {
         catCounts[cat] = (catCounts[cat] || 0) + 1
       }
     })
     
-    // 转换为分类列表
-    const categories = [{ name: '全部', color: '#667eea', count: jokes.length }]
+    const categories = [{ name: '全部', color: '#667eea', count: total }]
     
     Object.keys(catCounts)
       .filter(cat => !FILTER_CATEGORIES.includes(cat))
-      .sort((a, b) => catCounts[b] - catCounts[a])  // 按数量排序
+      .sort((a, b) => catCounts[b] - catCounts[a])
+      .slice(0, 10)
       .forEach(cat => {
         categories.push({
           name: cat,
@@ -94,19 +102,18 @@ Page({
         })
       })
     
-    return categories.slice(0, 10)  // 最多显示10个分类
+    return categories
   },
 
   async loadJokes() {
     this.setData({ loading: true })
     
     try {
-      // 加载全部笑话
-      const res = await api.getJokes({ limit: 500 })
+      const res = await api.getJokes({ limit: this.data.pageSize, page: 1 })
       const jokes = this.processJokes(res.data.list)
+      const total = res.data.total || jokes.length
       
-      // 动态构建分类
-      const categories = this.buildCategories(jokes)
+      const categories = this.buildCategories(jokes, total)
       
       wx.setStorageSync('cachedJokes', jokes)
       
@@ -114,23 +121,62 @@ Page({
         allJokes: jokes,
         jokes: this.filterJokes(jokes, '全部'),
         categories,
+        total,
+        page: 1,
+        hasMore: jokes.length < total,
         loading: false
       })
       
     } catch (err) {
+      console.error('加载失败:', err)
       const cached = wx.getStorageSync('cachedJokes') || []
       const jokes = this.processJokes(cached)
-      const categories = this.buildCategories(jokes)
+      const categories = this.buildCategories(jokes, jokes.length)
       this.setData({
         allJokes: jokes,
         jokes: this.filterJokes(jokes, '全部'),
         categories,
+        total: jokes.length,
         loading: false
       })
     }
   },
 
+  // 加载更多
+  async loadMore() {
+    if (!this.data.hasMore) return
+    
+    this.setData({ loadingMore: true })
+    
+    try {
+      const nextPage = this.data.page + 1
+      const res = await api.getJokes({ limit: this.data.pageSize, page: nextPage })
+      const newJokes = this.processJokes(res.data.list)
+      
+      if (newJokes.length > 0) {
+        const allJokes = [...this.data.allJokes, ...newJokes]
+        const categories = this.buildCategories(allJokes, this.data.total)
+        
+        this.setData({
+          allJokes,
+          jokes: this.filterJokes(allJokes, this.data.currentCategory),
+          categories,
+          page: nextPage,
+          hasMore: allJokes.length < this.data.total,
+          loadingMore: false
+        })
+      } else {
+        this.setData({ hasMore: false, loadingMore: false })
+      }
+      
+    } catch (err) {
+      console.error('加载更多失败:', err)
+      this.setData({ loadingMore: false })
+    }
+  },
+
   updateSeenStatus() {
+    if (this.data.allJokes.length === 0) return
     const jokes = this.processJokes(this.data.allJokes)
     this.setData({
       jokes: this.filterJokes(jokes, this.data.currentCategory)
@@ -158,14 +204,12 @@ Page({
     })
   },
 
-  // 切换排序方向
   toggleSort() {
     const newSortDesc = !this.data.sortDesc
     this.setData({
       sortDesc: newSortDesc,
       jokes: this.filterJokes(this.data.allJokes, this.data.currentCategory)
     })
-    
     wx.showToast({
       title: newSortDesc ? '点赞 ↓' : '点赞 ↑',
       icon: 'none',
