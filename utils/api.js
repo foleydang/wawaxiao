@@ -1,4 +1,4 @@
-const API_BASE = 'https://api.yanten.top/api/wawaxiao'
+const API_BASE = 'https://yanten.top/api/wawaxiao'
 
 function request(url, method = 'GET', data = {}) {
   return new Promise((resolve, reject) => {
