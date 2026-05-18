@@ -1,0 +1,40 @@
+.page-wrapper { padding: 20px; min-height: 100vh; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.header-left { display: flex; align-items: center; gap: 12px; }
+.header-dot { width: 12px; height: 12px; background: #6366f1; border-radius: 6px; }
+.header-title { font-size: 28px; font-weight: 700; }
+.theme-btn { width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; }
+.theme-icon { font-size: 20px; }
+
+.form-area { margin-bottom: 24px; }
+.form-group { margin-bottom: 20px; }
+.form-label { font-size: 14px; font-weight: 600; margin-bottom: 8px; display: block; }
+.form-input { width: 100%; padding: 14px 16px; border: 2px solid rgba(99,102,241,0.2); border-radius: 12px; font-size: 15px; }
+.form-textarea { width: 100%; padding: 14px 16px; border: 2px solid rgba(99,102,241,0.2); border-radius: 12px; font-size: 15px; min-height: 200px; }
+
+.cat-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.cat-option { padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; text-align: center; }
+.cat-active { background: #6366f1 !important; color: #fff !important; border-color: #6366f1 !important; }
+
+.submit-btn { padding: 16px; border-radius: 12px; text-align: center; margin-top: 8px; }
+.submit-btn-text { font-size: 16px; font-weight: 700; color: #fff; }
+.btn-disabled { opacity: 0.5; }
+
+.tips { margin-top: 16px; padding: 16px; }
+.tips-text { font-size: 12px; color: rgba(255,255,255,0.5); display: block; margin-bottom: 4px; }
+
+.mine-area { margin-top: 24px; }
+.mine-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+.mine-card { padding: 14px 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.mine-name { font-size: 14px; }
+.mine-status { font-size: 12px; font-weight: 600; }
+.status-approved { color: #10b981; }
+.status-pending { color: #f59e0b; }
+
+.glass { background: rgba(255,255,255,0.08); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.12); }
+
+/* light mode */
+.light-mode .glass { background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.08); }
+.light-mode .header-title { color: #111827; }
+.light-mode .tips-text { color: rgba(0,0,0,0.4); }
+.light-mode .mine-name { color: #374151; }

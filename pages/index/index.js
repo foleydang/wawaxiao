@@ -226,6 +226,10 @@ Page({
     wx.navigateTo({ url: '/pages/search/search' })
   },
 
+  goToSubmit() {
+    wx.navigateTo({ url: '/pages/submit/submit' })
+  },
+
   previewImage(e) {
     const url = e.currentTarget.dataset.url
     const urls = e.currentTarget.dataset.urls

@@ -17,7 +17,9 @@ Page({
     pageClass: '',
     favorites: [],
     themeIcon: '🌙',
-    loading: false
+    loading: false,
+    page: 1,
+    hasMore: true
   },
 
   onLoad() {
@@ -37,49 +39,70 @@ Page({
     this.loadFavorites()
   },
 
-  async loadFavorites() {
-    const likes = wx.getStorageSync('userLikes') || []
-    
-    if (likes.length === 0) {
-      this.setData({ favorites: [] })
-      return
+  onReachBottom() {
+    if (this.data.hasMore && !this.data.loading) {
+      this.loadMore()
     }
-    
+  },
+
+  async loadFavorites() {
     this.setData({ loading: true })
     
-    const cachedJokes = wx.getStorageSync('cachedJokes') || []
-    const favorites = []
-    
-    // 逐个获取喜欢的笑话
-    for (const id of likes) {
-      // 先从缓存找
-      let joke = cachedJokes.find(j => j.id === id)
+    try {
+      const res = await api.getFavorites(1, 50)
+      const favorites = (res.data.list || []).map(j => ({
+        ...j,
+        color: CAT_COLORS[j.category] || '#667eea',
+        preview: j.content ? j.content.split('\n')[0].substring(0, 40) : j.title
+      }))
       
-      // 缓存没有，从API获取
-      if (!joke) {
-        try {
-          const res = await api.getJokeById(id)
-          if (res.success) {
-            joke = res.data
-          }
-        } catch (err) {
-          console.error('获取笑话失败:', id, err)
+      this.setData({
+        favorites,
+        page: 1,
+        hasMore: (res.data.total || 0) > 50,
+        loading: false
+      })
+    } catch (err) {
+      // 后端失败时，使用本地缓存作为 fallback
+      const likes = api.getLocalLikedJokes()
+      const cachedJokes = wx.getStorageSync('cachedJokes') || []
+      const favorites = []
+      
+      for (const id of likes) {
+        const joke = cachedJokes.find(j => j.id === id)
+        if (joke) {
+          favorites.push({
+            ...joke,
+            color: CAT_COLORS[joke.category] || '#667eea',
+            preview: joke.content ? joke.content.split('\n')[0].substring(0, 40) : joke.title
+          })
         }
       }
       
-      if (joke) {
-        favorites.push({
-          ...joke,
-          color: CAT_COLORS[joke.category] || '#667eea',
-          preview: joke.content ? joke.content.split('\n')[0].substring(0, 40) : joke.title
-        })
-      }
+      this.setData({ favorites, loading: false })
     }
+  },
+
+  async loadMore() {
+    if (!this.data.hasMore) return
     
-    this.setData({ 
-      favorites,
-      loading: false
-    })
+    try {
+      const nextPage = this.data.page + 1
+      const res = await api.getFavorites(nextPage, 50)
+      const newFavs = (res.data.list || []).map(j => ({
+        ...j,
+        color: CAT_COLORS[j.category] || '#667eea',
+        preview: j.content ? j.content.split('\n')[0].substring(0, 40) : j.title
+      }))
+      
+      this.setData({
+        favorites: [...this.data.favorites, ...newFavs],
+        page: nextPage,
+        hasMore: this.data.favorites.length + newFavs.length < (res.data.total || 0)
+      })
+    } catch (err) {
+      console.error('加载更多失败:', err)
+    }
   },
 
   toggleTheme() {
@@ -96,17 +119,16 @@ Page({
     wx.navigateTo({ url: `/pages/detail/detail?id=${id}` })
   },
 
-  deleteFavorite(e) {
+  async deleteFavorite(e) {
     const id = e.currentTarget.dataset.id
-    let likes = wx.getStorageSync('userLikes') || []
-    likes = likes.filter(l => l !== id)
-    wx.setStorageSync('userLikes', likes)
     
-    // 同时从api中移除
-    api.removeLikedJoke(id)
-    
-    this.loadFavorites()
-    wx.showToast({ title: '已移除', icon: 'none' })
+    try {
+      await api.removeFavorite(id)
+      wx.showToast({ title: '已移除', icon: 'none' })
+      this.loadFavorites()
+    } catch (err) {
+      wx.showToast({ title: '移除失败', icon: 'none' })
+    }
   },
 
   goToIndex() {

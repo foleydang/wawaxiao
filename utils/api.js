@@ -1,5 +1,10 @@
 const API_BASE = 'https://yanten.top/api/wawaxiao'
 
+function getOpenid() {
+  const app = getApp()
+  return app ? app.getOpenid() : wx.getStorageSync('openid') || wx.getStorageSync('tempOpenid') || ''
+}
+
 function request(url, method = 'GET', data = {}) {
   return new Promise((resolve, reject) => {
     wx.request({
@@ -61,29 +66,29 @@ function markAsRead(jokeId) {
   }
 }
 
-// 喜欢的笑话（新增）
-function getLikedJokes() {
+// 本地收藏缓存（与后端同步）
+function getLocalLikedJokes() {
   return wx.getStorageSync('userLikes') || []
 }
 
-function saveLikedJokes(ids) {
+function saveLocalLikedJokes(ids) {
   wx.setStorageSync('userLikes', ids)
 }
 
-function addLikedJoke(jokeId) {
-  const likedIds = getLikedJokes()
+function addLocalLikedJoke(jokeId) {
+  const likedIds = getLocalLikedJokes()
   if (!likedIds.includes(jokeId)) {
     likedIds.push(jokeId)
-    saveLikedJokes(likedIds)
+    saveLocalLikedJokes(likedIds)
   }
 }
 
-function removeLikedJoke(jokeId) {
-  const likedIds = getLikedJokes()
+function removeLocalLikedJoke(jokeId) {
+  const likedIds = getLocalLikedJokes()
   const index = likedIds.indexOf(jokeId)
   if (index > -1) {
     likedIds.splice(index, 1)
-    saveLikedJokes(likedIds)
+    saveLocalLikedJokes(likedIds)
   }
 }
 
@@ -103,71 +108,96 @@ const api = {
     return request(`/jokes?${query}`)
   },
   
-  // 获取最新笑话
   getLatestJokes(limit = 50) {
     return request(`/latest?limit=${limit}`)
   },
   
-  // 获取今日笑话
   getTodayJokes() {
     return request('/today')
   },
   
-  // 获取热门笑话
   getHotJokes() {
     return request('/hot')
   },
   
-  // 获取随机笑话
   getRandomJoke() {
     return request('/random')
   },
   
-  // 获取单个笑话
   getJokeById(id) {
     return request(`/jokes/${id}`)
   },
   
-  // 累计点赞（每次点击都+1，同时加入喜欢列表）
+  // 点赞（同时自动收藏到后端）
   like(id) {
-    // 本地记录用户点赞次数
     const userCount = incrementUserCount(id, 'like')
+    addLocalLikedJoke(id)
     
-    // 添加到喜欢的笑话列表
-    addLikedJoke(id)
-    
-    return request(`/like/${id}`, 'POST').then(res => ({
+    return request(`/like/${id}`, 'POST', { openid: getOpenid() }).then(res => ({
       ...res,
       userLikeCount: userCount
     }))
   },
   
-  // 累计评价为平（每次点击都+1）
   neutral(id) {
     const userCount = incrementUserCount(id, 'neutral')
-    
-    return request(`/neutral/${id}`, 'POST').then(res => ({
+    return request(`/neutral/${id}`, 'POST', { openid: getOpenid() }).then(res => ({
       ...res,
       userNeutralCount: userCount
     }))
   },
   
-  // 累计不喜欢（每次点击都+1）
   dislike(id) {
     const userCount = incrementUserCount(id, 'dislike')
-    
-    return request(`/dislike/${id}`, 'POST').then(res => ({
+    return request(`/dislike/${id}`, 'POST', { openid: getOpenid() }).then(res => ({
       ...res,
       userDislikeCount: userCount
     }))
   },
   
-  // 获取统计
   getStats() {
     return request('/stats')
   },
   
-  // 本地存储方法
+  // ==================== 收藏 API ====================
+  
+  // 获取收藏列表（后端）
+  getFavorites(page = 1, limit = 50) {
+    return request(`/favorites?openid=${getOpenid()}&page=${page}&limit=${limit}`)
+  },
+  
+  // 添加收藏（后端）
+  addFavorite(jokeId) {
+    addLocalLikedJoke(jokeId)
+    return request(`/favorites/${jokeId}`, 'POST', { openid: getOpenid() })
+  },
+  
+  // 删除收藏（后端）
+  removeFavorite(jokeId) {
+    removeLocalLikedJoke(jokeId)
+    return request(`/favorites/${jokeId}?openid=${getOpenid()}`, 'DELETE')
+  },
+  
+  // 检查是否已收藏（批量）
+  checkFavorites(ids) {
+    if (!ids || ids.length === 0) return Promise.resolve({})
+    return request(`/favorites/check?openid=${getOpenid()}&ids=${ids.join(',')}`)
+  },
+  
+
+  // ==================== 投稿 API ====================
+  
+  // 投稿笑话
+  submitJoke(data) {
+    return request('/submit', 'POST', data)
+  },
+  
+  // 查询我的投稿
+  getMySubmits() {
+    return request(`/submit/mine?openid=${getOpenid()}`)
+  },
+  // ==================== 本地存储方法 ====================
+  
   getUserCounts,
   saveUserCounts,
   getUserCount,
@@ -176,12 +206,13 @@ const api = {
   getReadJokes,
   saveReadJokes,
   markAsRead,
-  getLikedJokes,
-  saveLikedJokes,
-  addLikedJoke,
-  removeLikedJoke,
+  getLocalLikedJokes,
+  saveLocalLikedJokes,
+  addLocalLikedJoke,
+  removeLocalLikedJoke,
   getLastVisitDate,
-  setLastVisitDate
+  setLastVisitDate,
+  getOpenid
 }
 
 module.exports = { api }

@@ -1,0 +1,50 @@
+<view class="page-wrapper {{pageClass}}">
+  <view class="header">
+    <view class="header-left">
+      <view class="header-dot"></view>
+      <text class="header-title">投稿笑话</text>
+    </view>
+    <view class="theme-btn glass" bindtap="toggleTheme">
+      <text class="theme-icon">{{themeIcon}}</text>
+    </view>
+  </view>
+
+  <view class="form-area">
+    <view class="form-group">
+      <text class="form-label">分类</text>
+      <view class="cat-picker">
+        <view class="cat-option glass {{currentCat === item ? 'cat-active' : ''}}" wx:for="{{categories}}" wx:key="*" bindtap="pickCat" data-cat="{{item}}">
+          <text>{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">标题（{{titleLen}}/50）</text>
+      <input class="form-input glass" placeholder="给笑话起个标题" value="{{title}}" bindinput="onTitleInput" maxlength="50" />
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">内容（{{contentLen}}/500）</text>
+      <textarea class="form-textarea glass" placeholder="写下笑话内容..." value="{{content}}" bindinput="onContentInput" maxlength="500" auto-height />
+    </view>
+
+    <view class="submit-btn glass {{canSubmit ? '' : 'btn-disabled'}}" bindtap="doSubmit">
+      <text class="submit-btn-text">{{submitting ? '提交中...' : '投稿'}}</text>
+    </view>
+
+    <view class="tips">
+      <text class="tips-text">💡 投稿后需审核，通过后会出现在笑话库中</text>
+      <text class="tips-text">📝 每天最多投稿5条</text>
+    </view>
+  </view>
+
+  <!-- 我的投稿 -->
+  <view class="mine-area" wx:if="{{mySubmits.length > 0}}">
+    <text class="mine-title">我的投稿</text>
+    <view class="mine-card glass" wx:for="{{mySubmits}}" wx:key="id">
+      <text class="mine-name">{{item.title}}</text>
+      <text class="mine-status {{item.status === 'approved' ? 'status-approved' : 'status-pending'}}">{{item.status === 'approved' ? '✅ 已通过' : '⏳ 待审核'}}</text>
+    </view>
+  </view>
+</view>

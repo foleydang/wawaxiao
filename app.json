@@ -4,7 +4,8 @@
     "pages/library/library",
     "pages/detail/detail",
     "pages/favorites/favorites",
-    "pages/search/search"
+    "pages/search/search",
+    "pages/submit/submit"
   ],
   "window": {
     "navigationBarTitleText": "",
@@ -19,19 +20,19 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页",
+        "text": "\u9996\u9875",
         "iconPath": "images/home.png",
         "selectedIconPath": "images/home-active.png"
       },
       {
         "pagePath": "pages/library/library",
-        "text": "笑话库",
+        "text": "\u7b11\u8bdd\u5e93",
         "iconPath": "images/library.png",
         "selectedIconPath": "images/library-active.png"
       },
       {
         "pagePath": "pages/favorites/favorites",
-        "text": "喜欢",
+        "text": "\u559c\u6b22",
         "iconPath": "images/heart.png",
         "selectedIconPath": "images/heart-active.png"
       }
