@@ -41,6 +41,7 @@
     "showES6CompileOption": false,
     "useCompilerPlugins": false
   },
+  "miniprogramRoot": "miniprogram/",
   "compileType": "miniprogram",
   "libVersion": "3.3.4",
   "appid": "wxf988beadb1f19b4d",

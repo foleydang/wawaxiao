@@ -16,3 +16,25 @@ yarn-error.log*
 *.tmp
 *.temp
 .cache/
+
+# OpenClaw workspace 文件（不属于小程序项目）
+.openclaw/
+AGENTS.md
+HEARTBEAT.md
+IDENTITY.md
+SOUL.md
+TOOLS.md
+USER.md
+MEMORY.md
+memory/
+skills/
+data/
+state/
+
+# 非项目文件
+revise_docx.py
+traditional_outline.py
+deai_outline.py
+speech_script.md
+speech_3min.md
+读书报告_导师推荐五篇文献.md
