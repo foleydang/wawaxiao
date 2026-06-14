@@ -32,7 +32,8 @@ wawaxiao/
 │   │   ├── detail/        # 详情页
 │   │   ├── library/       # 笑话库（分类浏览）
 │   │   ├── search/        # 搜索页
-│   │   └── favorites/     # 收藏页
+│   │   ├── favorites/     # 收藏页
+│   │   └── submit/        # 投稿页
 │   ├── utils/
 │   │   ├── api.js         # 数据接口（本地数据 + API）
 │   │   ├── jokes.js       # 笑话数据源
