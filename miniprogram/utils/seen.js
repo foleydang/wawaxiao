@@ -1,10 +1,11 @@
-// 已看过存储 - 使用普通数组方案
-// 更简单可靠，适合小程序环境
+// 已看过存储 - 使用普通数组方案 + 大小上限
+// 适合小程序环境，防止 storage 无限增长
+
+const MAX_SEEN_SIZE = 500; // 最多记录500条，超出时淘汰最旧的
 
 // 获取已看过的ID列表
 function getSeenIds() {
-  const seenIds = wx.getStorageSync('seenIds') || []
-  return seenIds
+  return wx.getStorageSync('seenIds') || []
 }
 
 // 标记已看过
@@ -14,6 +15,10 @@ function markSeen(id) {
   let seenIds = getSeenIds()
   if (!seenIds.includes(id)) {
     seenIds.push(id)
+    // 超过上限时，淘汰前半部分最旧的记录
+    if (seenIds.length > MAX_SEEN_SIZE) {
+      seenIds = seenIds.slice(seenIds.length - MAX_SEEN_SIZE)
+    }
     wx.setStorageSync('seenIds', seenIds)
   }
 }

@@ -21,9 +21,22 @@ function request(url, method = 'GET', data = {}) {
   })
 }
 
-// 本地存储：用户点赞次数
+// 本地存储：用户点赞次数（带清理，防止 key 无限增长）
+const MAX_USER_COUNTS_KEYS = 200;
+
 function getUserCounts() {
-  return wx.getStorageSync('userCounts') || {}
+  const counts = wx.getStorageSync('userCounts') || {}
+  // 超过上限时清理最旧的 key
+  const keys = Object.keys(counts)
+  if (keys.length > MAX_USER_COUNTS_KEYS) {
+    // 简单策略：随机淘汰一半（没有时间戳排序，性价比最高的方案）
+    const half = Math.floor(keys.length / 2)
+    for (let i = 0; i < half; i++) {
+      delete counts[keys[i]]
+    }
+    saveUserCounts(counts)
+  }
+  return counts
 }
 
 function saveUserCounts(counts) {
@@ -49,12 +62,18 @@ function incrementUserCount(jokeId, type) {
   return current + 1
 }
 
-// 已读笑话
+// 已读笑话（带大小上限，防止 storage 无限增长）
+const MAX_READ_SIZE = 500;
+
 function getReadJokes() {
   return wx.getStorageSync('readJokes') || []
 }
 
 function saveReadJokes(ids) {
+  // 超过上限时淘汰最旧的
+  if (ids.length > MAX_READ_SIZE) {
+    ids = ids.slice(ids.length - MAX_READ_SIZE)
+  }
   wx.setStorageSync('readJokes', ids)
 }
 
