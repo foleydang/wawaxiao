@@ -2,14 +2,12 @@ const { api } = require('../../utils/api.js')
 const { getCurrentTheme, toggleTheme, getThemeIcon, initTheme } = require('../../utils/theme.js')
 
 const CAT_COLORS = {
-  '职场': '#f093fb',
+  '搞笑': '#f5576c',
   '生活': '#4facfe',
   '家庭': '#43e97b',
   '校园': '#fa709a',
-  '搞笑': '#f5576c',
-  '弱智吧': '#667eea',
-  '儿童': '#FF85A2',
-  '动物': '#43e97b'
+  '动物': '#43e97b',
+  '职场': '#667eea',
 }
 
 Page({

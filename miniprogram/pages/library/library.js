@@ -4,15 +4,11 @@ const { getCurrentTheme, toggleTheme, getThemeIcon, initTheme } = require('../..
 
 const CAT_COLORS = {
   '搞笑': '#f5576c',
-  '弱智吧': '#667eea',
   '生活': '#4facfe',
   '家庭': '#43e97b',
   '校园': '#fa709a',
-  '职场': '#f093fb',
-  '儿童': '#FF85A2',
-  '经典': '#4ECDC4',
-  '糗事': '#f093fb',
   '动物': '#43e97b',
+  '职场': '#667eea',
 }
 
 Page({

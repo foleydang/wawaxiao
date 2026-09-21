@@ -3,7 +3,7 @@ const { api } = require('../../utils/api')
 Page({
   data: {
     history: [],  // 搜索历史
-    hotKeywords: ['小明', '老师', '搞笑', '生活', '校园', '家庭'],  // 热门关键词
+    hotKeywords: ['搞笑', '校园', '职场', '生活', '家庭', '动物'],  // 热门关键词
     keyword: '',
     results: [],
     loading: false,
