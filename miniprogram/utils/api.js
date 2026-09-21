@@ -143,6 +143,11 @@ const api = {
     return request('/random')
   },
   
+  // 搜索笑话
+  searchJokes(keyword) {
+    return request(`/search?q=${encodeURIComponent(keyword)}`)
+  },
+  
   getJokeById(id) {
     return request(`/jokes/${id}`)
   },

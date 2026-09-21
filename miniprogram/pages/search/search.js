@@ -3,7 +3,7 @@ const { api } = require('../../utils/api')
 Page({
   data: {
     history: [],  // 搜索历史
-    hotKeywords: ['儿童', '校园', '职场', '生活', '家庭', '小明'],  // 热门关键词
+    hotKeywords: ['小明', '老师', '搞笑', '生活', '校园', '家庭'],  // 热门关键词
     keyword: '',
     results: [],
     loading: false,
@@ -74,15 +74,9 @@ Page({
     this.setData({ loading: true })
     
     try {
-      // 搜索逻辑：标题或内容包含关键词
-      const res = await api.getJokes({ limit: 100 })
-      const allJokes = res.data.list
-      
-      const results = allJokes.filter(joke => 
-        joke.title.includes(keyword) || 
-        joke.content.includes(keyword) ||
-        joke.category.includes(keyword)
-      )
+      // 服务端搜索全部笑话
+      const res = await api.searchJokes(keyword)
+      const results = res.data || []
       
       this.setData({
         results,
