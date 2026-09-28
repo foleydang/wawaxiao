@@ -1,15 +1,7 @@
 const { api } = require('../../utils/api.js')
 const { markSeen, getSeenIds } = require('../../utils/seen.js')
 const { getCurrentTheme, toggleTheme, getThemeIcon, initTheme } = require('../../utils/theme.js')
-
-const CAT_COLORS = {
-  '搞笑': '#f5576c',
-  '生活': '#4facfe',
-  '家庭': '#43e97b',
-  '校园': '#fa709a',
-  '动物': '#43e97b',
-  '职场': '#667eea',
-}
+const { getCategoryColor, generatePreview } = require('../../utils/format.js')
 
 Page({
   data: {
@@ -47,8 +39,7 @@ Page({
 
   onPullDownRefresh() {
     this.setData({ page: 1, allJokes: [], hasMore: true })
-    this.loadJokes()
-    setTimeout(() => wx.stopPullDownRefresh(), 500)
+    this.loadJokes().finally(() => wx.stopPullDownRefresh())
   },
 
   onReachBottom() {
@@ -61,8 +52,8 @@ Page({
     const seenIds = getSeenIds()
     return jokes.map(j => ({
       ...j,
-      color: CAT_COLORS[j.category] || '#667eea',
-      preview: j.content.split('\n')[0].substring(0, 40) + (j.content.length > 40 ? '...' : ''),
+      color: getCategoryColor(j.category),
+      preview: generatePreview(j.content, j.title),
       hasSeen: seenIds.includes(j.id)
     }))
   },
@@ -70,17 +61,17 @@ Page({
   // 核心修复：使用API返回的分类统计（不是本地统计）
   buildCategories(categoryCounts, total) {
     const categories = [{ name: '全部', color: '#667eea', count: total }]
-    
+
     if (categoryCounts) {
       categoryCounts.forEach(item => {
         categories.push({
           name: item.category,
-          color: CAT_COLORS[item.category] || '#667eea',
+          color: getCategoryColor(item.category),
           count: item.count
         })
       })
     }
-    
+
     return categories
   },
 

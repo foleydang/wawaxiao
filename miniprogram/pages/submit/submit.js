@@ -84,7 +84,11 @@ Page({
       wx.showToast({ title: '网络错误', icon: 'none' })
     }
 
-    this.setData({ submitting: false })
+    // 恢复可提交状态：成功路径已清空 title/content → canSubmit=false；失败路径输入仍在 → canSubmit=true
+    this.setData({
+      submitting: false,
+      canSubmit: this.data.title.trim().length > 0 && this.data.content.trim().length > 0
+    })
   },
 
   async loadMySubmits() {

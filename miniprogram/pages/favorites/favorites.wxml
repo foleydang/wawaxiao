@@ -3,22 +3,31 @@
   <view class="header">
     <view class="header-left">
       <view class="header-dot"></view>
-      <text class="header-title">喜欢</text>
+      <text class="header-title">收藏</text>
       <text class="header-count">{{favorites.length}}条</text>
     </view>
-    
+
     <view class="theme-btn glass" bindtap="toggleTheme">
       <text class="theme-icon">{{themeIcon}}</text>
     </view>
   </view>
 
+  <!-- 备份提示（收藏按本机设备号保存，换设备/清缓存会丢失） -->
+  <view style="margin: 20rpx 30rpx 0; padding: 20rpx 24rpx; border-radius: 16rpx; background: rgba(250,204,21,0.12); display: flex; align-items: center; justify-content: space-between;">
+    <text style="font-size: 22rpx; color: #fbbf24; flex: 1;">⚠️ 收藏保存在本机，换设备或清缓存会丢失，请提前备份</text>
+    <view style="display: flex; gap: 12rpx;">
+      <text bindtap="backupFavorites" style="font-size: 22rpx; color: #60a5fa; padding: 4rpx 12rpx;">备份</text>
+      <text bindtap="restoreFavorites" style="font-size: 22rpx; color: #34d399; padding: 4rpx 12rpx;">恢复</text>
+    </view>
+  </view>
+
   <!-- 空状态 -->
-  <view class="empty" wx:if="{{favorites.length === 0}}">
+  <view class="empty" wx:if="{{!loading && favorites.length === 0}}">
     <view class="empty-icon glass">
       <text class="empty-face">♡</text>
     </view>
-    <text class="empty-title">还没有喜欢的笑话</text>
-    <text class="empty-desc">看到好笑的记得点喜欢哦</text>
+    <text class="empty-title">还没有收藏的笑话</text>
+    <text class="empty-desc">看到好笑的记得点 ♡ 收藏哦</text>
     <view class="empty-btn glass" bindtap="goToIndex">
       <text class="empty-btn-text">去看看</text>
     </view>

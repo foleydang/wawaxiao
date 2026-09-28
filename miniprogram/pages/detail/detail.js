@@ -4,6 +4,7 @@ Page({
   data: {
     joke: null,
     recommendJokes: [],
+    favorited: false,
     themeIcon: '🌙',
     pageClass: ''
   },
@@ -25,10 +26,10 @@ Page({
     try {
       const res = await api.getJokeById(id)
       const joke = res.data
-      
-      this.setData({ joke })
+
+      this.setData({ joke, favorited: api.getLocalLikedJokes().includes(id) })
       this.loadRecommendJokes()
-      
+
     } catch (err) {
       wx.showToast({ title: '加载失败', icon: 'none' })
     }
@@ -53,6 +54,22 @@ Page({
 
   goBack() {
     wx.navigateBack()
+  },
+
+  async toggleFavorite() {
+    if (!this.data.joke) return
+    const id = this.data.joke.id
+    try {
+      if (this.data.favorited) {
+        await api.removeFavorite(id)
+      } else {
+        await api.addFavorite(id)
+      }
+      this.setData({ favorited: !this.data.favorited })
+      wx.showToast({ title: this.data.favorited ? '已收藏' : '已取消收藏', icon: 'none', duration: 800 })
+    } catch (err) {
+      wx.showToast({ title: '操作失败', icon: 'none' })
+    }
   },
 
   async handleLike() {
@@ -131,9 +148,8 @@ Page({
 
   onShareAppMessage() {
     if (!this.data.joke) return
-    
     return {
-      title: this.data.joke.title,
+      title: '哇哇笑｜' + this.data.joke.title,
       path: `/pages/detail/detail?id=${this.data.joke.id}`
     }
   }

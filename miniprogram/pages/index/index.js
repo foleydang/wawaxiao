@@ -1,8 +1,11 @@
 const { api } = require('../../utils/api')
+const { formatJokes } = require('../../utils/format')
 
 Page({
   data: {
     loading: true,
+    loadError: false,
+    favorited: false,
     jokes: [],
     currentJoke: null,
     hotJokes: [],
@@ -47,9 +50,10 @@ Page({
       this.setData({ loading: true })
       
       const res = await api.getJokes({ limit: 20, page: 1 })
-      const jokes = res.data.list
-      
+      const jokes = formatJokes(res.data.list)
+
       const hotRes = await api.getHotJokes()
+      const hotJokes = formatJokes(hotRes.data || [])
       
       const stats = await api.getStats()
       const totalCount = stats.data.total || jokes.length
@@ -66,22 +70,23 @@ Page({
       this.setData({
         jokes,
         currentJoke: jokes[0] || null,
-        hotJokes: hotRes.data || [],
+        hotJokes,
         freshCount: Math.max(0, freshCount),
         totalCount,
         todayNewCount,
         loading: false,
-        hasMore: jokes.length === 20
+        loadError: false,
+        hasMore: jokes.length === 20,
+        favorited: jokes[0] ? api.getLocalLikedJokes().includes(jokes[0].id) : false
       })
-      
+
       if (jokes[0]) {
         api.markAsRead(jokes[0].id)
       }
-      
+
     } catch (err) {
       console.error('加载失败:', err)
-      this.setData({ loading: false })
-      wx.showToast({ title: '加载失败', icon: 'none' })
+      this.setData({ loading: false, loadError: true })
     }
   },
 
@@ -93,7 +98,7 @@ Page({
       
       const nextPage = this.data.page + 1
       const res = await api.getJokes({ limit: 20, page: nextPage })
-      const newJokes = res.data.list
+      const newJokes = formatJokes(res.data.list)
       
       if (newJokes.length > 0) {
         this.setData({
@@ -113,24 +118,47 @@ Page({
     }
   },
 
-  // 核心修复：nextJoke 随机取未读的笑话
-  nextJoke() {
-    const jokes = this.data.jokes
+  // 核心修复：nextJoke 优先取未读的笑话；已加载的全读过且还有更多页时静默拉下一页
+  async nextJoke() {
+    let jokes = this.data.jokes
     if (!jokes || jokes.length === 0) return
-    
-    const readIds = api.getReadJokes()
-    
-    // 找出所有未读的笑话
-    const unreadJokes = jokes.filter(j => !readIds.includes(j.id))
-    
+
+    let readIds = api.getReadJokes()
+    let unreadJokes = jokes.filter(j => !readIds.includes(j.id))
+
+    // 已加载的全读过了，且还有更多页 → 静默拉取下一页再从未读里取
+    if (unreadJokes.length === 0 && this.data.hasMore && !this.data.loading) {
+      this.setData({ loading: true })
+      try {
+        const nextPage = this.data.page + 1
+        const res = await api.getJokes({ limit: 20, page: nextPage })
+        const newJokes = formatJokes(res.data.list)
+        if (newJokes.length > 0) {
+          this.setData({
+            jokes: [...this.data.jokes, ...newJokes],
+            page: nextPage,
+            hasMore: newJokes.length === 20
+          })
+        } else {
+          this.setData({ hasMore: false })
+        }
+      } catch (err) {
+        console.error('nextJoke 加载更多失败:', err)
+      } finally {
+        this.setData({ loading: false })
+      }
+      jokes = this.data.jokes
+      readIds = api.getReadJokes()
+      unreadJokes = jokes.filter(j => !readIds.includes(j.id))
+    }
+
     let nextJoke
-    
     if (unreadJokes.length > 0) {
       // 有未读的，随机取一个未读的
       const randomIndex = Math.floor(Math.random() * unreadJokes.length)
       nextJoke = unreadJokes[randomIndex]
     } else {
-      // 都读过了，随机取一个（循环使用）
+      // 全部都读过了（已无更多页），随机循环
       const currentIndex = jokes.findIndex(j => j.id === this.data.currentJoke?.id)
       let nextIndex
       do {
@@ -138,14 +166,30 @@ Page({
       } while (nextIndex === currentIndex && jokes.length > 1)
       nextJoke = jokes[nextIndex]
     }
-    
+
     this.setData({ currentJoke: nextJoke })
     api.markAsRead(nextJoke.id)
-    
-    // 更新未读数量（基于总数）
+
+    // 更新未读数量（基于总数）+ 当前笑话的收藏态
     const newReadIds = api.getReadJokes()
     const freshCount = this.data.totalCount - newReadIds.length
-    this.setData({ freshCount: Math.max(0, freshCount) })
+    this.setData({ freshCount: Math.max(0, freshCount), favorited: api.getLocalLikedJokes().includes(nextJoke.id) })
+  },
+
+  async toggleFavorite() {
+    if (!this.data.currentJoke) return
+    const id = this.data.currentJoke.id
+    try {
+      if (this.data.favorited) {
+        await api.removeFavorite(id)
+      } else {
+        await api.addFavorite(id)
+      }
+      this.setData({ favorited: !this.data.favorited })
+      wx.showToast({ title: this.data.favorited ? '已收藏' : '已取消收藏', icon: 'none', duration: 800 })
+    } catch (err) {
+      wx.showToast({ title: '操作失败', icon: 'none' })
+    }
   },
 
   async handleLike() {
@@ -249,10 +293,9 @@ Page({
 
   onShareAppMessage() {
     if (!this.data.currentJoke) return
-    
     return {
-      title: this.data.currentJoke.title,
-      path: '/pages/index/index'
+      title: '哇哇笑｜' + this.data.currentJoke.title,
+      path: `/pages/detail/detail?id=${this.data.currentJoke.id}`
     }
   }
 })

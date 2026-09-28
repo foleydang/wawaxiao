@@ -1,14 +1,7 @@
 const { api } = require('../../utils/api.js')
 const { getCurrentTheme, toggleTheme, getThemeIcon, initTheme } = require('../../utils/theme.js')
-
-const CAT_COLORS = {
-  '搞笑': '#f5576c',
-  '生活': '#4facfe',
-  '家庭': '#43e97b',
-  '校园': '#fa709a',
-  '动物': '#43e97b',
-  '职场': '#667eea',
-}
+const { getCategoryColor, generatePreview } = require('../../utils/format.js')
+const app = getApp()
 
 Page({
   data: {
@@ -48,12 +41,19 @@ Page({
     
     try {
       const res = await api.getFavorites(1, 50)
-      const favorites = (res.data.list || []).map(j => ({
+      const rawList = res.data.list || []
+      const favorites = rawList.map(j => ({
         ...j,
-        color: CAT_COLORS[j.category] || '#667eea',
-        preview: j.content ? j.content.split('\n')[0].substring(0, 40) : j.title
+        color: getCategoryColor(j.category),
+        preview: generatePreview(j.content, j.title)
       }))
-      
+
+      // 成功路径同步写一份 cachedJokes，避免兜底分支依赖 library 页才能填充导致空列表
+      const cached = wx.getStorageSync('cachedJokes') || []
+      const cachedMap = new Map(cached.map(j => [j.id, j]))
+      for (const j of rawList) cachedMap.set(j.id, j)
+      wx.setStorageSync('cachedJokes', Array.from(cachedMap.values()))
+
       this.setData({
         favorites,
         page: 1,
@@ -71,8 +71,8 @@ Page({
         if (joke) {
           favorites.push({
             ...joke,
-            color: CAT_COLORS[joke.category] || '#667eea',
-            preview: joke.content ? joke.content.split('\n')[0].substring(0, 40) : joke.title
+            color: getCategoryColor(joke.category),
+            preview: generatePreview(joke.content, joke.title)
           })
         }
       }
@@ -89,8 +89,8 @@ Page({
       const res = await api.getFavorites(nextPage, 50)
       const newFavs = (res.data.list || []).map(j => ({
         ...j,
-        color: CAT_COLORS[j.category] || '#667eea',
-        preview: j.content ? j.content.split('\n')[0].substring(0, 40) : j.title
+        color: getCategoryColor(j.category),
+        preview: generatePreview(j.content, j.title)
       }))
       
       this.setData({
@@ -131,5 +131,35 @@ Page({
 
   goToIndex() {
     wx.switchTab({ url: '/pages/index/index' })
+  },
+
+  // 备份收藏：收藏按本机 openid 存在服务端，复制设备号可在新设备恢复
+  backupFavorites() {
+    const openid = app.getOpenid()
+    if (!openid) return wx.showToast({ title: '设备号未就绪', icon: 'none' })
+    wx.setClipboardData({
+      data: openid,
+      success: () => wx.showToast({ title: '设备号已复制，换手机时用它恢复收藏', icon: 'none', duration: 3000 })
+    })
+  },
+
+  // 换设备恢复：粘贴之前备份的设备号，重置 openid 后重新拉取服务端收藏
+  restoreFavorites() {
+    wx.showModal({
+      title: '恢复收藏',
+      content: '请粘贴你备份的设备号',
+      editable: true,
+      placeholderText: 'wx_xxx_xxx',
+      success: (res) => {
+        if (!res.confirm) return
+        const code = (res.content || '').trim()
+        if (!code) return wx.showToast({ title: '请输入设备号', icon: 'none' })
+        wx.setStorageSync('wawaxiao_openid', code)
+        wx.setStorageSync('openid', code)
+        app.globalData.openid = code
+        wx.showToast({ title: '已恢复，正在加载收藏', icon: 'success' })
+        this.loadFavorites()
+      }
+    })
   }
 })

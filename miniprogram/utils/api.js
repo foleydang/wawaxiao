@@ -63,7 +63,7 @@ function incrementUserCount(jokeId, type) {
 }
 
 // 已读笑话（带大小上限，防止 storage 无限增长）
-const MAX_READ_SIZE = 500;
+const MAX_READ_SIZE = 5000;
 
 function getReadJokes() {
   return wx.getStorageSync('readJokes') || []
@@ -190,16 +190,16 @@ const api = {
     return request(`/favorites?openid=${getOpenid()}&page=${page}&limit=${limit}`)
   },
   
-  // 添加收藏（后端）
+  // 添加收藏（后端）—— 先请求成功再改本地，失败时本地与服务端保持一致
   addFavorite(jokeId) {
-    addLocalLikedJoke(jokeId)
     return request(`/favorites/${jokeId}`, 'POST', { openid: getOpenid() })
+      .then(res => { addLocalLikedJoke(jokeId); return res })
   },
-  
-  // 删除收藏（后端）
+
+  // 删除收藏（后端）—— 同上，避免请求失败后本地已删而服务端仍保留
   removeFavorite(jokeId) {
-    removeLocalLikedJoke(jokeId)
     return request(`/favorites/${jokeId}?openid=${getOpenid()}`, 'DELETE')
+      .then(res => { removeLocalLikedJoke(jokeId); return res })
   },
   
   // 检查是否已收藏（批量）

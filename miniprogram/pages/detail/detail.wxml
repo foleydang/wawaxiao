@@ -38,6 +38,11 @@
       
       <!-- 三档评价 -->
       <view class="card-actions">
+        <view class="action-btn" bindtap="toggleFavorite">
+          <text class="action-icon">{{favorited ? '❤️' : '🤍'}}</text>
+          <text class="action-num">{{favorited ? '已收藏' : '收藏'}}</text>
+        </view>
+
         <view class="action-btn" bindtap="handleLike">
           <text class="action-icon">👍</text>
           <text class="action-num">{{joke.likes}}</text>
