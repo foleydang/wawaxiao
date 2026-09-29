@@ -43,8 +43,8 @@
       </view>
       <view class="section-right">
         <text class="section-count">共{{total}}条</text>
-        <view class="sort-btn glass btn-press" bindtap="toggleSort">
-          <text style="font-size:24rpx; color:#94a3b8; padding-left:8rpx;">{{sortMode === 'latest' ? '最新' : (sortMode === 'desc' ? '点赞↓' : '点赞↑')}}</text>
+        <view class="sort-btn glass btn-press" bindtap="toggleSort" style="width:auto; padding:0 14rpx; gap:4rpx;">
+          <text style="font-size:22rpx; color:#94a3b8; white-space:nowrap;">{{sortMode === 'latest' ? '最新' : (sortMode === 'desc' ? '点赞 ↓' : '点赞 ↑')}}</text>
         </view>
       </view>
     </view>

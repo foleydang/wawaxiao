@@ -46,21 +46,26 @@
       <text class="section-count">{{todayNewCount > 0 ? todayNewCount + '条最新' : freshCount + '条未看'}}</text>
     </view>
     
-    <view class="recommend-card glass">
+    <view class="recommend-card glass" style="position:relative;">
       <view class="card-color" style="background: {{currentJoke.color}}"></view>
-      
+
+      <!-- 收藏书签：右上角，不挤占评价按钮行 -->
+      <view bindtap="toggleFavorite" style="position:absolute; top:20rpx; right:24rpx; padding:6rpx 10rpx;">
+        <text style="font-size:40rpx;">{{favorited ? '❤️' : '🤍'}}</text>
+      </view>
+
       <view class="card-meta">
         <view class="meta-dot" style="background: {{currentJoke.color}}"></view>
         <text class="meta-cat">{{currentJoke.category}}</text>
         <text class="meta-date">{{currentJoke.date}}</text>
         <view class="meta-badge" wx:if="{{currentJoke.isTodayNew}}">NEW</view>
       </view>
-      
+
       <text class="card-title">{{currentJoke.title}}</text>
       <text class="card-content">{{currentJoke.content}}</text>
-      
+
       <view class="card-images" wx:if="{{currentJoke.hasImage}}">
-        <image 
+        <image
           class="card-img"
           wx:for="{{currentJoke.images}}"
           wx:for-item="imgUrl"
@@ -72,23 +77,18 @@
           data-urls="{{currentJoke.images}}"
         />
       </view>
-      
-      <view class="card-actions">
-        <view class="action-btn" bindtap="toggleFavorite">
-          <text class="action-icon">{{favorited ? '❤️' : '🤍'}}</text>
-          <text class="action-num">{{favorited ? '已收藏' : '收藏'}}</text>
-        </view>
 
+      <view class="card-actions">
         <view class="action-btn" bindtap="handleLike">
           <text class="action-icon">👍</text>
           <text class="action-num">{{currentJoke.likes}}</text>
         </view>
-        
+
         <view class="action-btn" bindtap="handleNeutral">
           <text class="action-icon">😐</text>
           <text class="action-num">{{currentJoke.neutrals}}</text>
         </view>
-        
+
         <view class="action-btn" bindtap="handleDislike">
           <text class="action-icon">👎</text>
           <text class="action-num">{{currentJoke.dislikes}}</text>
