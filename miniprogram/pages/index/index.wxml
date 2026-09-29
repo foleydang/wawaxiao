@@ -46,19 +46,16 @@
       <text class="section-count">{{todayNewCount > 0 ? todayNewCount + '条最新' : freshCount + '条未看'}}</text>
     </view>
     
-    <view class="recommend-card glass" style="position:relative;">
-      <view class="card-color" style="background: {{currentJoke.color}}"></view>
-
-      <!-- 收藏书签：右上角，纯文字符号避免 emoji 画风差异 -->
-      <view bindtap="toggleFavorite" style="position:absolute; top:20rpx; right:24rpx; padding:6rpx 10rpx;">
-        <text style="font-size:44rpx; color: {{favorited ? '#ef4444' : '#94a3b8'}};">{{favorited ? '♥' : '♡'}}</text>
-      </view>
-
-      <view class="card-meta">
-        <view class="meta-dot" style="background: {{currentJoke.color}}"></view>
-        <text class="meta-cat">{{currentJoke.category}}</text>
-        <text class="meta-date">{{currentJoke.date}}</text>
-        <view class="meta-badge" wx:if="{{currentJoke.isTodayNew}}">NEW</view>
+    <view class="recommend-card glass">
+      <!-- 头部：分类标签 + 收藏 -->
+      <view class="card-head">
+        <view class="cat-tag" style="color:{{currentJoke.color}}; background:{{currentJoke.color}}1f;">
+          <text>{{currentJoke.category}}</text>
+          <text wx:if="{{currentJoke.isTodayNew}}" class="cat-new">NEW</text>
+        </view>
+        <view class="fav-btn" bindtap="toggleFavorite">
+          <text style="color: {{favorited ? '#ef4444' : '#94a3b8'}};">{{favorited ? '♥' : '♡'}}</text>
+        </view>
       </view>
 
       <text class="card-title">{{currentJoke.title}}</text>
@@ -78,27 +75,23 @@
         />
       </view>
 
-      <view class="card-actions">
-        <view class="action-btn like" bindtap="handleLike">
-          <view class="action-icon-wrap">▲</view>
-          <text class="action-num">{{currentJoke.likes}}</text>
+      <!-- 底部：细胶囊反应行 + 下一个文字链 -->
+      <view class="card-foot">
+        <view class="react" bindtap="handleLike">
+          <text class="r-ico" style="color:#22c55e;">▲</text>
+          <text class="r-num">{{currentJoke.likes}}</text>
         </view>
-
-        <view class="action-btn neutral" bindtap="handleNeutral">
-          <view class="action-icon-wrap">○</view>
-          <text class="action-num">{{currentJoke.neutrals}}</text>
+        <view class="react" bindtap="handleNeutral">
+          <text class="r-ico" style="color:#64748b;">○</text>
+          <text class="r-num">{{currentJoke.neutrals}}</text>
         </view>
-
-        <view class="action-btn dislike" bindtap="handleDislike">
-          <view class="action-icon-wrap">▼</view>
-          <text class="action-num">{{currentJoke.dislikes}}</text>
+        <view class="react" bindtap="handleDislike">
+          <text class="r-ico" style="color:#ef4444;">▼</text>
+          <text class="r-num">{{currentJoke.dislikes}}</text>
         </view>
-      </view>
-
-      <!-- 下一个：居中中等胶囊按钮，显眼但不占满 -->
-      <view style="text-align:center; margin-top: 18rpx;">
-        <view bindtap="nextJoke" style="display:inline-block; padding: 16rpx 72rpx; border-radius: 999rpx; background: linear-gradient(90deg, {{currentJoke.color || '#8b5cf6'}}, #8b5cf6);">
-          <text style="color:#fff; font-size: 28rpx; font-weight: bold;">下一个 →</text>
+        <view class="next-link" bindtap="nextJoke">
+          <text>下一个</text>
+          <text class="next-arrow">→</text>
         </view>
       </view>
     </view>
