@@ -152,11 +152,9 @@ const api = {
     return request(`/jokes/${id}`)
   },
   
-  // 点赞（同时自动收藏到后端）
+  // 点赞（仅计数，不影响收藏；收藏由 addFavorite/removeFavorite 单独管理）
   like(id) {
     const userCount = incrementUserCount(id, 'like')
-    addLocalLikedJoke(id)
-    
     return request(`/like/${id}`, 'POST', { openid: getOpenid() }).then(res => ({
       ...res,
       userLikeCount: userCount
