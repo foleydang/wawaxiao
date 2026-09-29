@@ -49,9 +49,9 @@
     <view class="recommend-card glass" style="position:relative;">
       <view class="card-color" style="background: {{currentJoke.color}}"></view>
 
-      <!-- 收藏书签：右上角，不挤占评价按钮行 -->
+      <!-- 收藏书签：右上角，纯文字符号避免 emoji 画风差异 -->
       <view bindtap="toggleFavorite" style="position:absolute; top:20rpx; right:24rpx; padding:6rpx 10rpx;">
-        <text style="font-size:40rpx;">{{favorited ? '❤️' : '🤍'}}</text>
+        <text style="font-size:44rpx; color: {{favorited ? '#ef4444' : '#94a3b8'}};">{{favorited ? '♥' : '♡'}}</text>
       </view>
 
       <view class="card-meta">
@@ -80,17 +80,17 @@
 
       <view class="card-actions">
         <view class="action-btn like" bindtap="handleLike">
-          <view class="action-icon-wrap">👍</view>
+          <view class="action-icon-wrap">▲</view>
           <text class="action-num">{{currentJoke.likes}}</text>
         </view>
 
         <view class="action-btn neutral" bindtap="handleNeutral">
-          <view class="action-icon-wrap">😐</view>
+          <view class="action-icon-wrap">○</view>
           <text class="action-num">{{currentJoke.neutrals}}</text>
         </view>
 
         <view class="action-btn dislike" bindtap="handleDislike">
-          <view class="action-icon-wrap">👎</view>
+          <view class="action-icon-wrap">▼</view>
           <text class="action-num">{{currentJoke.dislikes}}</text>
         </view>
       </view>

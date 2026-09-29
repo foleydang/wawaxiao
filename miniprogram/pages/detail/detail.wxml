@@ -39,25 +39,25 @@
       
       <text class="card-content" style="font-size: {{contentFont}};">{{joke.content}}</text>
       
-      <!-- 三档评价 -->
+      <!-- 三档评价 + 收藏（纯文字符号，避免 emoji 画风差异） -->
       <view class="card-actions">
         <view class="action-btn" bindtap="toggleFavorite">
-          <text class="action-icon">{{favorited ? '❤️' : '🤍'}}</text>
+          <text class="action-icon" style="color: {{favorited ? '#ef4444' : '#94a3b8'}};">{{favorited ? '♥' : '♡'}}</text>
           <text class="action-num">{{favorited ? '已收藏' : '收藏'}}</text>
         </view>
 
         <view class="action-btn" bindtap="handleLike">
-          <text class="action-icon">👍</text>
+          <text class="action-icon" style="color:#22c55e;">▲</text>
           <text class="action-num">{{joke.likes}}</text>
         </view>
-        
+
         <view class="action-btn" bindtap="handleNeutral">
-          <text class="action-icon">😐</text>
+          <text class="action-icon" style="color:#64748b;">○</text>
           <text class="action-num">{{joke.neutrals}}</text>
         </view>
-        
+
         <view class="action-btn" bindtap="handleDislike">
-          <text class="action-icon">👎</text>
+          <text class="action-icon" style="color:#ef4444;">▼</text>
           <text class="action-num">{{joke.dislikes}}</text>
         </view>
       </view>
