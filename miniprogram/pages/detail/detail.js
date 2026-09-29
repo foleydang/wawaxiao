@@ -30,6 +30,10 @@ Page({
     try {
       const res = await api.getJokeById(id)
       const joke = res.data
+      // 计数兜底为 0，避免后端缺字段时显示空白
+      joke.likes = Number(joke.likes) || 0
+      joke.neutrals = Number(joke.neutrals) || 0
+      joke.dislikes = Number(joke.dislikes) || 0
 
       this.setData({ joke, favorited: api.getLocalLikedJokes().includes(id) })
       this.loadRecommendJokes()

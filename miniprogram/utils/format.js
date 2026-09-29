@@ -39,6 +39,10 @@ function formatJoke(joke) {
   if (!joke) return joke
   return {
     ...joke,
+    // 计数兜底为 0，避免后端缺字段时显示空白
+    likes: Number(joke.likes) || 0,
+    neutrals: Number(joke.neutrals) || 0,
+    dislikes: Number(joke.dislikes) || 0,
     color: getCategoryColor(joke.category),
     preview: generatePreview(joke.content, joke.title)
   }
