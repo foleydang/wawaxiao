@@ -223,7 +223,7 @@
 
 .react:active { transform: scale(0.92); }
 
-.react .r-label { font-size: 26rpx; font-weight: 600; }
+.react .r-ico { font-size: 30rpx; }
 .react .r-num { font-size: 24rpx; color: var(--text-secondary); }
 
 .next-link {

@@ -47,17 +47,17 @@
         </view>
 
         <view class="action-btn" bindtap="handleLike">
-          <text class="action-icon" style="color:#22c55e;">赞</text>
+          <text class="action-icon">👍</text>
           <text class="action-num">{{joke.likes}}</text>
         </view>
 
         <view class="action-btn" bindtap="handleNeutral">
-          <text class="action-icon" style="color:#64748b;">一般</text>
+          <text class="action-icon">😐</text>
           <text class="action-num">{{joke.neutrals}}</text>
         </view>
 
         <view class="action-btn" bindtap="handleDislike">
-          <text class="action-icon" style="color:#ef4444;">踩</text>
+          <text class="action-icon">👎</text>
           <text class="action-num">{{joke.dislikes}}</text>
         </view>
       </view>
