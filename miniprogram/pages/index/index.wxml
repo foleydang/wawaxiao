@@ -95,9 +95,11 @@
         </view>
       </view>
 
-      <!-- 下一个：全宽主按钮，避免和评价按钮挤一排找不到 -->
-      <view bindtap="nextJoke" style="margin: 22rpx 24rpx 0; padding: 22rpx 0; border-radius: 999rpx; background: linear-gradient(90deg, {{currentJoke.color || '#8b5cf6'}}, #8b5cf6); text-align: center;">
-        <text style="color:#fff; font-size: 30rpx; font-weight: bold;">下一个 →</text>
+      <!-- 下一个：居中中等胶囊按钮，显眼但不占满 -->
+      <view style="text-align:center; margin-top: 18rpx;">
+        <view bindtap="nextJoke" style="display:inline-block; padding: 16rpx 72rpx; border-radius: 999rpx; background: linear-gradient(90deg, {{currentJoke.color || '#8b5cf6'}}, #8b5cf6);">
+          <text style="color:#fff; font-size: 28rpx; font-weight: bold;">下一个 →</text>
+        </view>
       </view>
     </view>
   </view>
