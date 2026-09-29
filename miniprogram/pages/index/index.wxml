@@ -79,18 +79,18 @@
       </view>
 
       <view class="card-actions">
-        <view class="action-btn" bindtap="handleLike">
-          <text class="action-icon">👍</text>
+        <view class="action-btn like" bindtap="handleLike">
+          <view class="action-icon-wrap">👍</view>
           <text class="action-num">{{currentJoke.likes}}</text>
         </view>
 
-        <view class="action-btn" bindtap="handleNeutral">
-          <text class="action-icon">😐</text>
+        <view class="action-btn neutral" bindtap="handleNeutral">
+          <view class="action-icon-wrap">😐</view>
           <text class="action-num">{{currentJoke.neutrals}}</text>
         </view>
 
-        <view class="action-btn" bindtap="handleDislike">
-          <text class="action-icon">👎</text>
+        <view class="action-btn dislike" bindtap="handleDislike">
+          <view class="action-icon-wrap">👎</view>
           <text class="action-num">{{currentJoke.dislikes}}</text>
         </view>
       </view>
