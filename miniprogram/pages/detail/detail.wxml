@@ -12,6 +12,9 @@
     </view>
     
     <view class="header-right">
+      <text bindtap="adjustFont" data-d="-0.1" style="font-size:26rpx; color:#94a3b8; padding:0 10rpx; line-height:48rpx;">A-</text>
+      <text bindtap="adjustFont" data-d="0.1" style="font-size:30rpx; color:#94a3b8; padding:0 10rpx; line-height:48rpx;">A+</text>
+      <text bindtap="reportJoke" style="font-size:40rpx; color:#94a3b8; padding:0 10rpx; line-height:40rpx; letter-spacing:-4rpx;">⋯</text>
       <view class="theme-btn glass btn-press" bindtap="toggleTheme">
         <text class="theme-icon">{{themeIcon}}</text>
       </view>
@@ -34,7 +37,7 @@
       <!-- 标题和内容之间增加间距 -->
       <view class="title-divider"></view>
       
-      <text class="card-content">{{joke.content}}</text>
+      <text class="card-content" style="font-size: {{contentFont}};">{{joke.content}}</text>
       
       <!-- 三档评价 -->
       <view class="card-actions">

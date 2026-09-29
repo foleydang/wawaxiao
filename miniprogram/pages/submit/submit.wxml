@@ -35,7 +35,7 @@
 
     <view class="tips">
       <text class="tips-text">💡 投稿后需审核，通过后会出现在笑话库中</text>
-      <text class="tips-text">📝 每天最多投稿5条</text>
+      <text class="tips-text">📝 今日已投 {{todayCount}}/5，每天最多5条</text>
     </view>
   </view>
 

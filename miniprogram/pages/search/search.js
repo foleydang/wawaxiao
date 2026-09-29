@@ -3,9 +3,10 @@ const { api } = require('../../utils/api')
 Page({
   data: {
     history: [],  // 搜索历史
-    hotKeywords: ['搞笑', '校园', '职场', '生活', '家庭', '动物'],  // 热门关键词
+    hotKeywords: ['搞笑', '校园', '职场', '生活', '家庭', '动物'],
     keyword: '',
-    results: [],
+    results: null,
+    searchedKeyword: '',
     loading: false,
     themeIcon: '🌙',
     pageClass: ''
@@ -77,18 +78,18 @@ Page({
       // 服务端搜索全部笑话
       const res = await api.searchJokes(keyword)
       const results = res.data || []
-      
+
       this.setData({
         results,
+        searchedKeyword: keyword,
         loading: false
       })
-      
-      if (results.length === 0) {
-        wx.showToast({ title: '未找到相关笑话', icon: 'none' })
-      } else {
+
+      if (results.length > 0) {
         wx.showToast({ title: `找到${results.length}条笑话`, icon: 'success' })
       }
-      
+      // 无结果时不弹 toast，让空状态大块引导（热词+历史）接管
+
     } catch (err) {
       wx.showToast({ title: '搜索失败', icon: 'none' })
       this.setData({ loading: false })

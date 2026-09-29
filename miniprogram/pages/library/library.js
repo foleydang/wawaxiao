@@ -17,7 +17,7 @@ Page({
     loading: false,
     loadingMore: false,
     themeIcon: '🌙',
-    sortDesc: true,
+    sortMode: 'desc',  // desc(点赞降序) | asc(点赞升序) | latest(最新)
   },
 
   onLoad() {
@@ -151,14 +151,17 @@ Page({
   },
 
   filterJokes(jokes, category) {
-    let filtered = category === '全部' ? jokes : jokes.filter(j => j.category === category)
-    
-    if (this.data.sortDesc) {
+    let filtered = category === '全部' ? [...jokes] : jokes.filter(j => j.category === category)
+
+    if (this.data.sortMode === 'desc') {
       filtered = filtered.sort((a, b) => b.likes - a.likes)
-    } else {
+    } else if (this.data.sortMode === 'asc') {
       filtered = filtered.sort((a, b) => a.likes - b.likes)
+    } else {
+      // 最新：按 id 降序（id 递增，越大越新）
+      filtered = filtered.sort((a, b) => Number(b.id) - Number(a.id))
     }
-    
+
     return filtered
   },
 
@@ -171,13 +174,15 @@ Page({
   },
 
   toggleSort() {
-    const newSortDesc = !this.data.sortDesc
+    const order = ['desc', 'asc', 'latest']
+    const cur = order.indexOf(this.data.sortMode)
+    const newMode = order[(cur + 1) % order.length]
     this.setData({
-      sortDesc: newSortDesc,
+      sortMode: newMode,
       jokes: this.filterJokes(this.data.allJokes, this.data.currentCategory)
     })
     wx.showToast({
-      title: newSortDesc ? '点赞 ↓' : '点赞 ↑',
+      title: newMode === 'desc' ? '点赞 ↓' : newMode === 'asc' ? '点赞 ↑' : '最新',
       icon: 'none',
       duration: 800
     })

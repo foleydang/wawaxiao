@@ -154,9 +154,13 @@ Page({
 
     let nextJoke
     if (unreadJokes.length > 0) {
-      // 有未读的，随机取一个未读的
-      const randomIndex = Math.floor(Math.random() * unreadJokes.length)
-      nextJoke = unreadJokes[randomIndex]
+      // 按"踩数"升序排序，偏向少踩的分类（👎 过的同类往后排）
+      const w = wx.getStorageSync('dislikedCats') || {}
+      const sorted = [...unreadJokes].sort((a, b) => (w[a.category] || 0) - (w[b.category] || 0))
+      // 从踩数最低的前 5 条里随机取，避免完全固定
+      const pool = sorted.slice(0, Math.min(5, sorted.length))
+      const randomIndex = Math.floor(Math.random() * pool.length)
+      nextJoke = pool[randomIndex]
     } else {
       // 全部都读过了（已无更多页），随机循环
       const currentIndex = jokes.findIndex(j => j.id === this.data.currentJoke?.id)
@@ -240,22 +244,30 @@ Page({
 
   async handleDislike() {
     if (!this.data.currentJoke) return
-    
+
     try {
       const res = await api.dislike(this.data.currentJoke.id)
       const joke = this.data.currentJoke
       joke.likes = res.data.likes
       joke.neutrals = res.data.neutrals
       joke.dislikes = res.data.dislikes
-      
+
+      // 👎 记录该分类踩数，后续 nextJoke 降权少推同类
+      const cat = joke.category
+      if (cat) {
+        const w = wx.getStorageSync('dislikedCats') || {}
+        w[cat] = (w[cat] || 0) + 1
+        wx.setStorageSync('dislikedCats', w)
+      }
+
       this.setData({ currentJoke: joke })
-      
+
       wx.showToast({
         title: '👎 不喜欢+1',
         icon: 'none',
         duration: 800
       })
-      
+
     } catch (err) {
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
@@ -296,6 +308,14 @@ Page({
     return {
       title: '哇哇笑｜' + this.data.currentJoke.title,
       path: `/pages/detail/detail?id=${this.data.currentJoke.id}`
+    }
+  },
+
+  onShareTimeline() {
+    if (!this.data.currentJoke) return {}
+    return {
+      title: '哇哇笑｜' + this.data.currentJoke.title,
+      query: 'id=' + this.data.currentJoke.id
     }
   }
 })

@@ -5,7 +5,7 @@ Page({
   data: {
     pageClass: '',
     themeIcon: '🌙',
-    categories: ['搞笑', '生活', '职场', '家庭', '校园', '动物'],
+    categories: ['搞笑', '生活', '职场', '家庭', '校园', '儿童', '动物', '恋爱'],
     currentCat: '搞笑',
     title: '',
     content: '',
@@ -13,7 +13,8 @@ Page({
     contentLen: 0,
     canSubmit: false,
     submitting: false,
-    mySubmits: []
+    mySubmits: [],
+    todayCount: 0
   },
 
   onLoad() {
@@ -57,6 +58,12 @@ Page({
   async doSubmit() {
     if (!this.data.canSubmit || this.data.submitting) return
 
+    // 前端日限 5 条
+    if ((this.data.todayCount || 0) >= 5) {
+      wx.showToast({ title: '今日已达上限(5条)', icon: 'none' })
+      return
+    }
+
     this.setData({ submitting: true, canSubmit: false })
 
     try {
@@ -94,7 +101,12 @@ Page({
   async loadMySubmits() {
     try {
       const res = await api.getMySubmits()
-      this.setData({ mySubmits: res.data.list || [] })
+      const list = res.data.list || []
+      // 统计今日已投条数（按日期），前端限 5 条/天
+      const today = new Date()
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+      const todayCount = list.filter(s => (s.created_at || s.date || '').startsWith(todayStr) || (s.created_at || '').indexOf(todayStr) >= 0).length
+      this.setData({ mySubmits: list, todayCount })
     } catch (err) {
       console.error('加载投稿失败:', err)
     }

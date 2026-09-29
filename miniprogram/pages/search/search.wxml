@@ -28,6 +28,15 @@
     </view>
   </view>
 
+  <!-- 无结果空状态：显示搜索词 + 引导热词 -->
+  <view class="section" wx:if="{{results.length === 0 && !loading && searchedKeyword}}">
+    <view style="text-align:center; padding: 40rpx 0 20rpx;">
+      <text style="font-size: 60rpx;">🔍</text>
+    </view>
+    <view style="text-align:center; font-size: 30rpx; color: #94a3b8;">没找到“{{searchedKeyword}}”相关笑话</view>
+    <view style="text-align:center; font-size: 24rpx; color: #64748b; margin-top: 8rpx;">试试这些热门关键词</view>
+  </view>
+
   <!-- 热门搜索 -->
   <view class="section" wx:if="{{results.length === 0 && !loading}}">
     <view class="section-header">

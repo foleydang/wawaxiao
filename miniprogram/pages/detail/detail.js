@@ -5,11 +5,15 @@ Page({
     joke: null,
     recommendJokes: [],
     favorited: false,
+    fontScale: 1,
+    contentFont: '30rpx',
     themeIcon: '🌙',
     pageClass: ''
   },
 
   onLoad(options) {
+    const fs = wx.getStorageSync('fontScale') || 1
+    this.setData({ fontScale: fs, contentFont: Math.round(30 * fs) + 'rpx' })
     this.loadJoke(options.id)
     this.initTheme()
   },
@@ -139,10 +143,29 @@ Page({
     const current = wx.getStorageSync('theme') || 'dark'
     const newTheme = current === 'dark' ? 'light' : 'dark'
     wx.setStorageSync('theme', newTheme)
-    
+
     this.setData({
       pageClass: newTheme === 'light' ? 'light-mode' : '',
       themeIcon: newTheme === 'dark' ? '🌙' : '☀️'
+    })
+  },
+
+  // 字号调整（A-/A+，全局存储）
+  adjustFont(e) {
+    const d = parseFloat(e.currentTarget.dataset.d) || 0
+    let fs = Math.max(0.85, Math.min(1.4, this.data.fontScale + d))
+    wx.setStorageSync('fontScale', fs)
+    this.setData({ fontScale: fs, contentFont: Math.round(30 * fs) + 'rpx' })
+  },
+
+  // 举报内容（前端入口，记录后给反馈；真提交需后端）
+  reportJoke() {
+    if (!this.data.joke) return
+    wx.showActionSheet({
+      itemList: ['内容不当', '垃圾/广告', '其他问题'],
+      success: () => {
+        wx.showToast({ title: '已记录，感谢反馈', icon: 'success' })
+      }
     })
   },
 
@@ -151,6 +174,14 @@ Page({
     return {
       title: '哇哇笑｜' + this.data.joke.title,
       path: `/pages/detail/detail?id=${this.data.joke.id}`
+    }
+  },
+
+  onShareTimeline() {
+    if (!this.data.joke) return {}
+    return {
+      title: '哇哇笑｜' + this.data.joke.title,
+      query: 'id=' + this.data.joke.id
     }
   }
 })
