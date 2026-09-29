@@ -12,15 +12,6 @@
     </view>
   </view>
 
-  <!-- 备份提示（收藏按本机设备号保存，换设备/清缓存会丢失） -->
-  <view style="margin: 20rpx 30rpx 0; padding: 20rpx 24rpx; border-radius: 16rpx; background: rgba(250,204,21,0.12); display: flex; align-items: center; justify-content: space-between;">
-    <text style="font-size: 22rpx; color: #fbbf24; flex: 1;">⚠️ 收藏保存在本机，换设备或清缓存会丢失，请提前备份</text>
-    <view style="display: flex; gap: 12rpx;">
-      <text bindtap="backupFavorites" style="font-size: 22rpx; color: #60a5fa; padding: 4rpx 12rpx;">备份</text>
-      <text bindtap="restoreFavorites" style="font-size: 22rpx; color: #34d399; padding: 4rpx 12rpx;">恢复</text>
-    </view>
-  </view>
-
   <!-- 空状态 -->
   <view class="empty" wx:if="{{!loading && favorites.length === 0}}">
     <view class="empty-icon glass">

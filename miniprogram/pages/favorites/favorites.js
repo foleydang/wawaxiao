@@ -1,7 +1,6 @@
 const { api } = require('../../utils/api.js')
 const { getCurrentTheme, toggleTheme, getThemeIcon, initTheme } = require('../../utils/theme.js')
 const { getCategoryColor, generatePreview } = require('../../utils/format.js')
-const app = getApp()
 
 Page({
   data: {
@@ -131,35 +130,5 @@ Page({
 
   goToIndex() {
     wx.switchTab({ url: '/pages/index/index' })
-  },
-
-  // 备份收藏：收藏按本机 openid 存在服务端，复制设备号可在新设备恢复
-  backupFavorites() {
-    const openid = app.getOpenid()
-    if (!openid) return wx.showToast({ title: '设备号未就绪', icon: 'none' })
-    wx.setClipboardData({
-      data: openid,
-      success: () => wx.showToast({ title: '设备号已复制，换手机时用它恢复收藏', icon: 'none', duration: 3000 })
-    })
-  },
-
-  // 换设备恢复：粘贴之前备份的设备号，重置 openid 后重新拉取服务端收藏
-  restoreFavorites() {
-    wx.showModal({
-      title: '恢复收藏',
-      content: '请粘贴你备份的设备号',
-      editable: true,
-      placeholderText: 'wx_xxx_xxx',
-      success: (res) => {
-        if (!res.confirm) return
-        const code = (res.content || '').trim()
-        if (!code) return wx.showToast({ title: '请输入设备号', icon: 'none' })
-        wx.setStorageSync('wawaxiao_openid', code)
-        wx.setStorageSync('openid', code)
-        app.globalData.openid = code
-        wx.showToast({ title: '已恢复，正在加载收藏', icon: 'success' })
-        this.loadFavorites()
-      }
-    })
   }
 })
