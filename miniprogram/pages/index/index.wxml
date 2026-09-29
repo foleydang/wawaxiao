@@ -75,18 +75,18 @@
         />
       </view>
 
-      <!-- 底部：细胶囊反应行 + 下一个文字链 -->
+      <!-- 底部：反应行 + 下一个文字链 -->
       <view class="card-foot">
         <view class="react" bindtap="handleLike">
-          <text class="r-ico" style="color:#22c55e;">▲</text>
+          <text class="r-label" style="color:#22c55e;">赞</text>
           <text class="r-num">{{currentJoke.likes}}</text>
         </view>
         <view class="react" bindtap="handleNeutral">
-          <text class="r-ico" style="color:#64748b;">○</text>
+          <text class="r-label" style="color:#64748b;">一般</text>
           <text class="r-num">{{currentJoke.neutrals}}</text>
         </view>
         <view class="react" bindtap="handleDislike">
-          <text class="r-ico" style="color:#ef4444;">▼</text>
+          <text class="r-label" style="color:#ef4444;">踩</text>
           <text class="r-num">{{currentJoke.dislikes}}</text>
         </view>
         <view class="next-link" bindtap="nextJoke">
